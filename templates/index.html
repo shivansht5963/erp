@@ -1,0 +1,1651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academia - Smart College ERP System</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+
+        :root {
+          --primary-color: #6366f1;
+          --secondary-color: #8b5cf6;
+          --accent-color: #06b6d4;
+          --bg-dark: #0f0f23;
+          --bg-darker: #0a0a1a;
+          --bg-card: #1a1a2e;
+          --text-primary: #ffffff;
+          --text-secondary: #a1a1aa;
+          --gradient-primary: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+          --gradient-secondary: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
+          --shadow-glow: 0 0 20px rgba(99, 102, 241, 0.3);
+        }
+
+        body {
+          font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+          background: var(--bg-dark);
+          color: var(--text-primary);
+          line-height: 1.6;
+          overflow-x: hidden;
+        }
+
+        .container {
+          max-width: 1200px;
+          margin: 0 auto;
+          padding: 0 20px;
+        }
+
+        /* Navigation */
+        .navbar {
+          position: fixed;
+          top: 0;
+          width: 100%;
+          background: rgba(15, 15, 35, 0.95);
+          backdrop-filter: blur(10px);
+          z-index: 1000;
+          border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+        }
+
+        .nav-container {
+          max-width: 1200px;
+          margin: 0 auto;
+          padding: 0 20px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          height: 70px;
+        }
+
+        .nav-logo {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          font-size: 1.5rem;
+          font-weight: bold;
+          color: var(--text-primary);
+        }
+
+        .nav-logo i {
+          color: var(--primary-color);
+          font-size: 1.8rem;
+        }
+
+        .nav-menu {
+          display: flex;
+          align-items: center;
+          gap: 30px;
+        }
+
+        .nav-link {
+          color: var(--text-secondary);
+          text-decoration: none;
+          transition: color 0.3s ease;
+          position: relative;
+        }
+
+        .nav-link:hover {
+          color: var(--primary-color);
+        }
+
+        .nav-link::after {
+          content: "";
+          position: absolute;
+          bottom: -5px;
+          left: 0;
+          width: 0;
+          height: 2px;
+          background: var(--gradient-primary);
+          transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after {
+          width: 100%;
+        }
+
+        .cta-button {
+          background: var(--gradient-primary);
+          color: white;
+          border: none;
+          padding: 10px 20px;
+          border-radius: 25px;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          font-weight: 500;
+        }
+
+        .cta-button:hover {
+          transform: translateY(-2px);
+          box-shadow: var(--shadow-glow);
+        }
+
+        .hamburger {
+          display: none;
+          flex-direction: column;
+          cursor: pointer;
+        }
+
+        .hamburger span {
+          width: 25px;
+          height: 3px;
+          background: var(--text-primary);
+          margin: 3px 0;
+          transition: 0.3s;
+        }
+
+        /* Hero Section */
+        .hero {
+          min-height: 100vh;
+          display: flex;
+          align-items: center;
+          position: relative;
+          overflow: hidden;
+        }
+
+        .hero-background {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          z-index: -1;
+        }
+
+        .floating-elements {
+          position: absolute;
+          width: 100%;
+          height: 100%;
+        }
+
+        .binary-code {
+          position: absolute;
+          color: rgba(99, 102, 241, 0.1);
+          font-family: "Courier New", monospace;
+          font-size: 2rem;
+          animation: float 6s ease-in-out infinite;
+        }
+
+        .binary-code:nth-child(1) {
+          top: 20%;
+          left: 10%;
+          animation-delay: 0s;
+        }
+
+        .binary-code:nth-child(2) {
+          top: 60%;
+          right: 15%;
+          animation-delay: 2s;
+        }
+
+        .binary-code:nth-child(3) {
+          bottom: 30%;
+          left: 20%;
+          animation-delay: 4s;
+        }
+
+        .circuit-line {
+          position: absolute;
+          width: 200px;
+          height: 2px;
+          background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.3), transparent);
+          animation: pulse 3s ease-in-out infinite;
+        }
+
+        .circuit-line:nth-child(4) {
+          top: 40%;
+          left: 0;
+          transform: rotate(45deg);
+        }
+
+        .circuit-line:nth-child(5) {
+          bottom: 40%;
+          right: 0;
+          transform: rotate(-45deg);
+          animation-delay: 1.5s;
+        }
+
+        .hologram-chart {
+          position: absolute;
+          top: 30%;
+          right: 10%;
+          width: 100px;
+          height: 100px;
+          border: 2px solid rgba(139, 92, 246, 0.2);
+          border-radius: 50%;
+          animation: rotate 10s linear infinite;
+        }
+
+        .hologram-chart::before {
+          content: "";
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          width: 60%;
+          height: 60%;
+          border: 1px solid rgba(139, 92, 246, 0.3);
+          border-radius: 50%;
+          transform: translate(-50%, -50%);
+        }
+
+        @keyframes float {
+          0%,
+          100% {
+            transform: translateY(0px);
+          }
+          50% {
+            transform: translateY(-20px);
+          }
+        }
+
+        @keyframes pulse {
+          0%,
+          100% {
+            opacity: 0.3;
+          }
+          50% {
+            opacity: 1;
+          }
+        }
+
+        @keyframes rotate {
+          from {
+            transform: rotate(0deg);
+          }
+          to {
+            transform: rotate(360deg);
+          }
+        }
+
+        .hero-container {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 60px;
+          align-items: center;
+          padding-top: 70px;
+        }
+
+        .hero-title {
+          font-size: 3.5rem;
+          font-weight: 800;
+          line-height: 1.1;
+          margin-bottom: 20px;
+        }
+
+        .gradient-text {
+          background: var(--gradient-primary);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+        }
+
+        .hero-tagline {
+          font-size: 1.3rem;
+          color: var(--accent-color);
+          margin-bottom: 20px;
+          font-weight: 500;
+        }
+
+        .hero-description {
+          font-size: 1.1rem;
+          color: var(--text-secondary);
+          margin-bottom: 30px;
+          line-height: 1.7;
+        }
+
+        .hero-cta {
+          background: var(--gradient-primary);
+          color: white;
+          border: none;
+          padding: 15px 30px;
+          border-radius: 30px;
+          font-size: 1.1rem;
+          font-weight: 600;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          transition: all 0.3s ease;
+          width: fit-content;
+        }
+
+        .hero-cta:hover {
+          transform: translateY(-3px);
+          box-shadow: var(--shadow-glow);
+        }
+
+        .hero-visual {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+
+        .ai-illustration {
+          position: relative;
+          width: 300px;
+          height: 300px;
+        }
+
+        .brain-icon {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          font-size: 4rem;
+          color: var(--primary-color);
+          animation: pulse-glow 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-glow {
+          0%,
+          100% {
+            transform: translate(-50%, -50%) scale(1);
+            filter: drop-shadow(0 0 10px rgba(99, 102, 241, 0.5));
+          }
+          50% {
+            transform: translate(-50%, -50%) scale(1.1);
+            filter: drop-shadow(0 0 20px rgba(99, 102, 241, 0.8));
+          }
+        }
+
+        .data-nodes {
+          position: absolute;
+          width: 100%;
+          height: 100%;
+        }
+
+        .node {
+          position: absolute;
+          width: 12px;
+          height: 12px;
+          background: var(--accent-color);
+          border-radius: 50%;
+          animation: node-pulse 3s ease-in-out infinite;
+        }
+
+        .node:nth-child(1) {
+          top: 20%;
+          left: 20%;
+          animation-delay: 0s;
+        }
+
+        .node:nth-child(2) {
+          top: 20%;
+          right: 20%;
+          animation-delay: 0.5s;
+        }
+
+        .node:nth-child(3) {
+          bottom: 20%;
+          left: 20%;
+          animation-delay: 1s;
+        }
+
+        .node:nth-child(4) {
+          bottom: 20%;
+          right: 20%;
+          animation-delay: 1.5s;
+        }
+
+        @keyframes node-pulse {
+          0%,
+          100% {
+            transform: scale(1);
+            opacity: 0.7;
+          }
+          50% {
+            transform: scale(1.5);
+            opacity: 1;
+          }
+        }
+
+        /* Section Styles */
+        section {
+          padding: 100px 0;
+        }
+
+        .section-header {
+          text-align: center;
+          margin-bottom: 60px;
+        }
+
+        .section-header h2 {
+          font-size: 2.5rem;
+          font-weight: 700;
+          margin-bottom: 15px;
+          background: var(--gradient-primary);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+        }
+
+        .section-line {
+          width: 80px;
+          height: 4px;
+          background: var(--gradient-primary);
+          margin: 0 auto 20px;
+          border-radius: 2px;
+        }
+
+        .section-header p {
+          font-size: 1.1rem;
+          color: var(--text-secondary);
+          max-width: 600px;
+          margin: 0 auto;
+        }
+
+        /* About Section */
+        .about {
+          background: var(--bg-darker);
+        }
+
+        .about-content p {
+          font-size: 1.2rem;
+          line-height: 1.8;
+          color: var(--text-secondary);
+          text-align: center;
+          max-width: 800px;
+          margin: 0 auto;
+        }
+
+        /* Modules Section */
+        .modules-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+          gap: 30px;
+        }
+
+        .module-card {
+          background: var(--bg-card);
+          padding: 40px 30px;
+          border-radius: 15px;
+          text-align: center;
+          transition: all 0.3s ease;
+          border: 1px solid rgba(99, 102, 241, 0.1);
+          position: relative;
+          overflow: hidden;
+        }
+
+        .module-card::before {
+          content: "";
+          position: absolute;
+          top: 0;
+          left: -100%;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.1), transparent);
+          transition: left 0.5s ease;
+        }
+
+        .module-card:hover::before {
+          left: 100%;
+        }
+
+        .module-card:hover {
+          transform: translateY(-10px);
+          border-color: var(--primary-color);
+          box-shadow: 0 20px 40px rgba(99, 102, 241, 0.2);
+        }
+
+        .module-icon {
+          font-size: 3rem;
+          color: var(--primary-color);
+          margin-bottom: 20px;
+        }
+
+        .module-card h3 {
+          font-size: 1.3rem;
+          font-weight: 600;
+          margin-bottom: 15px;
+          color: var(--text-primary);
+        }
+
+        .module-card p {
+          color: var(--text-secondary);
+          line-height: 1.6;
+        }
+
+        /* AI Features Section */
+        .ai-features {
+          background: var(--bg-darker);
+        }
+
+        .ai-features-grid {
+          display: grid;
+          gap: 60px;
+        }
+
+        .ai-feature {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 50px;
+          align-items: center;
+        }
+
+        .ai-feature:nth-child(even) {
+          direction: rtl;
+        }
+
+        .ai-feature:nth-child(even) > * {
+          direction: ltr;
+        }
+
+        .ai-feature-visual {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 300px;
+        }
+
+        .prediction-chart {
+          position: relative;
+          width: 250px;
+          height: 200px;
+          background: var(--bg-card);
+          border-radius: 15px;
+          padding: 20px;
+          border: 1px solid rgba(99, 102, 241, 0.2);
+        }
+
+        .chart-bars {
+          display: flex;
+          align-items: end;
+          justify-content: space-between;
+          height: 120px;
+          gap: 10px;
+        }
+
+        .bar {
+          flex: 1;
+          background: var(--gradient-primary);
+          border-radius: 4px 4px 0 0;
+          animation: bar-grow 2s ease-out;
+        }
+
+        @keyframes bar-grow {
+          from {
+            height: 0;
+          }
+        }
+
+        .prediction-line {
+          position: absolute;
+          top: 30px;
+          left: 20px;
+          right: 20px;
+          height: 2px;
+          background: var(--accent-color);
+          border-radius: 1px;
+        }
+
+        .prediction-line::after {
+          content: "";
+          position: absolute;
+          right: -5px;
+          top: -3px;
+          width: 8px;
+          height: 8px;
+          background: var(--accent-color);
+          border-radius: 50%;
+          animation: pulse 2s ease-in-out infinite;
+        }
+
+        .note-classification {
+          position: relative;
+          width: 250px;
+          height: 200px;
+          background: var(--bg-card);
+          border-radius: 15px;
+          padding: 30px;
+          border: 1px solid rgba(139, 92, 246, 0.2);
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .document-icon {
+          font-size: 3rem;
+          color: var(--secondary-color);
+          margin-bottom: 20px;
+        }
+
+        .classification-tags {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 8px;
+          margin-bottom: 20px;
+        }
+
+        .tag {
+          background: rgba(139, 92, 246, 0.2);
+          color: var(--secondary-color);
+          padding: 4px 12px;
+          border-radius: 15px;
+          font-size: 0.8rem;
+          font-weight: 500;
+        }
+
+        .ocr-lines {
+          width: 100%;
+        }
+
+        .line {
+          height: 2px;
+          background: rgba(139, 92, 246, 0.3);
+          margin: 5px 0;
+          border-radius: 1px;
+          animation: scan 3s ease-in-out infinite;
+        }
+
+        .line:nth-child(2) {
+          width: 80%;
+          animation-delay: 0.5s;
+        }
+
+        .line:nth-child(3) {
+          width: 60%;
+          animation-delay: 1s;
+        }
+
+        @keyframes scan {
+          0%,
+          100% {
+            opacity: 0.3;
+          }
+          50% {
+            opacity: 1;
+          }
+        }
+
+        .ai-feature-content h3 {
+          font-size: 1.8rem;
+          font-weight: 700;
+          margin-bottom: 20px;
+          color: var(--text-primary);
+        }
+
+        .ai-feature-content p {
+          font-size: 1.1rem;
+          color: var(--text-secondary);
+          line-height: 1.7;
+          margin-bottom: 25px;
+        }
+
+        .ai-feature-content ul {
+          list-style: none;
+        }
+
+        .ai-feature-content li {
+          color: var(--text-secondary);
+          margin-bottom: 10px;
+          position: relative;
+          padding-left: 25px;
+        }
+
+        .ai-feature-content li::before {
+          content: "✓";
+          position: absolute;
+          left: 0;
+          color: var(--accent-color);
+          font-weight: bold;
+        }
+
+        /* How It Works Section */
+        .workflow {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          gap: 40px;
+          flex-wrap: wrap;
+        }
+
+        .workflow-step {
+          text-align: center;
+          max-width: 250px;
+          position: relative;
+        }
+
+        .step-number {
+          position: absolute;
+          top: -10px;
+          right: -10px;
+          width: 30px;
+          height: 30px;
+          background: var(--gradient-primary);
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-weight: bold;
+          font-size: 0.9rem;
+          z-index: 1;
+        }
+
+        .step-icon {
+          width: 80px;
+          height: 80px;
+          background: var(--bg-card);
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin: 0 auto 20px;
+          font-size: 2rem;
+          color: var(--primary-color);
+          border: 2px solid rgba(99, 102, 241, 0.2);
+          transition: all 0.3s ease;
+        }
+
+        .workflow-step:hover .step-icon {
+          transform: scale(1.1);
+          border-color: var(--primary-color);
+          box-shadow: var(--shadow-glow);
+        }
+
+        .workflow-step h3 {
+          font-size: 1.3rem;
+          font-weight: 600;
+          margin-bottom: 15px;
+          color: var(--text-primary);
+        }
+
+        .workflow-step p {
+          color: var(--text-secondary);
+          line-height: 1.6;
+        }
+
+        .workflow-arrow {
+          font-size: 1.5rem;
+          color: var(--primary-color);
+          animation: arrow-pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes arrow-pulse {
+          0%,
+          100% {
+            transform: translateX(0);
+          }
+          50% {
+            transform: translateX(10px);
+          }
+        }
+
+        /* Benefits Section */
+        .benefits {
+          background: var(--bg-darker);
+        }
+
+        .benefits-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+          gap: 40px;
+        }
+
+        .benefit-item {
+          text-align: center;
+          padding: 30px 20px;
+          transition: transform 0.3s ease;
+        }
+
+        .benefit-item:hover {
+          transform: translateY(-5px);
+        }
+
+        .benefit-item i {
+          font-size: 3rem;
+          color: var(--accent-color);
+          margin-bottom: 20px;
+          display: block;
+        }
+
+        .benefit-item h3 {
+          font-size: 1.3rem;
+          font-weight: 600;
+          margin-bottom: 15px;
+          color: var(--text-primary);
+        }
+
+        .benefit-item p {
+          color: var(--text-secondary);
+          line-height: 1.6;
+        }
+
+        /* Demo Section */
+        .demo-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+          gap: 30px;
+        }
+
+        .demo-card {
+          background: var(--bg-card);
+          border-radius: 15px;
+          overflow: hidden;
+          border: 1px solid rgba(99, 102, 241, 0.1);
+          transition: all 0.3s ease;
+        }
+
+        .demo-card:hover {
+          transform: translateY(-5px);
+          border-color: var(--primary-color);
+          box-shadow: 0 20px 40px rgba(99, 102, 241, 0.2);
+        }
+
+        .demo-placeholder {
+          padding: 60px 30px;
+          text-align: center;
+          background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+        }
+
+        .demo-placeholder i {
+          font-size: 4rem;
+          color: var(--primary-color);
+          margin-bottom: 20px;
+          display: block;
+        }
+
+        .demo-placeholder h4 {
+          font-size: 1.3rem;
+          font-weight: 600;
+          margin-bottom: 10px;
+          color: var(--text-primary);
+        }
+
+        .demo-placeholder p {
+          color: var(--text-secondary);
+        }
+
+        /* CTA Section */
+        .cta {
+          background: var(--bg-darker);
+          text-align: center;
+        }
+
+        .cta-content h2 {
+          font-size: 2.5rem;
+          font-weight: 700;
+          margin-bottom: 20px;
+          background: var(--gradient-primary);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+        }
+
+        .cta-content p {
+          font-size: 1.2rem;
+          color: var(--text-secondary);
+          margin-bottom: 40px;
+          max-width: 600px;
+          margin-left: auto;
+          margin-right: auto;
+        }
+
+        .cta-button-large {
+          background: var(--gradient-primary);
+          color: white;
+          border: none;
+          padding: 20px 40px;
+          border-radius: 35px;
+          font-size: 1.3rem;
+          font-weight: 600;
+          cursor: pointer;
+          display: inline-flex;
+          align-items: center;
+          gap: 15px;
+          transition: all 0.3s ease;
+          margin-bottom: 30px;
+        }
+
+        .cta-button-large:hover {
+          transform: translateY(-3px);
+          box-shadow: var(--shadow-glow);
+        }
+
+        .cta-features {
+          display: flex;
+          justify-content: center;
+          gap: 40px;
+          flex-wrap: wrap;
+        }
+
+        .cta-feature {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          color: var(--text-secondary);
+        }
+
+        .cta-feature i {
+          color: var(--accent-color);
+        }
+
+        /* Footer */
+        .footer {
+          background: var(--bg-darker);
+          padding: 40px 0;
+          border-top: 1px solid rgba(99, 102, 241, 0.1);
+        }
+
+        .footer-content {
+          text-align: center;
+        }
+
+        .footer-logo {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 10px;
+          font-size: 1.5rem;
+          font-weight: bold;
+          margin-bottom: 15px;
+        }
+
+        .footer-logo i {
+          color: var(--primary-color);
+        }
+
+        .footer p {
+          color: var(--text-secondary);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+          .nav-menu {
+            position: fixed;
+            left: -100%;
+            top: 70px;
+            flex-direction: column;
+            background-color: var(--bg-darker);
+            width: 100%;
+            text-align: center;
+            transition: 0.3s;
+            box-shadow: 0 10px 27px rgba(0, 0, 0, 0.05);
+            padding: 20px 0;
+          }
+
+          .nav-menu.active {
+            left: 0;
+          }
+
+          .hamburger {
+            display: flex;
+          }
+
+          .hamburger.active span:nth-child(2) {
+            opacity: 0;
+          }
+
+          .hamburger.active span:nth-child(1) {
+            transform: translateY(8px) rotate(45deg);
+          }
+
+          .hamburger.active span:nth-child(3) {
+            transform: translateY(-8px) rotate(-45deg);
+          }
+
+          .hero-container {
+            grid-template-columns: 1fr;
+            gap: 40px;
+            text-align: center;
+          }
+
+          .hero-title {
+            font-size: 2.5rem;
+          }
+
+          .ai-feature {
+            grid-template-columns: 1fr;
+            gap: 30px;
+          }
+
+          .ai-feature:nth-child(even) {
+            direction: ltr;
+          }
+
+          .workflow {
+            flex-direction: column;
+            gap: 30px;
+          }
+
+          .workflow-arrow {
+            transform: rotate(90deg);
+          }
+
+          .cta-features {
+            flex-direction: column;
+            gap: 20px;
+          }
+
+          .section-header h2 {
+            font-size: 2rem;
+          }
+
+          .modules-grid {
+            grid-template-columns: 1fr;
+          }
+
+          .demo-grid {
+            grid-template-columns: 1fr;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .container {
+            padding: 0 15px;
+          }
+
+          .hero-title {
+            font-size: 2rem;
+          }
+
+          .hero-tagline {
+            font-size: 1.1rem;
+          }
+
+          .hero-description {
+            font-size: 1rem;
+          }
+
+          section {
+            padding: 60px 0;
+          }
+
+          .ai-feature-visual {
+            height: 200px;
+          }
+
+          .prediction-chart,
+          .note-classification {
+            width: 200px;
+            height: 150px;
+            padding: 20px;
+          }
+        }
+
+        /* Smooth scrolling */
+        html {
+          scroll-behavior: smooth;
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+          width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+          background: var(--bg-darker);
+        }
+
+        ::-webkit-scrollbar-thumb {
+          background: var(--primary-color);
+          border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+          background: var(--secondary-color);
+        }
+
+        /* Button ripple effect */
+        button, .cta-button, .hero-cta {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(0);
+            animation: ripple-animation 0.6s linear;
+            pointer-events: none;
+        }
+        
+        @keyframes ripple-animation {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+     Navigation 
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-brain"></i>
+                <span>Academia</span>
+            </div>
+            <div class="nav-menu">
+                <a href="#home" class="nav-link">Home</a>
+                <a href="#about" class="nav-link">About</a>
+                <a href="#modules" class="nav-link">Modules</a>
+                <a href="#ai-features" class="nav-link">AI Features</a>
+                <a href="#benefits" class="nav-link">Benefits</a>
+                <button class="cta-button">Get Started</button>
+            </div>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+     Hero Section 
+    <section id="home" class="hero">
+        <div class="hero-background">
+            <div class="floating-elements">
+                <div class="binary-code">01010101</div>
+                <div class="binary-code">11001100</div>
+                <div class="binary-code">10101010</div>
+                <div class="circuit-line"></div>
+                <div class="circuit-line"></div>
+                <div class="hologram-chart"></div>
+            </div>
+        </div>
+        <div class="hero-container">
+            <div class="hero-content">
+                <h1 class="hero-title">
+                    <span class="gradient-text">Academia</span>
+                    <br>Smart College ERP System
+                </h1>
+                <p class="hero-tagline">Transforming College Management with AI Insights</p>
+                <p class="hero-description">
+                    Experience the future of educational administration with our AI-powered ERP system 
+                    that predicts student performance and intelligently classifies study materials.
+                </p>
+                <button class="hero-cta">
+                    <span>Explore Features</span>
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+            <div class="hero-visual">
+                <div class="ai-illustration">
+                    <div class="brain-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <div class="data-nodes">
+                        <div class="node"></div>
+                        <div class="node"></div>
+                        <div class="node"></div>
+                        <div class="node"></div>
+                    </div>
+                    <div class="connection-lines"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+     About Project 
+    <section id="about" class="about">
+        <div class="container">
+            <div class="section-header">
+                <h2>About Academia</h2>
+                <div class="section-line"></div>
+            </div>
+            <div class="about-content">
+                <p>
+                    Academia is a revolutionary smart ERP system designed specifically for colleges and educational institutions. 
+                    Our platform integrates cutting-edge artificial intelligence to predict student performance based on attendance 
+                    patterns and academic records, while automatically classifying and organizing study notes using advanced 
+                    OCR and NLP technologies. Transform your institution's management with data-driven insights and intelligent automation.
+                </p>
+            </div>
+        </div>
+    </section>
+
+     Modules Overview 
+    <section id="modules" class="modules">
+        <div class="container">
+            <div class="section-header">
+                <h2>System Modules</h2>
+                <div class="section-line"></div>
+                <p>Comprehensive management solutions for every aspect of your institution</p>
+            </div>
+            <div class="modules-grid">
+                <div class="module-card">
+                    <div class="module-icon">
+                        <i class="fas fa-user-graduate"></i>
+                    </div>
+                    <h3>Student Management</h3>
+                    <p>Complete student lifecycle management from admission to graduation with detailed profiles and academic tracking.</p>
+                </div>
+                <div class="module-card">
+                    <div class="module-icon">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                    </div>
+                    <h3>Staff/Faculty Management</h3>
+                    <p>Streamlined faculty administration, workload management, and performance evaluation systems.</p>
+                </div>
+                <div class="module-card">
+                    <div class="module-icon">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <h3>Attendance Management</h3>
+                    <p>Automated attendance tracking with real-time monitoring and intelligent pattern analysis.</p>
+                </div>
+                <div class="module-card">
+                    <div class="module-icon">
+                        <i class="fas fa-money-bill-wave"></i>
+                    </div>
+                    <h3>Fees Management</h3>
+                    <p>Comprehensive fee collection, tracking, and financial reporting with automated reminders.</p>
+                </div>
+                <div class="module-card">
+                    <div class="module-icon">
+                        <i class="fas fa-clipboard-list"></i>
+                    </div>
+                    <h3>Exam & Result Management</h3>
+                    <p>End-to-end examination management from scheduling to result publication and analysis.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+     AI/ML Features 
+    <section id="ai-features" class="ai-features">
+        <div class="container">
+            <div class="section-header">
+                <h2>AI-Powered Intelligence</h2>
+                <div class="section-line"></div>
+                <p>Harness the power of artificial intelligence for smarter educational management</p>
+            </div>
+            <div class="ai-features-grid">
+                <div class="ai-feature">
+                    <div class="ai-feature-visual">
+                        <div class="prediction-chart">
+                            <div class="chart-bars">
+                                <div class="bar" style="height: 60%"></div>
+                                <div class="bar" style="height: 80%"></div>
+                                <div class="bar" style="height: 45%"></div>
+                                <div class="bar" style="height: 90%"></div>
+                                <div class="bar" style="height: 70%"></div>
+                            </div>
+                            <div class="prediction-line"></div>
+                        </div>
+                    </div>
+                    <div class="ai-feature-content">
+                        <h3>Student Performance Prediction</h3>
+                        <p>
+                            Our advanced machine learning algorithms analyze attendance patterns, assignment scores, 
+                            and historical data to predict student performance and identify at-risk students early, 
+                            enabling proactive intervention strategies.
+                        </p>
+                        <ul>
+                            <li>Early warning system for struggling students</li>
+                            <li>Personalized learning recommendations</li>
+                            <li>Performance trend analysis</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="ai-feature">
+                    <div class="ai-feature-visual">
+                        <div class="note-classification">
+                            <div class="document-icon">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                            <div class="classification-tags">
+                                <span class="tag">Mathematics</span>
+                                <span class="tag">Physics</span>
+                                <span class="tag">Chemistry</span>
+                            </div>
+                            <div class="ocr-lines">
+                                <div class="line"></div>
+                                <div class="line"></div>
+                                <div class="line"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ai-feature-content">
+                        <h3>Smart Note Classification</h3>
+                        <p>
+                            Intelligent OCR and NLP-powered system that automatically reads, understands, and 
+                            classifies study notes by subject, topic, and difficulty level, making knowledge 
+                            management effortless and searchable.
+                        </p>
+                        <ul>
+                            <li>Automatic subject detection</li>
+                            <li>Content categorization</li>
+                            <li>Searchable knowledge base</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+     How It Works 
+    <section id="how-it-works" class="how-it-works">
+        <div class="container">
+            <div class="section-header">
+                <h2>How It Works</h2>
+                <div class="section-line"></div>
+                <p>Simple three-step process to transform your institution</p>
+            </div>
+            <div class="workflow">
+                <div class="workflow-step">
+                    <div class="step-number">1</div>
+                    <div class="step-icon">
+                        <i class="fas fa-database"></i>
+                    </div>
+                    <h3>Data Entry</h3>
+                    <p>Input student information, attendance records, and academic data into the system</p>
+                </div>
+                <div class="workflow-arrow">
+                    <i class="fas fa-arrow-right"></i>
+                </div>
+                <div class="workflow-step">
+                    <div class="step-number">2</div>
+                    <div class="step-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h3>AI Analysis</h3>
+                    <p>Our AI algorithms process and analyze the data to generate predictive insights</p>
+                </div>
+                <div class="workflow-arrow">
+                    <i class="fas fa-arrow-right"></i>
+                </div>
+                <div class="workflow-step">
+                    <div class="step-number">3</div>
+                    <div class="step-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>Insights & Actions</h3>
+                    <p>Receive actionable insights and automated recommendations for better outcomes</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+     Benefits 
+    <section id="benefits" class="benefits">
+        <div class="container">
+            <div class="section-header">
+                <h2>Key Benefits</h2>
+                <div class="section-line"></div>
+                <p>Discover how Academia transforms educational management</p>
+            </div>
+            <div class="benefits-grid">
+                <div class="benefit-item">
+                    <i class="fas fa-file-alt"></i>
+                    <h3>Automated Reports</h3>
+                    <p>Generate comprehensive reports automatically with real-time data visualization</p>
+                </div>
+                <div class="benefit-item">
+                    <i class="fas fa-bell"></i>
+                    <h3>Real-Time Alerts</h3>
+                    <p>Instant notifications for critical events and performance indicators</p>
+                </div>
+                <div class="benefit-item">
+                    <i class="fas fa-lightbulb"></i>
+                    <h3>AI-Driven Insights</h3>
+                    <p>Intelligent analytics that reveal hidden patterns and opportunities</p>
+                </div>
+                <div class="benefit-item">
+                    <i class="fas fa-clock"></i>
+                    <h3>Time Saving</h3>
+                    <p>Reduce administrative workload by up to 70% with automation</p>
+                </div>
+                <div class="benefit-item">
+                    <i class="fas fa-trophy"></i>
+                    <h3>Improved Student Success</h3>
+                    <p>Early intervention strategies lead to better academic outcomes</p>
+                </div>
+                <div class="benefit-item">
+                    <i class="fas fa-shield-alt"></i>
+                    <h3>Data Security</h3>
+                    <p>Enterprise-grade security ensures your data is always protected</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+     Screenshots/Demo Section 
+    <section id="demo" class="demo">
+        <div class="container">
+            <div class="section-header">
+                <h2>System Preview</h2>
+                <div class="section-line"></div>
+                <p>Get a glimpse of Academia's intuitive interface</p>
+            </div>
+            <div class="demo-grid">
+                <div class="demo-card">
+                    <div class="demo-placeholder">
+                        <i class="fas fa-chart-bar"></i>
+                        <h4>Dashboard Overview</h4>
+                        <p>Comprehensive analytics at a glance</p>
+                    </div>
+                </div>
+                <div class="demo-card">
+                    <div class="demo-placeholder">
+                        <i class="fas fa-users"></i>
+                        <h4>Student Management</h4>
+                        <p>Detailed student profiles and tracking</p>
+                    </div>
+                </div>
+                <div class="demo-card">
+                    <div class="demo-placeholder">
+                        <i class="fas fa-brain"></i>
+                        <h4>AI Predictions</h4>
+                        <p>Performance forecasting interface</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+     Call to Action 
+    <section id="cta" class="cta">
+        <div class="container">
+            <div class="cta-content">
+                <h2>Ready to Transform Your Institution?</h2>
+                <p>Join hundreds of colleges already using Academia to improve their management efficiency and student outcomes.</p>
+                <button class="cta-button-large">
+                    <span>Get Started Today</span>
+                    <i class="fas fa-rocket"></i>
+                </button>
+                <div class="cta-features">
+                    <div class="cta-feature">
+                        <i class="fas fa-check"></i>
+                        <span>Free 30-day trial</span>
+                    </div>
+                    <div class="cta-feature">
+                        <i class="fas fa-check"></i>
+                        <span>No setup fees</span>
+                    </div>
+                    <div class="cta-feature">
+                        <i class="fas fa-check"></i>
+                        <span>24/7 support</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+     Footer 
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <i class="fas fa-brain"></i>
+                    <span>Academia</span>
+                </div>
+                <p>&copy; 2024 Academia. All rights reserved. Transforming education with AI.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+          anchor.addEventListener("click", function (e) {
+            e.preventDefault()
+            const target = document.querySelector(this.getAttribute("href"))
+            if (target) {
+              target.scrollIntoView({
+                behavior: "smooth",
+                block: "start",
+              })
+            }
+          })
+        })
+
+        // Mobile menu toggle
+        const hamburger = document.querySelector(".hamburger")
+        const navMenu = document.querySelector(".nav-menu")
+
+        hamburger.addEventListener("click", () => {
+          hamburger.classList.toggle("active")
+          navMenu.classList.toggle("active")
+        })
+
+        // Close mobile menu when clicking on a link
+        document.querySelectorAll(".nav-link").forEach((n) =>
+          n.addEventListener("click", () => {
+            hamburger.classList.remove("active")
+            navMenu.classList.remove("active")
+          }),
+        )
+
+        // Navbar background on scroll
+        window.addEventListener("scroll", () => {
+          const navbar = document.querySelector(".navbar")
+          if (window.scrollY > 50) {
+            navbar.style.background = "rgba(15, 15, 35, 0.98)"
+          } else {
+            navbar.style.background = "rgba(15, 15, 35, 0.95)"
+          }
+        })
+
+        // Intersection Observer for animations
+        const observerOptions = {
+          threshold: 0.1,
+          rootMargin: "0px 0px -50px 0px",
+        }
+
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.style.opacity = "1"
+              entry.target.style.transform = "translateY(0)"
+            }
+          })
+        }, observerOptions)
+
+        // Observe all sections for scroll animations
+        document.querySelectorAll("section").forEach((section) => {
+          section.style.opacity = "0"
+          section.style.transform = "translateY(30px)"
+          section.style.transition = "opacity 0.6s ease, transform 0.6s ease"
+          observer.observe(section)
+        })
+
+        // Observe cards and other elements
+        document.querySelectorAll(".module-card, .benefit-item, .demo-card").forEach((card) => {
+          card.style.opacity = "0"
+          card.style.transform = "translateY(30px)"
+          card.style.transition = "opacity 0.6s ease, transform 0.6s ease"
+          observer.observe(card)
+        })
+
+        // Counter animation for statistics (if you want to add them later)
+        function animateCounter(element, target, duration = 2000) {
+          let start = 0
+          const increment = target / (duration / 16)
+
+          const timer = setInterval(() => {
+            start += increment
+            element.textContent = Math.floor(start)
+
+            if (start >= target) {
+              element.textContent = target
+              clearInterval(timer)
+            }
+          }, 16)
+        }
+
+        // Parallax effect for hero background elements
+        window.addEventListener("scroll", () => {
+          const scrolled = window.pageYOffset
+          const parallaxElements = document.querySelectorAll(".floating-elements > *")
+
+          parallaxElements.forEach((element, index) => {
+            const speed = 0.5 + index * 0.1
+            element.style.transform = `translateY(${scrolled * speed}px)`
+          })
+        })
+
+        // Add loading animation
+        window.addEventListener("load", () => {
+          document.body.classList.add("loaded")
+
+          // Animate hero elements
+          const heroTitle = document.querySelector(".hero-title")
+          const heroTagline = document.querySelector(".hero-tagline")
+          const heroDescription = document.querySelector(".hero-description")
+          const heroCta = document.querySelector(".hero-cta")
+
+          setTimeout(() => {
+            heroTitle.style.opacity = "1"
+            heroTitle.style.transform = "translateY(0)"
+          }, 200)
+
+          setTimeout(() => {
+            heroTagline.style.opacity = "1"
+            heroTagline.style.transform = "translateY(0)"
+          }, 400)
+
+          setTimeout(() => {
+            heroDescription.style.opacity = "1"
+            heroDescription.style.transform = "translateY(0)"
+          }, 600)
+
+          setTimeout(() => {
+            heroCta.style.opacity = "1"
+            heroCta.style.transform = "translateY(0)"
+          }, 800)
+        })
+
+        // Initialize hero animations
+        document.addEventListener("DOMContentLoaded", () => {
+          const heroElements = [".hero-title", ".hero-tagline", ".hero-description", ".hero-cta"]
+
+          heroElements.forEach((selector) => {
+            const element = document.querySelector(selector)
+            if (element) {
+              element.style.opacity = "0"
+              element.style.transform = "translateY(30px)"
+              element.style.transition = "opacity 0.6s ease, transform 0.6s ease"
+            }
+          })
+        })
+
+        // Add click effects to buttons
+        document.querySelectorAll("button, .cta-button, .hero-cta").forEach((button) => {
+          button.addEventListener("click", function (e) {
+            const ripple = document.createElement("span")
+            const rect = this.getBoundingClientRect()
+            const size = Math.max(rect.width, rect.height)
+            const x = e.clientX - rect.left - size / 2
+            const y = e.clientY - rect.top - size / 2
+
+            ripple.style.width = ripple.style.height = size + "px"
+            ripple.style.left = x + "px"
+            ripple.style.top = y + "px"
+            ripple.classList.add("ripple")
+
+            this.appendChild(ripple)
+
+            setTimeout(() => {
+              ripple.remove()
+            }, 600)
+          })
+        })
+    </script>
+</body>
+</html>
