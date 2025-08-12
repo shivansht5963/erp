@@ -1,13 +1,6 @@
 from django.db import models
 from students.models import Student
-
-class Subject(models.Model):
-    name = models.CharField(max_length=100)
-    code = models.CharField(max_length=20, unique=True)
-    semester = models.IntegerField()
-
-    def __str__(self):
-        return f"{self.code} - {self.name}"
+from faculty.models import Subject
 
 class Marks(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE)

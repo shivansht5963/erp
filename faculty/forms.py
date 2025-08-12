@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from accounts.models import CustomUser
-from .models import Teacher
+from .models import Teacher, Department, Course, Class
 
 class TeacherRegistrationForm(UserCreationForm):
     department = forms.CharField(max_length=100)
@@ -26,3 +26,23 @@ class TeacherRegistrationForm(UserCreationForm):
                 join_date=self.cleaned_data['join_date']
             )
         return user
+
+class DepartmentForm(forms.ModelForm):
+    class Meta:
+        model = Department
+        fields = '__all__'
+
+class CourseForm(forms.ModelForm):
+    class Meta:
+        model = Course
+        fields = '__all__'
+
+class ClassForm(forms.ModelForm):
+    class Meta:
+        model = Class
+        fields = '__all__'
+
+class TeacherForm(forms.ModelForm):
+    class Meta:
+        model = Teacher
+        fields = '__all__'
