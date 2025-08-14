@@ -116,6 +116,12 @@
           cursor: pointer;
           transition: all 0.3s ease;
           font-weight: 500;
+          text-decoration: none; /* Added for anchor tags */
+        }
+        
+        .cta-button a, .cta-button a:visited {
+            color: white;
+            text-decoration: none;
         }
 
         .cta-button:hover {
@@ -1113,20 +1119,25 @@
     </style>
 </head>
 <body>
-     Navigation 
+     <!-- Navigation -->
     <nav class="navbar">
         <div class="nav-container">
-            <div class="nav-logo">
+            <!-- UPDATED: Added link to home -->
+            <a href="{% url 'home' %}" class="nav-logo" style="text-decoration: none;">
                 <i class="fas fa-brain"></i>
                 <span>Academia</span>
-            </div>
+            </a>
             <div class="nav-menu">
-                <a href="#home" class="nav-link">Home</a>
+                <!-- UPDATED: Changed href to point to home URL -->
+                <a href="{% url 'home' %}" class="nav-link">Home</a>
                 <a href="#about" class="nav-link">About</a>
                 <a href="#modules" class="nav-link">Modules</a>
                 <a href="#ai-features" class="nav-link">AI Features</a>
                 <a href="#benefits" class="nav-link">Benefits</a>
-                <button class="cta-button">Get Started</button>
+                <!-- UPDATED: Wrapped button in a link to the login page -->
+                <a href="{% url 'accounts:login' %}" style="text-decoration: none;">
+                    <button class="cta-button">Get Started</button>
+                </a>
             </div>
             <div class="hamburger">
                 <span></span>
@@ -1136,7 +1147,7 @@
         </div>
     </nav>
 
-     Hero Section 
+     <!-- Hero Section -->
     <section id="home" class="hero">
         <div class="hero-background">
             <div class="floating-elements">
@@ -1159,10 +1170,11 @@
                     Experience the future of educational administration with our AI-powered ERP system 
                     that predicts student performance and intelligently classifies study materials.
                 </p>
-                <button class="hero-cta">
+                <!-- UPDATED: Changed button to a link pointing to the login page -->
+                <a href="{% url 'accounts:login' %}" class="hero-cta" style="text-decoration: none;">
                     <span>Explore Features</span>
                     <i class="fas fa-arrow-right"></i>
-                </button>
+                </a>
             </div>
             <div class="hero-visual">
                 <div class="ai-illustration">
@@ -1181,7 +1193,7 @@
         </div>
     </section>
 
-     About Project 
+     <!-- About Project -->
     <section id="about" class="about">
         <div class="container">
             <div class="section-header">
@@ -1199,7 +1211,7 @@
         </div>
     </section>
 
-     Modules Overview 
+     <!-- Modules Overview -->
     <section id="modules" class="modules">
         <div class="container">
             <div class="section-header">
@@ -1247,7 +1259,7 @@
         </div>
     </section>
 
-     AI/ML Features 
+     <!-- AI/ML Features -->
     <section id="ai-features" class="ai-features">
         <div class="container">
             <div class="section-header">
@@ -1319,7 +1331,7 @@
         </div>
     </section>
 
-     How It Works 
+     <!-- How It Works -->
     <section id="how-it-works" class="how-it-works">
         <div class="container">
             <div class="section-header">
@@ -1362,7 +1374,7 @@
         </div>
     </section>
 
-     Benefits 
+     <!-- Benefits -->
     <section id="benefits" class="benefits">
         <div class="container">
             <div class="section-header">
@@ -1405,7 +1417,7 @@
         </div>
     </section>
 
-     Screenshots/Demo Section 
+     <!-- Screenshots/Demo Section -->
     <section id="demo" class="demo">
         <div class="container">
             <div class="section-header">
@@ -1439,7 +1451,7 @@
         </div>
     </section>
 
-     Call to Action 
+     <!-- Call to Action -->
     <section id="cta" class="cta">
         <div class="container">
             <div class="cta-content">
@@ -1467,7 +1479,7 @@
         </div>
     </section>
 
-     Footer 
+     <!-- Footer -->
     <footer class="footer">
         <div class="container">
             <div class="footer-content">

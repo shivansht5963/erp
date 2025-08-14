@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ student.user.first_name }}'s Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; color: #333; margin: 0; padding: 20px; }
+        .container { max-width: 1200px; margin: auto; }
+        header { background-color: #005a9e; color: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+        header h1 { margin: 0; }
+        header a { color: #fff; text-decoration: none; background-color: #e63946; padding: 8px 15px; border-radius: 5px; }
+        .grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .card { background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .card h2 { margin-top: 0; border-bottom: 2px solid #005a9e; padding-bottom: 10px; color: #005a9e; }
+        .full-width { grid-column: 1 / -1; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background-color: #f2f2f2; }
+        .details-list p { margin: 8px 0; }
+        .details-list strong { color: #555; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Welcome, {{ student.user.get_full_name }}!</h1>
+        <a href="{% url 'accounts:logout' %}">Logout</a>
+    </header>
+
+    <div class="grid-container">
+        <!-- (a) Student Details -->
+        <div class="card full-width">
+            <h2>My Profile</h2>
+            <div class="details-list">
+                <p><strong>Roll Number:</strong> {{ student.roll_number }}</p>
+                <p><strong>Course:</strong> {{ student.course.name }}</p>
+                <p><strong>Department:</strong> {{ student.course.department.name }}</p>
+                <p><strong>Semester:</strong> {{ student.semester }}</p>
+                <!-- Using the method we created in the Student model -->
+                <p><strong>Current Year:</strong> {{ student.get_current_year }}</p>
+                <p><strong>Email:</strong> {{ student.user.email }}</p>
+                <p><strong>Contact:</strong> {{ student.contact_number }}</p>
+            </div>
+        </div>
+
+        <!-- Placeholder for Attendance -->
+        <div class="card">
+            <h2>Attendance</h2>
+            <p>Attendance records will be displayed here.</p>
+        </div>
+
+        <!-- Placeholder for Marks -->
+        <div class="card">
+            <h2>Exam Marks</h2>
+            <p>Exam marks will be displayed here.</p>
+        </div>
+        
+        <!-- Placeholder for Assignments -->
+        <div class="card">
+            <h2>Assignments & Reminders</h2>
+            <p>Upcoming assignments will be displayed here.</p>
+        </div>
+
+        <!-- Placeholder for Fees -->
+        <div class="card">
+            <h2>Fee Status</h2>
+            <p>Fee payment status will be displayed here.</p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

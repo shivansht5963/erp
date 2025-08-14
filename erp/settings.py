@@ -10,47 +10,62 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+import os
 from pathlib import Path
+
+# ==============================================================================
+# Core Paths and Security
+# ==============================================================================
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
-
 # SECURITY WARNING: keep the secret key used in production secret!
+# It's okay to have it here for local development.
 SECRET_KEY = 'django-insecure--bbi%qicp7qxrboal7&&r97w@=&%4$&t6d917+$ax_+p2(utcc'
 
 # SECURITY WARNING: don't run with debug turned on in production!
+# DEBUG = True is necessary for local development to see error pages.
 DEBUG = True
 
+# Allows all hosts to connect. For production, you should list your specific domain(s).
 ALLOWED_HOSTS = ['*']
 
-import os
-# TEMPLATES[0]['DIRS'] = [os.path.join(BASE_DIR, 'templates')]
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
+# ==============================================================================
+# Application Definitions
+# ==============================================================================
 
-# Application definition
-
+# These are the Django apps that are activated for this project.
+# The order can sometimes matter, especially for apps that override templates.
 INSTALLED_APPS = [
+    # Django Core Apps
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django_extensions',
+
+    # Third-party Apps
+    'django_extensions',  # Useful for management commands like `shell_plus`
+
+    # Your Project's Apps
+    # These must match the `name` attribute in each app's apps.py file.
     'accounts',
-    'exams',
     'students',
     'faculty',
     'attendance',
+    'exams',
     'fees',
-    
 ]
 
+
+# ==============================================================================
+# Middleware Configuration
+# ==============================================================================
+
+# Middleware processes requests and responses globally.
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -61,15 +76,33 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+
+# ==============================================================================
+# URL and WSGI Configuration
+# ==============================================================================
+
+# Points to the root URL configuration file for the project.
 ROOT_URLCONF = 'erp.urls'
+
+# WSGI application entry point for production servers.
+WSGI_APPLICATION = 'erp.wsgi.application'
+
+
+# ==============================================================================
+# Template Configuration
+# ==============================================================================
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        # This tells Django to look for a 'templates' directory at the root of the project.
+        # This is where your base.html, index.html, etc., should go.
         'DIRS': [BASE_DIR / "templates"],
+        # This tells Django to also look for templates inside each app's 'templates' directory.
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
+                'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
@@ -78,12 +111,12 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'erp.wsgi.application'
 
+# ==============================================================================
+# Database Configuration
+# ==============================================================================
 
-# Database
-# https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-
+# Using SQLite for local development is simple and effective.
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -92,52 +125,67 @@ DATABASES = {
 }
 
 
-# Password validation
-# https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
+# ==============================================================================
+# Authentication and Authorization
+# ==============================================================================
 
+# Tells Django to use your CustomUser model instead of the default User model.
+# This is a critical setting for your project.
+AUTH_USER_MODEL = 'accounts.CustomUser'
+
+# --- LOGIN/LOGOUT URLS ---
+# These are essential for a functional login system.
+
+# The URL name where Django redirects users after a successful login.
+# 'students:student_dashboard' points to the 'student_dashboard' URL
+# inside the 'students' app.
+LOGIN_REDIRECT_URL = 'students:student_dashboard'
+
+# The URL name where users are sent if they try to access a page that
+# requires login (@login_required) but they are not authenticated.
+LOGIN_URL = 'accounts:login'
+
+# The URL name where users are sent after they log out.
+# Redirecting back to the login page is a common pattern.
+LOGOUT_REDIRECT_URL = 'accounts:login'
+
+
+# Password validation rules.
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',},
 ]
 
 
+# ==============================================================================
 # Internationalization
-# https://docs.djangoproject.com/en/5.2/topics/i18n/
+# ==============================================================================
 
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_TZ = True
 
-# ERP/settings.py
 
-# Tells Django to use your model for logins, signups, etc.
-AUTH_USER_MODEL = 'accounts.CustomUser'
+# ==============================================================================
+# Static Files (CSS, JavaScript, Images)
+# ==============================================================================
 
-# Tells Django where to send users after they successfully log in.
-LOGIN_REDIRECT_URL = 'home' # We will create a 'home' URL next.
-
-
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.2/howto/static-files/
-
+# The URL prefix for static files.
 STATIC_URL = 'static/'
 
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
+# Directories where Django will look for static files, in addition to each app's 'static' folder.
+# It's common to have a project-wide static folder.
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',
+]
 
+
+# ==============================================================================
+# Default Primary Key Field Type
+# ==============================================================================
+
+# The default primary key type for new models.
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
