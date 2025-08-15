@@ -70,3 +70,14 @@ class Teacher(models.Model):
     def declare_result(self):
         """Method for declaring results"""
         pass
+    
+class Notification(models.Model):
+    title = models.CharField(max_length=255)
+    message = models.TextField()
+    due_date = models.DateField(null=True, blank=True)
+    target_class = models.ForeignKey(Class, on_delete=models.CASCADE, help_text="The class this notification is for.")
+    created_by = models.ForeignKey(Teacher, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Notification for {self.target_class}: {self.title}"
