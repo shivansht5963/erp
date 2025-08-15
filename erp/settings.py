@@ -139,7 +139,7 @@ AUTH_USER_MODEL = 'accounts.CustomUser'
 # The URL name where Django redirects users after a successful login.
 # 'students:student_dashboard' points to the 'student_dashboard' URL
 # inside the 'students' app.
-LOGIN_REDIRECT_URL = 'students:student_dashboard'
+# LOGIN_REDIRECT_URL = 'students:student_dashboard'
 
 # The URL name where users are sent if they try to access a page that
 # requires login (@login_required) but they are not authenticated.
@@ -147,7 +147,7 @@ LOGIN_URL = 'accounts:login'
 
 # The URL name where users are sent after they log out.
 # Redirecting back to the login page is a common pattern.
-LOGOUT_REDIRECT_URL = 'accounts:login'
+# LOGOUT_REDIRECT_URL = 'accounts:login'
 
 
 # Password validation rules.
@@ -169,7 +169,6 @@ USE_I18N = True
 USE_TZ = True
 
 
-<<<<<<< HEAD
 # Tells Django to use your model for logins, signups, etc.
 AUTH_USER_MODEL = 'accounts.CustomUser'
 
@@ -180,11 +179,9 @@ LOGIN_REDIRECT_URL = 'exams:add_marks' # Redirect to marks entry page after logi
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
-=======
 # ==============================================================================
 # Static Files (CSS, JavaScript, Images)
 # ==============================================================================
->>>>>>> 3b65088fbbf582239fd186dbdb82d185455ba5f1
 
 # The URL prefix for static files.
 STATIC_URL = 'static/'

@@ -52,3 +52,6 @@ def add_teacher(request):
     else:
         form = TeacherForm()
     return render(request, 'faculty/add_teacher.html', {'form': form})
+
+def teacher_dashboard(request):
+    return render(request, 'faculty/teacher_dashboard.html')
