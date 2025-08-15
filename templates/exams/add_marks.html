@@ -1,6 +1,20 @@
+
 <h2>Add Marks</h2>
 <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
     <button type="submit">Add</button>
 </form>
+
+<h3>Update Existing Marks</h3>
+<ul>
+    {% for mark in marks %}
+        <li>
+            {{ mark.student }} - {{ mark.subject }}:
+            {{ mark.total_marks }}
+            <a href="{% url 'exams:update_marks' mark.pk %}">Update</a>
+        </li>
+    {% empty %}
+        <li>No marks found.</li>
+    {% endfor %}
+</ul>

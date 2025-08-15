@@ -127,7 +127,7 @@ USE_TZ = True
 AUTH_USER_MODEL = 'accounts.CustomUser'
 
 # Tells Django where to send users after they successfully log in.
-LOGIN_REDIRECT_URL = 'home' # We will create a 'home' URL next.
+LOGIN_REDIRECT_URL = 'exams:add_marks' # Redirect to marks entry page after login.
 
 
 
