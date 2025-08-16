@@ -17,4 +17,6 @@ class CustomLoginView(LoginView):
         user = self.request.user
         if user.role == 'faculty':
             return reverse_lazy('faculty:teacher_dashboard')
+        elif user.role == 'student':
+            return reverse_lazy('students:student_dashboard')
         return super().get_success_url()

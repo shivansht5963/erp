@@ -6,7 +6,7 @@ from attendance.models import AttendanceReport
 
 # App-specific Imports
 from .models import Student
-from .forms import StudentForm
+from .forms import StudentWithUserForm
 from accounts.forms import CustomUserCreationForm
 
 
@@ -75,7 +75,7 @@ def add_student(request):
     """
     if request.method == "POST":
         user_form = CustomUserCreationForm(request.POST)
-        student_form = StudentForm(request.POST)
+        student_form = StudentWithUserForm(request.POST)
         
         # Check if both forms contain valid data
         if user_form.is_valid() and student_form.is_valid():
@@ -95,7 +95,7 @@ def add_student(request):
     else:
         # If the request is a GET, create new, empty forms
         user_form = CustomUserCreationForm()
-        student_form = StudentForm()
+        student_form = StudentWithUserForm()
 
     # Pass the forms to the template
     return render(request, 'students/add_student.html', {
