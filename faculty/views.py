@@ -12,3 +12,6 @@ def register_teacher(request):
     else:
         form = TeacherWithUserForm()
     return render(request, 'faculty/register_teacher.html', {'form': form})
+
+def teacher_dashboard(request):
+    return render(request, 'faculty/teacher_dashboard.html')
