@@ -1,57 +1,63 @@
+
 from django import forms
+from django.contrib.auth.forms import UserCreationForm
 from accounts.models import CustomUser
 from .models import Teacher, Department, Course, Class
-import string
-import secrets
+from django.db import transaction
 
-def generate_password(length=12):
-    chars = string.ascii_letters + string.digits + '@_'
-    return ''.join(secrets.choice(chars) for _ in range(length))
-class TeacherWithUserForm(forms.ModelForm):
-    username = forms.CharField()
-    email = forms.EmailField()
-    first_name = forms.CharField()
-    last_name = forms.CharField()
+class TeacherRegistrationForm(UserCreationForm):
+    """
+    A form for creating a new teacher, which includes creating a CustomUser
+    account and the related Teacher profile in one step.
+    """
+    # Adding fields for the Teacher model
+    department = forms.ModelChoiceField(queryset=Department.objects.all(), required=True)
+    qualification = forms.CharField(max_length=100, required=True)
+    contact_number = forms.CharField(max_length=15, required=True)
+    join_date = forms.DateField(widget=forms.SelectDateWidget(years=range(1980, 2030)))
 
+    class Meta(UserCreationForm.Meta):
+        model = CustomUser
+        # Fields for the CustomUser part of the form
+        fields = UserCreationForm.Meta.fields + ('email', 'first_name', 'last_name',)
+
+    @transaction.atomic
+    def save(self, commit=True):
+        # First, save the user part of the form
+        user = super().save(commit=False)
+        user.role = 'faculty'  # Set the role to faculty
+        if commit:
+            user.save()
+            # Now, create and save the Teacher profile linked to this user
+            Teacher.objects.create(
+                user=user,
+                department=self.cleaned_data['department'],
+                qualification=self.cleaned_data['qualification'],
+                contact_number=self.cleaned_data['contact_number'],
+                join_date=self.cleaned_data['join_date']
+            )
+        return user
+
+
+class DepartmentForm(forms.ModelForm):
+    class Meta:
+        model = Department
+        fields = '__all__'
+
+
+class CourseForm(forms.ModelForm):
+    class Meta:
+        model = Course
+        fields = '__all__'
+
+
+class ClassForm(forms.ModelForm):
+    class Meta:
+        model = Class
+        fields = '__all__'
+
+
+class TeacherForm(forms.ModelForm):
     class Meta:
         model = Teacher
-        fields = ['department', 'qualification', 'contact_number', 'join_date']
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        if self.instance and self.instance.pk:
-            # Editing: populate user fields from linked user
-            self.fields['username'].initial = self.instance.user.username
-            self.fields['email'].initial = self.instance.user.email
-            self.fields['first_name'].initial = self.instance.user.first_name
-            self.fields['last_name'].initial = self.instance.user.last_name
-
-    def save(self, commit=True):
-        import secrets, string
-        if self.instance and self.instance.pk:
-            # Update existing user
-            user = self.instance.user
-            user.username = self.cleaned_data['username']
-            user.email = self.cleaned_data['email']
-            user.first_name = self.cleaned_data['first_name']
-            user.last_name = self.cleaned_data['last_name']
-            user.save()
-            teacher = super().save(commit=False)
-            teacher.user = user
-        else:
-            # Create new user
-            password = ''.join(secrets.choice(string.ascii_letters + string.digits + '@_') for _ in range(12))
-            user = CustomUser.objects.create_user(
-                username=self.cleaned_data['username'],
-                email=self.cleaned_data['email'],
-                password=password,
-                first_name=self.cleaned_data['first_name'],
-                last_name=self.cleaned_data['last_name'],
-                role='faculty'
-            )
-            teacher = super().save(commit=False)
-            teacher.user = user
-            self._saved_password = password
-        if commit:
-            teacher.save()
-        return teacher
+        fields = '__all__'

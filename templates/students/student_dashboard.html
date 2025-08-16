@@ -19,6 +19,7 @@
         th { background-color: #f2f2f2; }
         .details-list p { margin: 8px 0; }
         .details-list strong { color: #555; }
+        #attendanceChartContainer { max-width: 400px; margin: 20px auto; }
     </style>
 </head>
 <body>
@@ -30,7 +31,6 @@
     </header>
 
     <div class="grid-container">
-        <!-- (a) Student Details -->
         <div class="card full-width">
             <h2>My Profile</h2>
             <div class="details-list">
@@ -38,38 +38,93 @@
                 <p><strong>Course:</strong> {{ student.course.name }}</p>
                 <p><strong>Department:</strong> {{ student.course.department.name }}</p>
                 <p><strong>Semester:</strong> {{ student.semester }}</p>
-                <!-- Using the method we created in the Student model -->
                 <p><strong>Current Year:</strong> {{ student.get_current_year }}</p>
                 <p><strong>Email:</strong> {{ student.user.email }}</p>
                 <p><strong>Contact:</strong> {{ student.contact_number }}</p>
             </div>
         </div>
 
-        <!-- Placeholder for Attendance -->
         <div class="card">
             <h2>Attendance</h2>
-            <p>Attendance records will be displayed here.</p>
+            {% if attendance_reports %}
+                <div id="attendanceChartContainer">
+                    <canvas id="attendancePieChart"></canvas>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Subject</th>
+                            <th>Attended / Total</th>
+                            <th>Percentage</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for report in attendance_reports %}
+                        <tr>
+                            <td>{{ report.subject.name }}</td>
+                            <td>{{ report.classes_attended }} / {{ report.total_classes }}</td>
+                            <td>{{ report.attendance_percentage|floatformat:2 }}%</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>No attendance records have been posted yet.</p>
+            {% endif %}
         </div>
 
-        <!-- Placeholder for Marks -->
         <div class="card">
             <h2>Exam Marks</h2>
             <p>Exam marks will be displayed here.</p>
         </div>
         
-        <!-- Placeholder for Assignments -->
         <div class="card">
             <h2>Assignments & Reminders</h2>
             <p>Upcoming assignments will be displayed here.</p>
         </div>
 
-        <!-- Placeholder for Fees -->
         <div class="card">
             <h2>Fee Status</h2>
             <p>Fee payment status will be displayed here.</p>
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const reports = {{ attendance_reports.values_list 'subject__name', 'attendance_percentage'|safe }};
+    
+    if (reports && reports.length > 0) {
+        const labels = reports.map(report => report[0]);
+        const data = reports.map(report => report[1]);
+
+        const ctx = document.getElementById('attendancePieChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Attendance %',
+                    data: data,
+                    backgroundColor: [
+                        'rgba(54, 162, 235, 0.7)', 'rgba(255, 99, 132, 0.7)',
+                        'rgba(255, 206, 86, 0.7)', 'rgba(75, 192, 192, 0.7)',
+                        'rgba(153, 102, 255, 0.7)', 'rgba(255, 159, 64, 0.7)'
+                    ],
+                    borderColor: '#fff', borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'top' },
+                    title: { display: true, text: 'Attendance Percentage by Subject' }
+                }
+            }
+        });
+    }
+});
+</script>
 
 </body>
 </html>
