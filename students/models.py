@@ -1,12 +1,14 @@
+# students/models.py
 from django.db import models
 from django.conf import settings
 from faculty.models import Course, Class
-import math
 
 class Student(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     roll_number = models.CharField(max_length=20, unique=True)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    # Added field to link student to a specific class (e.g., CO1)
+    class_enrolled = models.ForeignKey(Class, on_delete=models.SET_NULL, null=True, blank=True, related_name='students')
     semester = models.IntegerField()
     dob = models.DateField()
     contact_number = models.CharField(max_length=15)
@@ -14,15 +16,6 @@ class Student(models.Model):
 
     def __str__(self):
         return f"{self.roll_number} - {self.user.first_name} {self.user.last_name}"
-    
-    def get_current_year(self):
-        """Calculates the academic year based on the semester."""
-        if self.semester and self.semester > 0:
-            # Semesters 1,2 -> Year 1
-            # Semesters 3,4 -> Year 2
-            # etc.
-            return math.ceil(self.semester / 2)
-        return "N/A"
     
     def view_attendance(self):
         """Method to view student's attendance"""

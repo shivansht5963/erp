@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 =======
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.decorators import user_passes_test
 from django.utils.dateparse import parse_date
 from django.db import transaction
 
@@ -24,7 +24,6 @@ def is_teacher(user):
 @user_passes_test(is_teacher, login_url='accounts:login')
 def teacher_dashboard(request):
     try:
-        # Assumes a related_name of 'teacher' is on the user model, or gets it this way
         teacher = Teacher.objects.get(user=request.user)
         subjects = Subject.objects.filter(teacher=teacher)
         context = {
@@ -55,7 +54,6 @@ def mark_attendance(request, subject_id):
             with transaction.atomic():
                 for student in students:
                     status = str(student.id) in present_student_ids
-                    
                     Attendance.objects.update_or_create(
                         student=student,
                         subject=subject,
@@ -74,8 +72,7 @@ def mark_attendance(request, subject_id):
     }
     return render(request, 'faculty/mark_attendance.html', context)
 
-# Existing Admin-facing views
->>>>>>> 2b80914a11edc1d0606b968936c459262e2b7817
+# --- Existing Admin-facing views below ---
 def register_teacher(request):
     if request.method == 'POST':
         form = TeacherRegistrationForm(request.POST)
@@ -84,13 +81,45 @@ def register_teacher(request):
             messages.success(request, "Teacher registered successfully! You can now log in.")
             return redirect('accounts:login')
     else:
-        form = TeacherWithUserForm()
+        form = TeacherRegistrationForm()
     return render(request, 'faculty/register_teacher.html', {'form': form})
-@login_required
-def teacher_dashboard(request):
-<<<<<<< HEAD
-    teacher = get_object_or_404(Teacher, user=request.user)
-    return render(request, 'faculty/teacher_dashboard.html', {'teacher': teacher})
-=======
-    return render(request, 'faculty/teacher_dashboard.html')
->>>>>>> 2b80914a11edc1d0606b968936c459262e2b7817
+
+def add_department(request):
+    if request.method == 'POST':
+        form = DepartmentForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('faculty:add_department')
+    else:
+        form = DepartmentForm()
+    return render(request, 'faculty/add_department.html', {'form': form})
+
+def add_course(request):
+    if request.method == 'POST':
+        form = CourseForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('faculty:add_course')
+    else:
+        form = CourseForm()
+    return render(request, 'faculty/add_course.html', {'form': form})
+
+def add_class(request):
+    if request.method == 'POST':
+        form = ClassForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('faculty:add_class')
+    else:
+        form = ClassForm()
+    return render(request, 'faculty/add_class.html', {'form': form})
+
+def add_teacher(request):
+    if request.method == 'POST':
+        form = TeacherForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('faculty:add_teacher')
+    else:
+        form = TeacherForm()
+    return render(request, 'faculty/add_teacher.html', {'form': form})

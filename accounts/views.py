@@ -1,7 +1,18 @@
+
+
+# --- 'redirect' IS NOW INCLUDED IN THIS IMPORT ---
 from django.shortcuts import render, redirect
+from django.contrib.auth import logout
 from .forms import CustomUserForm
-from django.contrib.auth.views import LoginView
-from django.urls import reverse_lazy
+
+def logout_view(request):
+    """
+    Logs the user out and redirects them to the login page.
+    """
+    logout(request)
+    return redirect('accounts:login')
+
+
 def add_user(request):
     if request.method == 'POST':
         form = CustomUserForm(request.POST)
@@ -11,12 +22,3 @@ def add_user(request):
     else:
         form = CustomUserForm()
     return render(request, 'accounts/add_user.html', {'form': form})
-
-class CustomLoginView(LoginView):
-    def get_success_url(self):
-        user = self.request.user
-        if user.role == 'faculty':
-            return reverse_lazy('faculty:teacher_dashboard')
-        elif user.role == 'student':
-            return reverse_lazy('students:student_dashboard')
-        return super().get_success_url()
