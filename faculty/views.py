@@ -1,78 +1,11 @@
-<<<<<<< HEAD
-from django.shortcuts import render, redirect,get_object_or_404
-from django.contrib import messages
-from .forms import TeacherWithUserForm  # Use the correct form
-from faculty.models import Teacher
-from django.contrib.auth.decorators import login_required
-=======
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-from django.contrib.auth.decorators import user_passes_test
-from django.utils.dateparse import parse_date
-from django.db import transaction
-
+from django.contrib.auth.decorators import login_required
 from .forms import TeacherRegistrationForm, DepartmentForm, CourseForm, ClassForm, TeacherForm
 from .models import Teacher, Subject
-from students.models import Student
-from attendance.models import Attendance
+from students.models import Student  # Added for mark_attendance
+from attendance.models import Attendance # Added for mark_attendance
 
-# Helper function for role checking
-def is_teacher(user):
-    return user.is_authenticated and user.role == 'faculty'
-
-# Teacher Dashboard View
-@user_passes_test(is_teacher, login_url='accounts:login')
-def teacher_dashboard(request):
-    try:
-        teacher = Teacher.objects.get(user=request.user)
-        subjects = Subject.objects.filter(teacher=teacher)
-        context = {
-            'teacher': teacher,
-            'subjects': subjects,
-        }
-        return render(request, 'faculty/teacher_dashboard.html', context)
-    except Teacher.DoesNotExist:
-        messages.error(request, "Your teacher profile is not set up.")
-        return redirect('accounts:logout')
-
-# Mark Attendance View
-@user_passes_test(is_teacher, login_url='accounts:login')
-def mark_attendance(request, subject_id):
-    subject = get_object_or_404(Subject, id=subject_id, teacher__user=request.user) # Security check
-    students = Student.objects.filter(course=subject.course, semester=subject.semester).order_by('roll_number')
-
-    if request.method == 'POST':
-        attendance_date_str = request.POST.get('attendance_date')
-        attendance_date = parse_date(attendance_date_str)
-        present_student_ids = request.POST.getlist('present_students')
-
-        if not attendance_date:
-            messages.error(request, "Invalid date format. Please use YYYY-MM-DD.")
-            return redirect('faculty:mark_attendance', subject_id=subject.id)
-
-        try:
-            with transaction.atomic():
-                for student in students:
-                    status = str(student.id) in present_student_ids
-                    Attendance.objects.update_or_create(
-                        student=student,
-                        subject=subject,
-                        date=attendance_date,
-                        defaults={'status': status, 'marked_by': request.user.teacher}
-                    )
-            messages.success(request, f"Attendance for {attendance_date_str} saved successfully.")
-        except Exception as e:
-            messages.error(request, f"An error occurred: {e}")
-            
-        return redirect('faculty:mark_attendance', subject_id=subject.id)
-    
-    context = {
-        'subject': subject,
-        'students': students,
-    }
-    return render(request, 'faculty/mark_attendance.html', context)
-
-# --- Existing Admin-facing views below ---
 def register_teacher(request):
     if request.method == 'POST':
         form = TeacherRegistrationForm(request.POST)
@@ -123,3 +56,45 @@ def add_teacher(request):
     else:
         form = TeacherForm()
     return render(request, 'faculty/add_teacher.html', {'form': form})
+
+@login_required
+def teacher_dashboard(request):
+    try:
+        teacher = Teacher.objects.get(user=request.user)
+        subjects = Subject.objects.filter(teacher=teacher)
+        context = {
+            'teacher': teacher,
+            'subjects': subjects
+        }
+        return render(request, 'faculty/teacher_dashboard.html', context)
+    except Teacher.DoesNotExist:
+        messages.error(request, "You do not have permission to view this page.")
+        return redirect('accounts:login')
+
+# --- THIS IS THE SECOND MISSING FUNCTION THAT HAS BEEN ADDED BACK ---
+@login_required
+def mark_attendance(request, subject_id):
+    subject = get_object_or_404(Subject, id=subject_id)
+    # Assuming students are enrolled in the course that the subject belongs to
+    students = Student.objects.filter(course=subject.course)
+    
+    if request.method == 'POST':
+        # Logic to process the submitted attendance data
+        for student in students:
+            status = request.POST.get(f'status_{student.id}')
+            if status:
+                # Create or update attendance record
+                Attendance.objects.update_or_create(
+                    student=student,
+                    subject=subject,
+                    date=request.POST.get('attendance_date'),
+                    defaults={'status': status == 'present'}
+                )
+        messages.success(request, f"Attendance marked for {subject.name}.")
+        return redirect('faculty:teacher_dashboard')
+
+    context = {
+        'subject': subject,
+        'students': students
+    }
+    return render(request, 'faculty/mark_attendance.html', context)

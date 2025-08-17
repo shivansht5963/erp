@@ -1,3 +1,5 @@
+# File: erp/settings.py
+
 """
 Django settings for erp project.
 
@@ -42,7 +44,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_extensions',
-    'smart_selects', # Note: This can be removed if you are no longer using it
     'accounts',
     'exams',
     'students',
@@ -112,7 +113,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 
 # Internationalization
-# https://docs.djangoproject.com/en/5.2/topics/i18n/
+# https://docs.djangoproject.com/en/5.2/topics/i1n/
 
 LANGUAGE_CODE = 'en-us'
 
@@ -122,17 +123,17 @@ USE_I18N = True
 
 USE_TZ = True
 
-# ERP/settings.py
+
+# --- CORRECTED SECTION ---
 
 # Tells Django to use your model for logins, signups, etc.
 AUTH_USER_MODEL = 'accounts.CustomUser'
 
-# --- START OF CORRECTION ---
 # Tells Django where to send users after they successfully log in.
-# This now points to our smart redirect view ('login_redirect') which will
-# check the user's role and send them to the correct dashboard.
-LOGIN_REDIRECT_URL = 'login_redirect'
-# --- END OF CORRECTION ---
+# This now points to our new view that handles role-based redirection.
+LOGIN_REDIRECT_URL = 'accounts:login_redirect'
+
+# --- END CORRECTED SECTION ---
 
 
 # Static files (CSS, JavaScript, Images)
