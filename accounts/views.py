@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from students.models import Student
 from .forms import CustomUserForm
 import json
+from notifications.models import UserNotificationStatus
 
 @login_required
 def dashboard(request):
@@ -26,27 +27,29 @@ def dashboard(request):
 def student_dashboard(request):
     """Displays the dashboard for a logged-in student."""
     try:
-        # Get the student profile linked to the logged-in user
         student = request.user.student
     except Student.DoesNotExist:
-        # Handle cases where a user with a student role has no student profile
-        # You might want to create an error.html template for this
         return render(request, 'accounts/login.html', {'error': 'Student profile not found.'})
 
-    # Fetch detailed attendance reports using the model method
+    # Fetch detailed attendance reports
     attendance_reports = student.view_attendance()
 
     # Prepare data for the pie chart
     chart_labels = [report.subject.name for report in attendance_reports]
     chart_data = [report.attendance_percentage for report in attendance_reports]
+    
+    # --- NEW: Fetch recent notifications ---
+    recent_notifications = UserNotificationStatus.objects.filter(user=request.user).select_related(
+        'notification', 'notification__created_by'
+    ).order_by('-notification__created_at')[:5] # Get the 5 most recent
 
-    # Combine user and student data into a single context
     context = {
         'student': student,
-        'user': request.user, # Pass the user object for general info like name/email
+        'user': request.user,
         'attendance_reports': attendance_reports,
         'chart_labels_json': json.dumps(chart_labels),
         'chart_data_json': json.dumps(chart_data),
+        'notifications': recent_notifications, # <-- Add notifications to context
     }
     return render(request, 'accounts/dashboard_student.html', context)
 

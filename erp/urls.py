@@ -22,4 +22,6 @@ urlpatterns = [
     path('fees/', include('fees.urls', namespace='fees')),
     path('exams/', include('exams.urls', namespace='exams')),
     path('students/', include('students.urls', namespace='students')),
+    path('students/', include('students.urls', namespace='students')),
+    path('notifications/', include('notifications.urls', namespace='notifications')),
 ]
