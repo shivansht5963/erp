@@ -1,0 +1,135 @@
+<!-- templates/accounts/dashboard_student.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background-color: #f8f9fa; color: #343a40; margin: 0; }
+        .main-container { max-width: 1400px; margin: 20px auto; padding: 0 20px; }
+        .welcome-header { margin-bottom: 2rem; }
+        .welcome-header h1 { font-size: 2.2rem; font-weight: 600; color: #004085; }
+        .grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px; }
+        .card { background-color: #fff; border-radius: 8px; padding: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #e9ecef; }
+        .card h2 { margin-top: 0; color: #0056b3; font-size: 1.4rem; border-bottom: 2px solid #eef; padding-bottom: 15px; margin-bottom: 20px; font-weight: 600; }
+        .info-grid { display: grid; grid-template-columns: 140px 1fr; gap: 15px; font-size: 1rem; }
+        .info-grid strong { color: #495057; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 0.95rem; }
+        th, td { text-align: left; padding: 14px; border-bottom: 1px solid #dee2e6; }
+        th { background-color: #007bff; color: white; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 0.5px; }
+        tbody tr:hover { background-color: #f1f3f5; }
+        .empty-message { text-align: center; padding: 30px; color: #6c757d; font-style: italic; }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="welcome-header">
+            <h1>Welcome, {{ user.first_name }} {{ user.last_name }}!</h1>
+        </div>
+
+        <div class="grid-container">
+            <div class="card">
+                <h2>Student Information</h2>
+                <div class="info-grid">
+                    <strong>Roll Number:</strong> <span>{{ student.roll_number }}</span>
+                    <strong>Email:</strong> <span>{{ user.email }}</span>
+                    <strong>Course:</strong> <span>{{ student.course.name }}</span>
+                    <strong>Department:</strong> <span>{{ student.course.department.name }} ({{ student.course.department.name.0|upper }}O)</span>
+                    <strong>Semester:</strong> <span>{{ student.semester }}</span>
+                </div>
+            </div>
+            <div class="card">
+                <h2>Overall Attendance Summary</h2>
+                <canvas id="attendancePieChart"></canvas>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Detailed Attendance Report</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Subject</th>
+                        <th>Total Classes</th>
+                        <th>Classes Attended</th>
+                        <th>Percentage</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for report in attendance_reports %}
+                    <tr>
+                        <td>{{ report.subject.name }} ({{ report.subject.code }})</td>
+                        <td>{{ report.total_classes }}</td>
+                        <td>{{ report.classes_attended }}</td>
+                        <td>{{ report.attendance_percentage|floatformat:2 }}%</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="empty-message">No attendance records have been found for you.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const labels = JSON.parse('{{ chart_labels_json|safe }}');
+            const data = JSON.parse('{{ chart_data_json|safe }}');
+            const chartColors = [
+                '#FF6384', // Pink
+                '#36A2EB', // Blue
+                '#FFCE56', // Yellow
+                '#4BC0C0', // Teal
+                '#9966FF', // Purple
+                '#FF9F40'  // Orange
+            ];
+
+            if (labels.length > 0) {
+                const ctx = document.getElementById('attendancePieChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Attendance Percentage',
+                            data: data,
+                            backgroundColor: chartColors.slice(0, labels.length),
+                            borderColor: '#fff',
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        if (context.parsed !== null) {
+                                            label += context.parsed.toFixed(2) + '%';
+                                        }
+                                        return label;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            } else {
+                 const chartArea = document.getElementById('attendancePieChart').parentElement;
+                 chartArea.innerHTML += '<p class="empty-message">No attendance data available to display chart.</p>';
+            }
+        });
+    </script>
+</body>
+</html>

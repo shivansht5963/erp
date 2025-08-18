@@ -1,4 +1,4 @@
-# File: erp/settings.py
+# erp/settings.py
 
 """
 Django settings for erp project.
@@ -113,7 +113,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 
 # Internationalization
-# https://docs.djangoproject.com/en/5.2/topics/i1n/
+# https://docs.djangoproject.com/en/5.2/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
 
@@ -123,17 +123,14 @@ USE_I18N = True
 
 USE_TZ = True
 
-
-# --- CORRECTED SECTION ---
+# ERP/settings.py
 
 # Tells Django to use your model for logins, signups, etc.
 AUTH_USER_MODEL = 'accounts.CustomUser'
 
 # Tells Django where to send users after they successfully log in.
-# This now points to our new view that handles role-based redirection.
-LOGIN_REDIRECT_URL = 'accounts:login_redirect'
+LOGIN_REDIRECT_URL = 'accounts:dashboard' # We will create a 'home' URL next.
 
-# --- END CORRECTED SECTION ---
 
 
 # Static files (CSS, JavaScript, Images)
