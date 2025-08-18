@@ -52,16 +52,16 @@ class Subject(models.Model):
 
 class Teacher(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
-    # Changed from ForeignKey to ManyToManyField to support multiple departments
-    departments = models.ManyToManyField(Department, related_name='teachers')
+    # RENAME this field to be plural
+    departments = models.ManyToManyField(Department) 
     qualification = models.CharField(max_length=100)
     contact_number = models.CharField(max_length=15)
     join_date = models.DateField()
-    
+
     def __str__(self):
-        # Updated to correctly display multiple department names
+        # Update the string representation as well
         dept_names = ", ".join([dept.name for dept in self.departments.all()])
-        return f"{self.user.get_full_name()} - {dept_names or 'No Department'}"
+        return f"{self.user.get_full_name()} - {dept_names}"
     
     def mark_attendance(self):
         """Method for marking attendance"""

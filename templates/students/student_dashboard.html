@@ -2,53 +2,80 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>My Dashboard</title>
-    <!-- We need to include the Chart.js library -->
+    <title>Student Dashboard</title>
+    <!-- We need the Chart.js library to create the pie chart -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; margin: 2em; background-color: #f4f4f9; color: #333; }
-        .container { max-width: 1200px; margin: auto; background: #fff; padding: 25px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-        h1, h2 { color: #0056b3; }
-        h1 { border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 20px;}
-        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #eef1f5;
+            margin: 0;
+            padding: 2rem;
+        }
+        .container {
+            max-width: 1200px;
+            margin: auto;
+        }
+        h1, h2 {
+            color: #333;
+        }
         .dashboard-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 40px;
-            margin-top: 20px;
+            grid-template-columns: repeat(2, 1fr);
+            grid-template-rows: auto;
+            gap: 1.5rem;
         }
-
-        .details-section, .chart-section {
-            padding: 20px;
-            border: 1px solid #e0e0e0;
+        .card {
+            background: #fff;
+            padding: 1.5rem;
             border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
         }
-
-        .details-list {
-            list-style: none;
-            padding: 0;
+        .full-width {
+            grid-column: 1 / -1; /* Make this card span the full width */
         }
-        .details-list li {
-            padding: 8px 0;
-            border-bottom: 1px solid #f0f0f0;
+        /* Student Info Card Styles */
+        .student-info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
         }
-        .details-list li:last-child {
+        .student-info-grid div {
+            padding: 5px 0;
+        }
+        .student-info-grid strong {
+            color: #555;
+            display: block;
+        }
+        /* Table Styles */
+        .detail-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        .detail-table th, .detail-table td {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+        }
+        .detail-table thead th {
+            background-color: #007bff;
+            color: white;
+        }
+        /* Notification Styles */
+        .notification-item {
+            border-bottom: 1px solid #eee;
+            padding: 1rem 0;
+        }
+        .notification-item:last-child {
             border-bottom: none;
         }
-        .details-list strong {
-            display: inline-block;
-            width: 120px;
-            color: #555;
-        }
-
-        table { width: 100%; border-collapse: collapse; margin-top: 25px; }
-        th, td { padding: 15px; border: 1px solid #ddd; text-align: left; }
-        th { background-color: #007bff; color: white; font-weight: bold; }
-        tr:nth-child(even) { background-color: #f8f9fa; }
-        tr:hover { background-color: #e9ecef; }
-        .no-records { text-align: center; color: #777; font-style: italic; padding: 20px; }
-
-        @media (max-width: 900px) {
+        .notification-item strong { font-size: 1.1em; }
+        .notification-item p { margin: 0.5rem 0; }
+        .notification-item small { color: #777; }
+        .no-records { color: #555; }
+        
+        @media (max-width: 992px) {
             .dashboard-grid {
                 grid-template-columns: 1fr;
             }
@@ -56,33 +83,33 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        {% if student %}
-            <h1>Welcome, {{ student.user.get_full_name|default:student.user.username }}!</h1>
-            
-            <div class="dashboard-grid">
-                <!-- Column 1: Student Details -->
-                <div class="details-section">
-                    <h2>Student Information</h2>
-                    <ul class="details-list">
-                        <li><strong>Roll Number:</strong> {{ student.roll_number }}</li>
-                        <li><strong>Email:</strong> {{ student.user.email }}</li>
-                        <li><strong>Course:</strong> {{ student.course.name }}</li>
-                        <li><strong>Department:</strong> {{ student.course.department.name }}</li>
-                        <li><strong>Semester:</strong> {{ student.semester }}</li>
-                    </ul>
-                </div>
 
-                <!-- Column 2: Attendance Pie Chart -->
-                <div class="chart-section">
-                    <h2>Overall Attendance Summary</h2>
-                    <!-- The canvas element is where the chart will be drawn -->
-                    <canvas id="attendancePieChart"></canvas>
-                </div>
+<div class="container">
+    <h1>Welcome, {{ student.user.first_name }} {{ student.user.last_name }}!</h1>
+    
+    <div class="dashboard-grid">
+        
+        <div class="card">
+            <h2>Student Information</h2>
+            <div class="student-info-grid">
+                <div><strong>Roll Number:</strong> {{ student.roll_number }}</div>
+                <div><strong>Email:</strong> {{ student.user.email }}</div>
+                <div><strong>Course:</strong> {{ student.course.name }}</div>
+                <div><strong>Department:</strong> {{ student.course.department.name }}</div>
+                <div><strong>Semester:</strong> {{ student.semester }}</div>
             </div>
+        </div>
 
-            <h2 style="margin-top: 40px;">Detailed Attendance Report</h2>
-            <table>
+        <div class="card">
+            <h2>Overall Attendance Summary</h2>
+            <div class="chart-container" style="position: relative; height:250px;">
+                <canvas id="attendanceChart"></canvas>
+            </div>
+        </div>
+
+        <div class="card full-width">
+            <h2>Detailed Attendance Report</h2>
+            <table class="detail-table">
                 <thead>
                     <tr>
                         <th>Subject</th>
@@ -92,76 +119,81 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for record in attendance_records %}
+                    {% for report in attendance_reports %}
                         <tr>
-                            <td>{{ record.subject.name }} ({{ record.subject.code }})</td>
-                            <td>{{ record.total_classes }}</td>
-                            <td>{{ record.classes_attended }}</td>
-                            <td>{{ record.attendance_percentage|floatformat:2 }}%</td>
+                            <td>{{ report.subject.name }} ({{ report.subject.code }})</td>
+                            <td>{{ report.total_classes }}</td>
+                            <td>{{ report.classes_attended }}</td>
+                            <td>{{ report.attendance_percentage|floatformat:2 }}%</td>
                         </tr>
                     {% empty %}
                         <tr>
-                            <td colspan="4" class="no-records">No attendance records have been found for you.</td>
+                            <td colspan="4" class="no-records">No attendance records found.</td>
                         </tr>
                     {% endfor %}
                 </tbody>
             </table>
+        </div>
 
-        {% else %}
-            <h1>Error</h1>
-            <p>Could not find a student profile associated with your account. Please contact an administrator.</p>
-        {% endif %}
+        <div class="card full-width">
+            <h2>Recent Announcements</h2>
+            {% for notif in notifications %}
+                <div class="notification-item">
+                    <strong>{{ notif.title }}</strong>
+                    <p>{{ notif.message }}</p>
+                    <small>From: {{ notif.sender.username }} | Received: {{ notif.created_at|date:"F d, Y, P" }}</small>
+                </div>
+            {% empty %}
+                <p class="no-records">You have no new announcements at this time.</p>
+            {% endfor %}
+        </div>
+
     </div>
+</div>
 
-    <!-- JavaScript block to create the chart -->
-    <script>
-        // We check if there's data to avoid errors
-        const chartLabels = {{ chart_labels|safe }};
-        if (chartLabels.length > 0) {
-            const ctx = document.getElementById('attendancePieChart').getContext('2d');
-            
-            const attendancePieChart = new Chart(ctx, {
-                type: 'pie', // The type of chart we want to create
-                data: {
-                    // These are the names of the subjects
-                    labels: chartLabels,
-                    datasets: [{
-                        label: 'Attendance Percentage',
-                        // These are the attendance percentage values
-                        data: {{ chart_data|safe }},
-                        backgroundColor: [
-                            'rgba(255, 99, 132, 0.7)',
-                            'rgba(54, 162, 235, 0.7)',
-                            'rgba(255, 206, 86, 0.7)',
-                            'rgba(75, 192, 192, 0.7)',
-                            'rgba(153, 102, 255, 0.7)',
-                            'rgba(255, 159, 64, 0.7)'
-                        ],
-                        borderColor: [
-                            'rgba(255, 99, 132, 1)',
-                            'rgba(54, 162, 235, 1)',
-                            'rgba(255, 206, 86, 1)',
-                            'rgba(75, 192, 192, 1)',
-                            'rgba(153, 102, 255, 1)',
-                            'rgba(255, 159, 64, 1)'
-                        ],
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            position: 'top',
-                        },
-                        title: {
-                            display: true,
-                            text: 'Attendance Percentage by Subject'
-                        }
-                    }
+<!-- This script builds the pie chart -->
+<script>
+    const ctx = document.getElementById('attendanceChart');
+    
+    // Get the data prepared by our Django view
+    const labels = JSON.parse('{{ chart_labels_json|safe }}');
+    const data = JSON.parse('{{ chart_data_json|safe }}');
+
+    new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Attendance %',
+                data: data,
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.8)',
+                    'rgba(54, 162, 235, 0.8)',
+                    'rgba(255, 206, 86, 0.8)',
+                    'rgba(75, 192, 192, 0.8)',
+                    'rgba(153, 102, 255, 0.8)',
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top',
                 }
-            });
+            }
         }
-    </script>
+    });
+</script>
+
 </body>
 </html>

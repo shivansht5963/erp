@@ -1,74 +1,44 @@
-<!-- templates/notifications/create_notification.html -->
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Send Notification</title>
+    <title>Send Announcement</title>
     <style>
-        body { font-family: sans-serif; padding: 20px; }
-        .form-container { max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ccc; border-radius: 5px; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; }
-        input, select, textarea { width: 100%; padding: 8px; box-sizing: border-box; }
-        button { padding: 10px 15px; background-color: #007bff; color: white; border: none; cursor: pointer; }
-        .hidden { display: none; }
+        body { font-family: sans-serif; margin: 2rem; }
+        .container { max-width: 700px; margin: auto; padding: 2rem; border: 1px solid #ddd; border-radius: 10px; }
+        form div { margin-bottom: 1rem; }
+        label { display: block; margin-bottom: 0.5rem; font-weight: bold; }
+        input, select, textarea { width: 100%; padding: 0.5rem; box-sizing: border-box; }
+        button { padding: 0.7rem 1.5rem; background-color: #007bff; color: white; border: none; cursor: pointer; }
     </style>
 </head>
 <body>
-    <div class="form-container">
-        <h2>Create and Send Notification</h2>
-        {% if messages %}
-            {% for message in messages %}
-                <p style="color: green;">{{ message }}</p>
-            {% endfor %}
-        {% endif %}
-        <form method="post">
-            {% csrf_token %}
-            <div class="form-group">
-                <label for="{{ form.title.id_for_label }}">Title</label>
-                {{ form.title }}
-            </div>
-            <div class="form-group">
-                <label for="{{ form.message.id_for_label }}">Message</label>
-                {{ form.message }}
-            </div>
-            <div class="form-group">
-                <label for="{{ form.audience_type.id_for_label }}">Send To</label>
-                {{ form.audience_type }}
-            </div>
-            <div id="class-selector" class="form-group hidden">
-                <label for="{{ form.target_class.id_for_label }}">Select Class</label>
-                {{ form.target_class }}
-            </div>
-            <div id="student-selector" class="form-group hidden">
-                <label for="{{ form.target_student.id_for_label }}">Select Student</label>
-                {{ form.target_student }}
-            </div>
-            <button type="submit">Send Notification</button>
-        </form>
-    </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const audienceSelect = document.getElementById('{{ form.audience_type.id_for_label }}');
-            const classSelector = document.getElementById('class-selector');
-            const studentSelector = document.getElementById('student-selector');
+<div class="container">
+    <h2>Send an Announcement to Your Class</h2>
+    
+    {% if messages %}
+        {% for message in messages %}
+            <p style="color: green;">{{ message }}</p>
+        {% endfor %}
+    {% endif %}
 
-            function toggleSelectors() {
-                const selectedValue = audienceSelect.value;
-                classSelector.classList.add('hidden');
-                studentSelector.classList.add('hidden');
+    <form method="POST">
+        {% csrf_token %}
+        <div>
+            {{ form.target_class.label_tag }}
+            {{ form.target_class }}
+        </div>
+        <div>
+            {{ form.title.label_tag }}
+            {{ form.title }}
+        </div>
+        <div>
+            {{ form.message.label_tag }}
+            {{ form.message }}
+        </div>
+        <button type="submit">Send Announcement</button>
+    </form>
+</div>
 
-                if (selectedValue === 'class') {
-                    classSelector.classList.remove('hidden');
-                } else if (selectedValue === 'student') {
-                    studentSelector.classList.remove('hidden');
-                }
-            }
-            
-            // Initial call and on change
-            toggleSelectors();
-            audienceSelect.addEventListener('change', toggleSelectors);
-        });
-    </script>
 </body>
 </html>

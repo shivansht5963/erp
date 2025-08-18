@@ -1,42 +1,39 @@
-# faculty/forms.py
-
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from accounts.models import CustomUser
+# Import the Department model to use in the form
 from .models import Teacher, Department, Course, Class
 
 class TeacherRegistrationForm(UserCreationForm):
-    department = forms.CharField(max_length=100)
+    # --- THIS IS THE FIX ---
+    # Use ModelMultipleChoiceField to allow selecting multiple departments
+    departments = forms.ModelMultipleChoiceField(
+        queryset=Department.objects.all(),
+        widget=forms.CheckboxSelectMultiple, # A checkbox list is user-friendly
+        label="Departments"
+    )
     qualification = forms.CharField(max_length=100)
     contact_number = forms.CharField(max_length=15)
     join_date = forms.DateField(widget=forms.SelectDateWidget(years=range(1980, 2030)))
 
     class Meta:
         model = CustomUser
-        fields = ['username', 'email', 'password1', 'password2']
+        fields = ['username', 'email', 'first_name', 'last_name']
 
     def save(self, commit=True):
         user = super().save(commit=False)
-        
-        # --- Start of Correction ---
-        
-        # Set the user's role to 'faculty' to match the choices in your CustomUser model.
-        user.role = 'faculty' 
-        
-        # Grant staff status so the user can log into the Django admin site.
-        user.is_staff = True   
-        
-        # --- End of Correction ---
-
+        user.role = 'faculty'
         if commit:
             user.save()
-            Teacher.objects.create(
+            # Create the teacher profile first
+            teacher = Teacher.objects.create(
                 user=user,
-                department=self.cleaned_data['department'],
                 qualification=self.cleaned_data['qualification'],
                 contact_number=self.cleaned_data['contact_number'],
                 join_date=self.cleaned_data['join_date']
             )
+            # Then, set the many-to-many relationship
+            teacher.departments.set(self.cleaned_data['departments'])
         return user
 
 class DepartmentForm(forms.ModelForm):

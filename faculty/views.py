@@ -1,10 +1,65 @@
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from .forms import TeacherRegistrationForm, DepartmentForm, CourseForm, ClassForm, TeacherForm
+
+# Import necessary forms and models
+from notifications.forms import TeacherNotificationForm
+from notifications.models import Notification
+from students.models import Student
+from accounts.models import CustomUser
+from accounts.decorators import is_faculty
+
+# --- THIS IS THE FIX ---
+# Import the Teacher and Subject models from the same app's models.py file
 from .models import Teacher, Subject
-from students.models import Student  # Added for mark_attendance
-from attendance.models import Attendance # Added for mark_attendance
+@user_passes_test(is_faculty)
+def teacher_dashboard(request):
+    try:
+        teacher = Teacher.objects.get(user=request.user)
+    except Teacher.DoesNotExist:
+        messages.error(request, "Your teacher profile could not be found. Please contact an administrator.")
+        return redirect('accounts:logout')
+
+    if request.method == 'POST':
+        # --- PASS 'teacher' OBJECT TO THE FORM ON POST ---
+        form = TeacherNotificationForm(request.POST)
+        if form.is_valid():
+            data = form.cleaned_data
+            notification = Notification.objects.create(
+                title=data['title'],
+                message=data['message'],
+                created_by=request.user
+            )
+            # Logic for faculty is to send to a specific class
+            target_class = data['target_class']
+            students_in_class = Student.objects.filter(
+                course__department=target_class.department, 
+                semester=target_class.semester
+            )
+            recipients = [student.user for student in students_in_class]
+            for user in recipients:
+                Notification.objects.create(user=user, notification=notification)
+            messages.success(request, f'Notification sent to class {target_class} successfully!')
+            return redirect('faculty:teacher_dashboard')
+    
+    else:
+        # --- PASS 'teacher' OBJECT TO THE FORM ON GET ---
+       form = TeacherNotificationForm(request.POST)
+
+    subjects = Subject.objects.filter(teacher=teacher)
+    sent_notifications = Notification.objects.filter(created_by=request.user).order_by('-created_at')[:5]
+
+    context = {
+        'teacher': teacher,
+        'form': form,
+        'sent_notifications': sent_notifications,
+        'subjects': subjects,
+    }
+    return render(request, 'faculty/dashboard_teacher.html', context)
+
+
+# --- Keep all your existing views below ---
 
 def register_teacher(request):
     if request.method == 'POST':
@@ -12,7 +67,7 @@ def register_teacher(request):
         if form.is_valid():
             form.save()
             messages.success(request, "Teacher registered successfully! You can now log in.")
-            return redirect('accounts:login')
+            return redirect('accounts:login')  # Use the name of the login URL
     else:
         form = TeacherRegistrationForm()
     return render(request, 'faculty/register_teacher.html', {'form': form})
@@ -56,45 +111,3 @@ def add_teacher(request):
     else:
         form = TeacherForm()
     return render(request, 'faculty/add_teacher.html', {'form': form})
-
-@login_required
-def teacher_dashboard(request):
-    try:
-        teacher = Teacher.objects.get(user=request.user)
-        subjects = Subject.objects.filter(teacher=teacher)
-        context = {
-            'teacher': teacher,
-            'subjects': subjects
-        }
-        return render(request, 'faculty/teacher_dashboard.html', context)
-    except Teacher.DoesNotExist:
-        messages.error(request, "You do not have permission to view this page.")
-        return redirect('accounts:login')
-
-# --- THIS IS THE SECOND MISSING FUNCTION THAT HAS BEEN ADDED BACK ---
-@login_required
-def mark_attendance(request, subject_id):
-    subject = get_object_or_404(Subject, id=subject_id)
-    # Assuming students are enrolled in the course that the subject belongs to
-    students = Student.objects.filter(course=subject.course)
-    
-    if request.method == 'POST':
-        # Logic to process the submitted attendance data
-        for student in students:
-            status = request.POST.get(f'status_{student.id}')
-            if status:
-                # Create or update attendance record
-                Attendance.objects.update_or_create(
-                    student=student,
-                    subject=subject,
-                    date=request.POST.get('attendance_date'),
-                    defaults={'status': status == 'present'}
-                )
-        messages.success(request, f"Attendance marked for {subject.name}.")
-        return redirect('faculty:teacher_dashboard')
-
-    context = {
-        'subject': subject,
-        'students': students
-    }
-    return render(request, 'faculty/mark_attendance.html', context)

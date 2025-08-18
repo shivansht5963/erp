@@ -1,17 +1,10 @@
-# notifications/urls.py
-
 from django.urls import path
-from . import views
+from .views import create_teacher_notification
 
+# This sets the namespace for the app, allowing you to use names like 'notifications:create_teacher_notification'
 app_name = 'notifications'
 
 urlpatterns = [
-    # For Admins/Faculty to send notifications
-    path('create/', views.create_notification, name='create'),
-    
-    # For Students to view their notifications
-    path('list/', views.notification_list, name='list'),
-    
-    # To mark a notification as read
-    path('mark-read/<int:status_id>/', views.mark_notification_as_read, name='mark_as_read'),
+    # This URL will be accessible at /notifications/teacher/create/
+    path('teacher/create/', create_teacher_notification, name='create_teacher_notification'),
 ]

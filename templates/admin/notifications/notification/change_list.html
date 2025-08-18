@@ -1,0 +1,6 @@
+{% extends "admin/change_list.html" %}
+
+{% block object-tools %}
+    {{ send_button|safe }}
+    {{ block.super }}
+{% endblock %}
