@@ -3,113 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <title>Student Dashboard</title>
-    <!-- We need the Chart.js library to create the pie chart -->
+    <!-- We will use Chart.js for the pie chart -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            background-color: #eef1f5;
-            margin: 0;
-            padding: 2rem;
-        }
-        .container {
-            max-width: 1200px;
-            margin: auto;
-        }
-        h1, h2 {
-            color: #333;
-        }
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            grid-template-rows: auto;
-            gap: 1.5rem;
-        }
-        .card {
-            background: #fff;
-            padding: 1.5rem;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-        }
-        .full-width {
-            grid-column: 1 / -1; /* Make this card span the full width */
-        }
-        /* Student Info Card Styles */
-        .student-info-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-        }
-        .student-info-grid div {
-            padding: 5px 0;
-        }
-        .student-info-grid strong {
-            color: #555;
-            display: block;
-        }
-        /* Table Styles */
-        .detail-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 1rem;
-        }
-        .detail-table th, .detail-table td {
-            text-align: left;
-            padding: 12px;
-            border-bottom: 1px solid #ddd;
-        }
-        .detail-table thead th {
-            background-color: #007bff;
-            color: white;
-        }
-        /* Notification Styles */
-        .notification-item {
-            border-bottom: 1px solid #eee;
-            padding: 1rem 0;
-        }
-        .notification-item:last-child {
-            border-bottom: none;
-        }
-        .notification-item strong { font-size: 1.1em; }
-        .notification-item p { margin: 0.5rem 0; }
-        .notification-item small { color: #777; }
-        .no-records { color: #555; }
-        
-        @media (max-width: 992px) {
-            .dashboard-grid {
-                grid-template-columns: 1fr;
-            }
-        }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background-color: #f0f2f5; color: #333; margin: 0; padding: 2rem; }
+        .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; max-width: 1200px; margin: 0 auto; }
+        .card { background-color: #fff; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); padding: 1.5rem; }
+        .card-title { font-size: 1.25rem; font-weight: 600; margin-top: 0; margin-bottom: 1.5rem; color: #111; }
+        .full-width { grid-column: 1 / -1; } /* Makes a card span the full width */
+        .welcome-header { max-width: 1200px; margin: 0 auto 2rem auto; font-size: 2rem; font-weight: 700; }
+
+        /* Student Info Card */
+        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .info-item label { font-weight: 600; color: #555; display: block; margin-bottom: 0.25rem; }
+        .info-item span { color: #333; }
+
+        /* Attendance Table */
+        .attendance-table { width: 100%; border-collapse: collapse; }
+        .attendance-table th, .attendance-table td { padding: 0.75rem 1rem; text-align: left; border-bottom: 1px solid #e5e7eb; }
+        .attendance-table thead { background-color: #007bff; color: white; }
+        .attendance-table th { font-weight: 600; }
+
+        /* Announcements */
+        .announcement-item { border-bottom: 1px solid #e5e7eb; padding: 1rem 0; }
+        .announcement-item:last-child { border-bottom: none; }
+        .announcement-title { font-weight: 700; margin: 0 0 0.25rem 0; }
+        .announcement-body { margin: 0 0 0.5rem 0; }
+        .announcement-meta { font-size: 0.8rem; color: #666; }
     </style>
 </head>
 <body>
+    <h1 class="welcome-header">Welcome, {{ student.user.first_name }} {{ student.user.last_name }}!</h1>
 
-<div class="container">
-    <h1>Welcome, {{ student.user.first_name }} {{ student.user.last_name }}!</h1>
-    
     <div class="dashboard-grid">
-        
+        <!-- Student Information Card -->
         <div class="card">
-            <h2>Student Information</h2>
-            <div class="student-info-grid">
-                <div><strong>Roll Number:</strong> {{ student.roll_number }}</div>
-                <div><strong>Email:</strong> {{ student.user.email }}</div>
-                <div><strong>Course:</strong> {{ student.course.name }}</div>
-                <div><strong>Department:</strong> {{ student.course.department.name }}</div>
-                <div><strong>Semester:</strong> {{ student.semester }}</div>
+            <h2 class="card-title">Student Information</h2>
+            <div class="info-grid">
+                <div class="info-item"><label>Roll Number:</label><span>{{ student.roll_number }}</span></div>
+                <div class="info-item"><label>Email:</label><span>{{ student.user.email }}</span></div>
+                <div class="info-item"><label>Course:</label><span>{{ student.course.name }}</span></div>
+                <div class="info-item"><label>Department:</label><span>{{ student.course.department.name }}</span></div>
+                <div class="info-item"><label>Semester:</label><span>{{ student.semester }}</span></div>
             </div>
         </div>
 
+        <!-- Overall Attendance Summary Card -->
         <div class="card">
-            <h2>Overall Attendance Summary</h2>
-            <div class="chart-container" style="position: relative; height:250px;">
-                <canvas id="attendanceChart"></canvas>
+            <h2 class="card-title">Overall Attendance Summary</h2>
+            <div style="width: 250px; height: 250px; margin: 0 auto;">
+                <canvas id="attendancePieChart"></canvas>
             </div>
         </div>
 
+        <!-- Detailed Attendance Report Card -->
         <div class="card full-width">
-            <h2>Detailed Attendance Report</h2>
-            <table class="detail-table">
+            <h2 class="card-title">Detailed Attendance Report</h2>
+            <table class="attendance-table">
                 <thead>
                     <tr>
                         <th>Subject</th>
@@ -120,80 +70,74 @@
                 </thead>
                 <tbody>
                     {% for report in attendance_reports %}
-                        <tr>
-                            <td>{{ report.subject.name }} ({{ report.subject.code }})</td>
-                            <td>{{ report.total_classes }}</td>
-                            <td>{{ report.classes_attended }}</td>
-                            <td>{{ report.attendance_percentage|floatformat:2 }}%</td>
-                        </tr>
+                    <tr>
+                        <td>{{ report.subject.name }} ({{ report.subject.code }})</td>
+                        <td>{{ report.total_classes }}</td>
+                        <td>{{ report.classes_attended }}</td>
+                        <td>{{ report.attendance_percentage|floatformat:2 }}%</td>
+                    </tr>
                     {% empty %}
-                        <tr>
-                            <td colspan="4" class="no-records">No attendance records found.</td>
-                        </tr>
+                    <tr><td colspan="4" style="text-align: center;">No attendance data available.</td></tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
 
+        <!-- Recent Announcements Card -->
         <div class="card full-width">
-            <h2>Recent Announcements</h2>
-            {% for notif in notifications %}
-                <div class="notification-item">
-                    <strong>{{ notif.title }}</strong>
-                    <p>{{ notif.message }}</p>
-                    <small>From: {{ notif.sender.username }} | Received: {{ notif.created_at|date:"F d, Y, P" }}</small>
+            <h2 class="card-title">Recent Announcements</h2>
+            {% for announcement in recent_announcements %}
+                <div class="announcement-item">
+                    <h3 class="announcement-title">{{ announcement.title }}</h3>
+                    <p class="announcement-body">{{ announcement.message|linebreaksbr }}</p>
+                    <p class="announcement-meta">
+                        From: {{ announcement.teacher.user.get_full_name }} | Received: {{ announcement.created_at|date:"F j, Y, P" }}
+                    </p>
                 </div>
             {% empty %}
-                <p class="no-records">You have no new announcements at this time.</p>
+                <p>No new announcements.</p>
             {% endfor %}
         </div>
-
     </div>
-</div>
 
-<!-- This script builds the pie chart -->
-<script>
-    const ctx = document.getElementById('attendanceChart');
-    
-    // Get the data prepared by our Django view
-    const labels = JSON.parse('{{ chart_labels_json|safe }}');
-    const data = JSON.parse('{{ chart_data_json|safe }}');
-
-    new Chart(ctx, {
-        type: 'pie',
-        data: {
-            labels: labels,
-            datasets: [{
-                label: 'Attendance %',
-                data: data,
-                backgroundColor: [
-                    'rgba(255, 99, 132, 0.8)',
-                    'rgba(54, 162, 235, 0.8)',
-                    'rgba(255, 206, 86, 0.8)',
-                    'rgba(75, 192, 192, 0.8)',
-                    'rgba(153, 102, 255, 0.8)',
-                ],
-                borderColor: [
-                    'rgba(255, 99, 132, 1)',
-                    'rgba(54, 162, 235, 1)',
-                    'rgba(255, 206, 86, 1)',
-                    'rgba(75, 192, 192, 1)',
-                    'rgba(153, 102, 255, 1)',
-                ],
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    position: 'top',
+    <script>
+        // JavaScript for rendering the Pie Chart
+        const ctx = document.getElementById('attendancePieChart').getContext('2d');
+        const attendancePieChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Attended', 'Absent'],
+                datasets: [{
+                    label: 'Overall Attendance',
+                    data: [{{ overall_attendance_percentage }}, {{ overall_absence_percentage }}],
+                    backgroundColor: [
+                        'rgba(0, 123, 255, 0.8)', // Blue for attended
+                        'rgba(220, 53, 69, 0.8)'   // Red for absent
+                    ],
+                    borderColor: [
+                        'rgba(0, 123, 255, 1)',
+                        'rgba(220, 53, 69, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.label + ': ' + context.raw.toFixed(2) + '%';
+                            }
+                        }
+                    }
                 }
             }
-        }
-    });
-</script>
-
+        });
+    </script>
 </body>
 </html>

@@ -74,3 +74,13 @@ class Teacher(models.Model):
     def declare_result(self):
         """Method for declaring results"""
         pass
+    
+class Announcement(models.Model):
+    teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, help_text="The teacher posting the announcement.")
+    target_class = models.ForeignKey(Class, on_delete=models.SET_NULL, null=True, blank=True, help_text="Optional: Post to a specific class.")
+    title = models.CharField(max_length=200)
+    message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.title} by {self.teacher.user.get_full_name()}"

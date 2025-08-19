@@ -6,6 +6,5 @@ app_name = 'students'
 
 urlpatterns = [
     path('add/', add_student, name='add_student'),
-    # URL for the student dashboard view
     path('dashboard/', student_dashboard, name='dashboard'),
 ]

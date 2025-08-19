@@ -1,21 +1,41 @@
+
+
 from django.contrib import admin
 from .models import Student
 
-# Create a custom admin class to improve the display
+@admin.register(Student)
 class StudentAdmin(admin.ModelAdmin):
-    # 'list_display' controls which columns are shown in the admin list
-    list_display = ('roll_number', 'get_full_name', 'course', 'semester', 'class_enrolled')
+    """
+    Customizes the admin interface for the Student model.
+    """
+    # Define which fields to display in the list view.
+    # We are using the correct field name 'class_assigned' here.
+    list_display = (
+        'roll_number',
+        'user',
+        'course',
+        'semester',
+        'class_assigned',  # Corrected from 'class_enrolled'
+        'contact_number'
+    )
     
-    # 'search_fields' adds a search bar to search by these fields
-    search_fields = ('roll_number', 'user__first_name', 'user__last_name', 'user__email')
+    # Add filters to the right sidebar for easier navigation.
+    list_filter = (
+        'course',
+        'semester',
+        'class_assigned'   # Corrected from 'class_enrolled'
+    )
     
-    # 'list_filter' adds a sidebar to filter results
-    list_filter = ('course', 'semester', 'class_enrolled')
+    # Add a search bar that can search by roll number or user's name.
+    search_fields = (
+        'roll_number',
+        'user__first_name',
+        'user__last_name',
+        'user__email'
+    )
+    
+    # Make the user field a searchable dropdown for better performance.
+    raw_id_fields = ('user',)
 
-    # This is a custom method to get the name from the related user model
-    @admin.display(description='Full Name', ordering='user__first_name')
-    def get_full_name(self, obj):
-        return obj.user.get_full_name()
-
-# Register the Student model with its custom admin options
-admin.site.register(Student, StudentAdmin)
+# Note: We are using the @admin.register decorator, so the line
+# admin.site.register(Student) is no longer needed and should be removed if present.

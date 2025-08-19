@@ -1,4 +1,3 @@
-# students/models.py
 from django.db import models
 from django.conf import settings
 from faculty.models import Course, Class
@@ -6,10 +5,22 @@ from faculty.models import Course, Class
 class Student(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     roll_number = models.CharField(max_length=20, unique=True)
+    
+    # --- KEY CHANGE ---
+    # Directly links a student to their specific class (which includes section, semester, and department).
+    class_assigned = models.ForeignKey(
+        Class,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='students',
+        help_text="The specific class section the student is enrolled in."
+    )
+    
+    # These fields are now somewhat redundant but are kept for compatibility.
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
-    # Added field to link student to a specific class (e.g., CO1)
-    class_enrolled = models.ForeignKey(Class, on_delete=models.SET_NULL, null=True, blank=True, related_name='students')
     semester = models.IntegerField()
+    
     dob = models.DateField()
     contact_number = models.CharField(max_length=15)
     address = models.TextField(blank=True, null=True)
