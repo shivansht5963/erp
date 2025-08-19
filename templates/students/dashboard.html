@@ -1,59 +1,70 @@
-// File: templates/students/dashboard.html
-
+<!-- templates/students/dashboard.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Dashboard</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background-color: #f0f2f5; color: #333; margin: 0; padding: 2rem; }
-        .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; max-width: 1200px; margin: 0 auto; }
-        .card { background-color: #fff; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); padding: 1.5rem; }
-        .card-title { font-size: 1.25rem; font-weight: 600; margin-top: 0; margin-bottom: 1.5rem; color: #111; }
-        .full-width { grid-column: 1 / -1; }
-        .welcome-header { max-width: 1200px; margin: 0 auto 2rem auto; font-size: 2rem; font-weight: 700; }
-        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-        .info-item label { font-weight: 600; color: #555; display: block; margin-bottom: 0.25rem; }
-        .info-item span { color: #333; }
-        .attendance-table { width: 100%; border-collapse: collapse; }
-        .attendance-table th, .attendance-table td { padding: 0.75rem 1rem; text-align: left; border-bottom: 1px solid #e5e7eb; }
-        .attendance-table thead { background-color: #007bff; color: white; }
-        .attendance-table th { font-weight: 600; }
-        .announcement-item { border-bottom: 1px solid #e5e7eb; padding: 1rem 0; }
-        .announcement-item:last-child { border-bottom: none; }
-        .announcement-title { font-weight: 700; margin: 0 0 0.25rem 0; }
-        .announcement-body { margin: 0 0 0.5rem 0; }
-        .announcement-meta { font-size: 0.8rem; color: #666; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; color: #333; margin: 0; }
+        .header { background-color: #2c3e50; color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
+        .header h1 { margin: 0; font-size: 1.5em; }
+        .main-container { padding: 20px; max-width: 1200px; margin: auto; }
+        .grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 20px; }
+        .card { background-color: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); padding: 20px; }
+        .card h2 { margin-top: 0; border-bottom: 2px solid #6366f1; padding-bottom: 10px; font-size: 1.2em; color: #2c3e50; }
+        .info-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 10px; }
+        .info-grid strong { color: #555; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { text-align: left; padding: 12px; border-bottom: 1px solid #ddd; }
+        th { background-color: #6366f1; color: white; }
+        tr:nth-child(even) { background-color: #f9f9f9; }
+        .chart-container { position: relative; height: 350px; width: 100%; display: flex; justify-content: center; align-items: center; }
+        .no-data { text-align: center; color: #777; padding: 40px 0; }
     </style>
 </head>
 <body>
-    <h1 class="welcome-header">Welcome, {{ student.user.first_name }} {{ student.user.last_name }}!</h1>
 
-    <div class="dashboard-grid">
-        <div class="card">
-            <h2 class="card-title">Student Information</h2>
-            <div class="info-grid">
-                <div class="info-item"><label>Roll Number:</label><span>{{ student.roll_number }}</span></div>
-                <div class="info-item"><label>Email:</label><span>{{ student.user.email }}</span></div>
-                <div class="info-item"><label>Course:</label><span>{{ student.course.name }}</span></div>
-                <div class="info-item"><label>Department:</label><span>{{ student.course.department.name }}</span></div>
-                <div class="info-item"><label>Semester:</label><span>{{ student.semester }}</span></div>
+    <header class="header">
+        <h1>Welcome, {{ request.user.first_name }} {{ request.user.last_name }}!</h1>
+    </header>
+
+    <div class="main-container">
+        <div class="grid-container">
+            <div class="card">
+                <h2>Student Information</h2>
+                <div class="info-grid">
+                    <strong>Roll Number:</strong> <span>{{ student.roll_number }}</span>
+                    <strong>Email:</strong> <span>{{ request.user.email }}</span>
+                    <strong>Course:</strong> <span>{{ student.course.name }}</span>
+                    <strong>Department:</strong> <span>{{ student.course.department.name }}</span>
+                    <strong>Semester:</strong> <span>{{ student.semester }}</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Overall Attendance Summary</h2>
+                {% if chart_labels and chart_data %}
+                    <div class="chart-container">
+                        <canvas id="attendancePieChart"></canvas>
+                    </div>
+                {% else %}
+                    <p class="no-data">No attendance data to generate a summary.</p>
+                {% endif %}
             </div>
         </div>
 
-        <div class="card">
-            <h2 class="card-title">Overall Attendance Summary</h2>
-            <div style="width: 250px; height: 250px; margin: 0 auto;">
-                <canvas id="attendancePieChart"></canvas>
-            </div>
-        </div>
-
-        <div class="card full-width">
-            <h2 class="card-title">Detailed Attendance Report</h2>
-            <table class="attendance-table">
+        <div class="card" style="margin-top: 20px;">
+            <h2>Detailed Attendance Report</h2>
+            <table>
                 <thead>
-                    <tr><th>Subject</th><th>Total Classes</th><th>Classes Attended</th><th>Percentage</th></tr>
+                    <tr>
+                        <th>Subject</th>
+                        <th>Total Classes</th>
+                        <th>Classes Attended</th>
+                        <th>Percentage</th>
+                    </tr>
                 </thead>
                 <tbody>
                     {% for report in attendance_reports %}
@@ -64,69 +75,52 @@
                         <td>{{ report.attendance_percentage|floatformat:2 }}%</td>
                     </tr>
                     {% empty %}
-                    <tr><td colspan="4" style="text-align: center;">No attendance data available.</td></tr>
+                    <tr>
+                        <td colspan="4" class="no-data">No attendance records have been found for you.</td>
+                    </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
-
-        <div class="card full-width">
-            <h2 class="card-title">Recent Announcements</h2>
-            {% for announcement in recent_announcements %}
-                <div class="announcement-item">
-                    <h3 class="announcement-title">{{ announcement.title }}</h3>
-                    <p class="announcement-body">{{ announcement.message|linebreaksbr }}</p>
-                    <p class="announcement-meta">
-                        From: {{ announcement.teacher.user.get_full_name }} | Received: {{ announcement.created_at|date:"F j, Y, P" }}
-                    </p>
-                </div>
-            {% empty %}
-                <p>No new announcements.</p>
-            {% endfor %}
-        </div>
     </div>
 
-    <!-- Safely pass data from Django to JavaScript -->
-    {{ chart_data|json_script:"chartData" }}
-
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const chartElement = document.getElementById('attendancePieChart');
-            const chartDataElement = document.getElementById('chartData');
-            
-            if (!chartElement || !chartDataElement) return;
-
-            const chartData = JSON.parse(chartDataElement.textContent);
-            const attended = chartData.attended;
-            const absent = chartData.absent;
-
-            if (attended > 0 || absent > 0) {
-                new Chart(chartElement.getContext('2d'), {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['Attended', 'Absent'],
-                        datasets: [{
-                            label: 'Overall Attendance',
-                            data: [attended, absent],
-                            backgroundColor: ['rgba(0, 123, 255, 0.8)', 'rgba(220, 53, 69, 0.8)'],
-                            borderColor: ['rgba(0, 123, 255, 1)', 'rgba(220, 53, 69, 1)'],
-                            borderWidth: 1
-                        }]
+    {% if chart_labels and chart_data %}
+        const ctx = document.getElementById('attendancePieChart').getContext('2d');
+        const attendanceChart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: {{ chart_labels|safe }},
+                datasets: [{
+                    label: 'Attendance Percentage',
+                    data: {{ chart_data|safe }},
+                    backgroundColor: [
+                        '#ff6384',
+                        '#36a2eb',
+                        '#ffce56',
+                        '#4bc0c0',
+                        '#9966ff',
+                        '#ff9f40'
+                    ],
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
                     },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: { position: 'top' },
-                            tooltip: { callbacks: { label: (c) => c.label + ': ' + c.raw.toFixed(2) + '%' } }
-                        }
+                    title: {
+                        display: true,
+                        text: 'Attendance Percentage by Subject'
                     }
-                });
-            } else {
-                const chartContainer = chartElement.parentElement;
-                chartContainer.innerHTML = '<p style="text-align: center; color: #888; margin-top: 4rem;">No attendance data to display.</p>';
+                }
             }
         });
+    {% endif %}
     </script>
+
 </body>
 </html>

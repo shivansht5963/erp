@@ -1,73 +1,121 @@
+<!-- templates/students/student_dashboard.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Dashboard</title>
-    <!-- We will use Chart.js for the pie chart -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- 1. Load the Chart.js library in the head -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background-color: #f0f2f5; color: #333; margin: 0; padding: 2rem; }
-        .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; max-width: 1200px; margin: 0 auto; }
-        .card { background-color: #fff; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); padding: 1.5rem; }
-        .card-title { font-size: 1.25rem; font-weight: 600; margin-top: 0; margin-bottom: 1.5rem; color: #111; }
-        .full-width { grid-column: 1 / -1; } /* Makes a card span the full width */
-        .welcome-header { max-width: 1200px; margin: 0 auto 2rem auto; font-size: 2rem; font-weight: 700; }
-
-        /* Student Info Card */
-        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-        .info-item label { font-weight: 600; color: #555; display: block; margin-bottom: 0.25rem; }
-        .info-item span { color: #333; }
-
-        /* Attendance Table */
-        .attendance-table { width: 100%; border-collapse: collapse; }
-        .attendance-table th, .attendance-table td { padding: 0.75rem 1rem; text-align: left; border-bottom: 1px solid #e5e7eb; }
-        .attendance-table thead { background-color: #007bff; color: white; }
-        .attendance-table th { font-weight: 600; }
-
-        /* Announcements */
-        .announcement-item { border-bottom: 1px solid #e5e7eb; padding: 1rem 0; }
-        .announcement-item:last-child { border-bottom: none; }
-        .announcement-title { font-weight: 700; margin: 0 0 0.25rem 0; }
-        .announcement-body { margin: 0 0 0.5rem 0; }
-        .announcement-meta { font-size: 0.8rem; color: #666; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #f4f6f9;
+            margin: 0;
+            color: #1f2937;
+        }
+        .header {
+            background-color: #343a40;
+            color: white;
+            padding: 18px 40px;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 24px;
+            gap: 24px;
+            max-width: 1400px;
+            margin: auto;
+        }
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
+            padding: 24px;
+        }
+        .full-width { flex-basis: 100%; }
+        .half-width { flex: 1 1 calc(50% - 12px); min-width: 400px; }
+        .card-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin: 0 0 16px 0;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        .info-item { font-size: 0.9rem; }
+        .info-item strong {
+            display: block;
+            color: #6b7280;
+            margin-bottom: 4px;
+            font-weight: 500;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            text-align: left;
+            padding: 12px 16px;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 0.9rem;
+        }
+        th {
+            background-color: #007bff;
+            color: white;
+            font-weight: 600;
+        }
+        .no-data {
+            color: #6b7280;
+            text-align: center;
+            padding: 20px;
+        }
+        /* This CSS ensures the chart has a visible area to draw in */
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
     </style>
 </head>
 <body>
-    <h1 class="welcome-header">Welcome, {{ student.user.first_name }} {{ student.user.last_name }}!</h1>
 
-    <div class="dashboard-grid">
+    <div class="header">
+        Welcome, {{ request.user.first_name }} {{ request.user.last_name }}!
+    </div>
+
+    <div class="container">
         <!-- Student Information Card -->
-        <div class="card">
+        <div class="card half-width">
             <h2 class="card-title">Student Information</h2>
             <div class="info-grid">
-                <div class="info-item"><label>Roll Number:</label><span>{{ student.roll_number }}</span></div>
-                <div class="info-item"><label>Email:</label><span>{{ student.user.email }}</span></div>
-                <div class="info-item"><label>Course:</label><span>{{ student.course.name }}</span></div>
-                <div class="info-item"><label>Department:</label><span>{{ student.course.department.name }}</span></div>
-                <div class="info-item"><label>Semester:</label><span>{{ student.semester }}</span></div>
+                <div class="info-item"><strong>Roll Number:</strong> {{ student.roll_number }}</div>
+                <div class="info-item"><strong>Email:</strong> {{ student.user.email }}</div>
+                <div class="info-item"><strong>Course:</strong> {{ student.course.name }}</div>
+                <div class="info-item"><strong>Department:</strong> {{ student.course.department.name }}</div>
+                <div class="info-item"><strong>Semester:</strong> {{ student.semester }}</div>
             </div>
         </div>
 
-        <!-- Overall Attendance Summary Card -->
-        <div class="card">
+        <!-- Attendance Summary Card -->
+        <div class="card half-width">
             <h2 class="card-title">Overall Attendance Summary</h2>
-            <div style="width: 250px; height: 250px; margin: 0 auto;">
-                <canvas id="attendancePieChart"></canvas>
+            <div class="chart-container">
+                <canvas id="attendanceChart"></canvas>
             </div>
         </div>
 
         <!-- Detailed Attendance Report Card -->
         <div class="card full-width">
             <h2 class="card-title">Detailed Attendance Report</h2>
-            <table class="attendance-table">
-                <thead>
-                    <tr>
-                        <th>Subject</th>
-                        <th>Total Classes</th>
-                        <th>Classes Attended</th>
-                        <th>Percentage</th>
-                    </tr>
-                </thead>
+            <table>
+                <thead><tr><th>Subject</th><th>Total Classes</th><th>Classes Attended</th><th>Percentage</th></tr></thead>
                 <tbody>
                     {% for report in attendance_reports %}
                     <tr>
@@ -77,67 +125,71 @@
                         <td>{{ report.attendance_percentage|floatformat:2 }}%</td>
                     </tr>
                     {% empty %}
-                    <tr><td colspan="4" style="text-align: center;">No attendance data available.</td></tr>
+                    <tr><td colspan="4" class="no-data">No attendance records have been found.</td></tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
-
-        <!-- Recent Announcements Card -->
-        <div class="card full-width">
-            <h2 class="card-title">Recent Announcements</h2>
-            {% for announcement in recent_announcements %}
-                <div class="announcement-item">
-                    <h3 class="announcement-title">{{ announcement.title }}</h3>
-                    <p class="announcement-body">{{ announcement.message|linebreaksbr }}</p>
-                    <p class="announcement-meta">
-                        From: {{ announcement.teacher.user.get_full_name }} | Received: {{ announcement.created_at|date:"F j, Y, P" }}
-                    </p>
-                </div>
-            {% empty %}
-                <p>No new announcements.</p>
-            {% endfor %}
-        </div>
     </div>
 
+    <!-- 2. This tag safely embeds the Django data into the page as JSON -->
+    {{ subject_attendance_data|json_script:"subject-attendance-data" }}
+
     <script>
-        // JavaScript for rendering the Pie Chart
-        const ctx = document.getElementById('attendancePieChart').getContext('2d');
-        const attendancePieChart = new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: ['Attended', 'Absent'],
-                datasets: [{
-                    label: 'Overall Attendance',
-                    data: [{{ overall_attendance_percentage }}, {{ overall_absence_percentage }}],
-                    backgroundColor: [
-                        'rgba(0, 123, 255, 0.8)', // Blue for attended
-                        'rgba(220, 53, 69, 0.8)'   // Red for absent
-                    ],
-                    borderColor: [
-                        'rgba(0, 123, 255, 1)',
-                        'rgba(220, 53, 69, 1)'
-                    ],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'top',
-                    },
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                return context.label + ': ' + context.raw.toFixed(2) + '%';
+        // 3. This listener waits for the entire HTML page to be ready before running the script
+        document.addEventListener('DOMContentLoaded', function() {
+            try {
+                // Safely read and parse the data from the script tag
+                const dataElement = document.getElementById('subject-attendance-data');
+                const chartData = JSON.parse(dataElement.textContent);
+                
+                const ctx = document.getElementById('attendanceChart').getContext('2d');
+                const chartContainer = document.querySelector('.chart-container');
+
+                // Only draw the chart if there is data to show
+                if (!chartData || !chartData.data || chartData.data.length === 0) {
+                    chartContainer.innerHTML = '<p class="no-data">No attendance data to generate a summary.</p>';
+                } else {
+                    new Chart(ctx, {
+                        type: 'pie',
+                        data: {
+                            labels: chartData.labels,
+                            datasets: [{
+                                label: 'Classes Attended',
+                                data: chartData.data,
+                                backgroundColor: [
+                                    '#3B82F6', '#F472B6', '#10B981', '#F59E0B', '#8B5CF6', '#EC4899'
+                                ],
+                                borderColor: '#fff',
+                                borderWidth: 2
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    position: 'top',
+                                    align: 'start',
+                                },
+                                title: {
+                                    display: true,
+                                    text: 'Attendance by Subject'
+                                }
                             }
                         }
-                    }
+                    });
+                }
+            } catch (e) {
+                // If any error occurs, log it to the console for debugging
+                console.error("Could not render the attendance chart:", e);
+                const chartContainer = document.querySelector('.chart-container');
+                if (chartContainer) {
+                    chartContainer.innerHTML = '<p class="no-data">Error loading chart data.</p>';
                 }
             }
         });
     </script>
+
 </body>
 </html>
