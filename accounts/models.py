@@ -1,6 +1,8 @@
-from django.contrib.auth.models import AbstractUser, Group, Permission
+# accounts/models.py
+from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from django.conf import settings # Import settings
 
 class CustomUser(AbstractUser):
     ROLE_CHOICES = (
@@ -14,31 +16,6 @@ class CustomUser(AbstractUser):
     phone = models.CharField(max_length=15, blank=True, null=True)
     dob = models.DateField(blank=True, null=True)
     address = models.TextField(blank=True, null=True)
-
-    # --- ADD THESE TWO FIELDS TO FIX THE CLASHING ERROR ---
-    # We are overriding the default fields from AbstractUser to provide
-    # a unique related_name. This tells Django how to create the "backwards"
-    # relationship from Group and Permission to your CustomUser model without
-    # conflicting with the built-in User model.
-    groups = models.ManyToManyField(
-        Group,
-        verbose_name=_('groups'),
-        blank=True,
-        help_text=_(
-            'The groups this user belongs to. A user will get all permissions '
-            'granted to each of their groups.'
-        ),
-        related_name="customuser_groups",  # Unique related_name
-        related_query_name="user",
-    )
-    user_permissions = models.ManyToManyField(
-        Permission,
-        verbose_name=_('user permissions'),
-        blank=True,
-        help_text=_('Specific permissions for this user.'),
-        related_name="customuser_permissions",  # Unique related_name
-        related_query_name="user",
-    )
     
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', 'first_name', 'last_name']
@@ -53,3 +30,18 @@ class CustomUser(AbstractUser):
     def logout(self):
         """Method for logout functionality"""
         pass
+
+# --- Start of New Code ---
+class Notification(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='notifications')
+    title = models.CharField(max_length=255)
+    message = models.TextField()
+    read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Notification for {self.user.email}: {self.title}"
+
+    class Meta:
+        ordering = ['-created_at']
+# --- End of New Code ---"""

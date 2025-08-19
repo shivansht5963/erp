@@ -1,44 +1,31 @@
-from django.db.models import Sum
-from django.db.models.signals import post_save, post_delete
+# attendance/signals.py
+from django.db.models.signals import post_save
 from django.dispatch import receiver
-from .models import Attendance, AttendanceReport
+from .models import AttendanceReport
+from accounts.models import Notification
 
-def _update_attendance_report(student, subject):
+@receiver(post_save, sender=AttendanceReport)
+def create_low_attendance_notification(sender, instance, **kwargs):
     """
-    A helper function to recalculate the aggregate attendance report.
-    This is called when any daily attendance record is saved or deleted.
+    Creates a notification for a student if their attendance percentage
+    for a subject is below 75%.
     """
-    # Sum up all 'classes_held' for this student in this subject across all dates.
-    total_held_agg = Attendance.objects.filter(student=student, subject=subject).aggregate(total=Sum('classes_held'))
-    total_held = total_held_agg['total'] or 0
+    # Check if the attendance is below the threshold
+    if instance.attendance_percentage < 75.0:
+        # Define a unique message to prevent duplicates
+        message = f"Your attendance for {instance.subject.name} is now {instance.attendance_percentage:.2f}%. Please improve your attendance."
+        
+        # Check if an identical unread notification already exists
+        notification_exists = Notification.objects.filter(
+            user=instance.student.user,
+            title='Low Attendance Alert',
+            message=message,
+            read=False
+        ).exists()
 
-    # Sum up all 'classes_attended' for this student in this subject across all dates.
-    total_attended_agg = Attendance.objects.filter(student=student, subject=subject).aggregate(total=Sum('classes_attended'))
-    total_attended = total_attended_agg['total'] or 0
-
-    # Find the summary report (or create it if it's the first entry)
-    report, created = AttendanceReport.objects.get_or_create(
-        student=student,
-        subject=subject
-    )
-    
-    # Update the report with the newly calculated totals
-    report.total_classes = total_held
-    report.classes_attended = total_attended
-    report.save()  # This will trigger the percentage calculation in the report's own save method
-
-@receiver(post_save, sender=Attendance)
-def on_attendance_save(sender, instance, **kwargs):
-    """
-    Signal receiver that runs every time a daily Attendance record is created or updated.
-    """
-    _update_attendance_report(instance.student, instance.subject)
-    print(f"Report updated for {instance.student} in {instance.subject} after save operation.")
-
-@receiver(post_delete, sender=Attendance)
-def on_attendance_delete(sender, instance, **kwargs):
-    """
-    Signal receiver that runs every time a daily Attendance record is deleted.
-    """
-    _update_attendance_report(instance.student, instance.subject)
-    print(f"Report updated for {instance.student} in {instance.subject} after delete operation.")
+        if not notification_exists:
+            Notification.objects.create(
+                user=instance.student.user,
+                title='Low Attendance Alert',
+                message=message
+            )
