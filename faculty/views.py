@@ -1,10 +1,3 @@
-<<<<<<< HEAD
-from django.shortcuts import render, redirect,get_object_or_404
-from django.contrib import messages
-from .forms import TeacherWithUserForm  # Use the correct form
-from faculty.models import Teacher
-from django.contrib.auth.decorators import login_required
-=======
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -75,7 +68,6 @@ def mark_attendance(request, subject_id):
     return render(request, 'faculty/mark_attendance.html', context)
 
 # Existing Admin-facing views
->>>>>>> 2b80914a11edc1d0606b968936c459262e2b7817
 def register_teacher(request):
     if request.method == 'POST':
         form = TeacherRegistrationForm(request.POST)
@@ -88,9 +80,5 @@ def register_teacher(request):
     return render(request, 'faculty/register_teacher.html', {'form': form})
 @login_required
 def teacher_dashboard(request):
-<<<<<<< HEAD
     teacher = get_object_or_404(Teacher, user=request.user)
     return render(request, 'faculty/teacher_dashboard.html', {'teacher': teacher})
-=======
-    return render(request, 'faculty/teacher_dashboard.html')
->>>>>>> 2b80914a11edc1d0606b968936c459262e2b7817
