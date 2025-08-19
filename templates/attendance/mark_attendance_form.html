@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Mark Attendance for {{ subject.name }}</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: #f4f4f4; padding: 20px; }
+        .container { max-width: 800px; margin: auto; background-color: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        h1, h2 { color: #333; }
+        .student-list { list-style-type: none; padding: 0; }
+        .student-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid #eee; }
+        .student-item:last-child { border-bottom: none; }
+        .student-item label { font-size: 1.1em; cursor: pointer; }
+        input[type="checkbox"] { transform: scale(1.5); margin-right: 15px; }
+        .submit-btn { display: block; width: 100%; padding: 15px; background-color: #28a745; color: white; border: none; border-radius: 5px; font-size: 1.2em; cursor: pointer; margin-top: 20px; }
+        .back-link { display: inline-block; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="{% url 'faculty:teacher_dashboard' %}" class="back-link">&larr; Back to Dashboard</a>
+        <h1>Mark Attendance</h1>
+        <h2>{{ subject.name }} ({{ subject.code }}) - {{ subject.course.department.name }}</h2>
+        <p>Date: {% now "d M Y" %}. Please check the box for each student who is present.</p>
+
+        <form method="post">
+            {% csrf_token %}
+            <ul class="student-list">
+                {% for student in students %}
+                    <li class="student-item">
+                        <label for="student_{{ student.id }}">
+                            <input type="checkbox" name="present_students" value="{{ student.id }}" id="student_{{ student.id }}" checked>
+                            {{ student.roll_number }} - {{ student.user.get_full_name }}
+                        </label>
+                    </li>
+                {% empty %}
+                    <li>No students found for this class.</li>
+                {% endfor %}
+            </ul>
+            <button type="submit" class="submit-btn">Save Attendance</button>
+        </form>
+    </div>
+</body>
+</html>

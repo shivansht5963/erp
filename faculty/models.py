@@ -1,3 +1,4 @@
+# faculty/models.py
 from django.db import models
 from accounts.models import CustomUser
 
@@ -32,8 +33,8 @@ class Class(models.Model):
         return f"Section {self.section} - Semester {self.semester}"
     
     def display_student_per_class(self):
-        from students.models import Student
-        return Student.objects.filter(course__department=self.department, semester=self.semester).count()
+        # This now uses the related_name from the Student model
+        return self.students.count()
     
     def display_courses_per_class(self):
         return Course.objects.filter(department=self.department).count()
@@ -51,13 +52,16 @@ class Subject(models.Model):
 
 class Teacher(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
-    department = models.ForeignKey(Department, on_delete=models.CASCADE)
+    # RENAME this field to be plural
+    departments = models.ManyToManyField(Department) 
     qualification = models.CharField(max_length=100)
     contact_number = models.CharField(max_length=15)
     join_date = models.DateField()
-    
+
     def __str__(self):
-        return f"{self.user.get_full_name()} - {self.department.name}"
+        # Update the string representation as well
+        dept_names = ", ".join([dept.name for dept in self.departments.all()])
+        return f"{self.user.get_full_name()} - {dept_names}"
     
     def mark_attendance(self):
         """Method for marking attendance"""
@@ -70,14 +74,3 @@ class Teacher(models.Model):
     def declare_result(self):
         """Method for declaring results"""
         pass
-    
-class Notification(models.Model):
-    title = models.CharField(max_length=255)
-    message = models.TextField()
-    due_date = models.DateField(null=True, blank=True)
-    target_class = models.ForeignKey(Class, on_delete=models.CASCADE, help_text="The class this notification is for.")
-    created_by = models.ForeignKey(Teacher, on_delete=models.CASCADE)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"Notification for {self.target_class}: {self.title}"

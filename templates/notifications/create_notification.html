@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Send Announcement</title>
+    <style>
+        body { font-family: sans-serif; margin: 2rem; }
+        .container { max-width: 700px; margin: auto; padding: 2rem; border: 1px solid #ddd; border-radius: 10px; }
+        form div { margin-bottom: 1rem; }
+        label { display: block; margin-bottom: 0.5rem; font-weight: bold; }
+        input, select, textarea { width: 100%; padding: 0.5rem; box-sizing: border-box; }
+        button { padding: 0.7rem 1.5rem; background-color: #007bff; color: white; border: none; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Send an Announcement to Your Class</h2>
+    
+    {% if messages %}
+        {% for message in messages %}
+            <p style="color: green;">{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+
+    <form method="POST">
+        {% csrf_token %}
+        <div>
+            {{ form.target_class.label_tag }}
+            {{ form.target_class }}
+        </div>
+        <div>
+            {{ form.title.label_tag }}
+            {{ form.title }}
+        </div>
+        <div>
+            {{ form.message.label_tag }}
+            {{ form.message }}
+        </div>
+        <button type="submit">Send Announcement</button>
+    </form>
+</div>
+
+</body>
+</html>

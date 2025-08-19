@@ -1,84 +1,128 @@
+<<<<<<< HEAD
 from django.shortcuts import render, redirect, get_object_or_404
+=======
+from django.shortcuts import render, redirect
+>>>>>>> efe1bb9f390217f5769482b5b4faf6f7723951f9
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.utils.dateparse import parse_date
-from django.db import transaction
-
 from .forms import TeacherRegistrationForm, DepartmentForm, CourseForm, ClassForm, TeacherForm
-from .models import Teacher, Subject
+
+# Import necessary forms and models
+from notifications.forms import TeacherNotificationForm
+from notifications.models import Notification
 from students.models import Student
-from attendance.models import Attendance
+from accounts.models import CustomUser
+from accounts.decorators import is_faculty
 
-# Helper function for role checking
-def is_teacher(user):
-    return user.is_authenticated and user.role == 'faculty'
-
-# Teacher Dashboard View
-@user_passes_test(is_teacher, login_url='accounts:login')
+# --- THIS IS THE FIX ---
+# Import the Teacher and Subject models from the same app's models.py file
+from .models import Teacher, Subject
+@user_passes_test(is_faculty)
 def teacher_dashboard(request):
     try:
-        # Assumes a related_name of 'teacher' is on the user model, or gets it this way
         teacher = Teacher.objects.get(user=request.user)
-        subjects = Subject.objects.filter(teacher=teacher)
-        context = {
-            'teacher': teacher,
-            'subjects': subjects,
-        }
-        return render(request, 'faculty/teacher_dashboard.html', context)
     except Teacher.DoesNotExist:
-        messages.error(request, "Your teacher profile is not set up.")
+        messages.error(request, "Your teacher profile could not be found. Please contact an administrator.")
         return redirect('accounts:logout')
 
-# Mark Attendance View
-@user_passes_test(is_teacher, login_url='accounts:login')
-def mark_attendance(request, subject_id):
-    subject = get_object_or_404(Subject, id=subject_id, teacher__user=request.user) # Security check
-    students = Student.objects.filter(course=subject.course, semester=subject.semester).order_by('roll_number')
-
     if request.method == 'POST':
-        attendance_date_str = request.POST.get('attendance_date')
-        attendance_date = parse_date(attendance_date_str)
-        present_student_ids = request.POST.getlist('present_students')
-
-        if not attendance_date:
-            messages.error(request, "Invalid date format. Please use YYYY-MM-DD.")
-            return redirect('faculty:mark_attendance', subject_id=subject.id)
-
-        try:
-            with transaction.atomic():
-                for student in students:
-                    status = str(student.id) in present_student_ids
-                    
-                    Attendance.objects.update_or_create(
-                        student=student,
-                        subject=subject,
-                        date=attendance_date,
-                        defaults={'status': status, 'marked_by': request.user.teacher}
-                    )
-            messages.success(request, f"Attendance for {attendance_date_str} saved successfully.")
-        except Exception as e:
-            messages.error(request, f"An error occurred: {e}")
-            
-        return redirect('faculty:mark_attendance', subject_id=subject.id)
+        # --- PASS 'teacher' OBJECT TO THE FORM ON POST ---
+        form = TeacherNotificationForm(request.POST)
+        if form.is_valid():
+            data = form.cleaned_data
+            notification = Notification.objects.create(
+                title=data['title'],
+                message=data['message'],
+                created_by=request.user
+            )
+            # Logic for faculty is to send to a specific class
+            target_class = data['target_class']
+            students_in_class = Student.objects.filter(
+                course__department=target_class.department, 
+                semester=target_class.semester
+            )
+            recipients = [student.user for student in students_in_class]
+            for user in recipients:
+                Notification.objects.create(user=user, notification=notification)
+            messages.success(request, f'Notification sent to class {target_class} successfully!')
+            return redirect('faculty:teacher_dashboard')
     
-    context = {
-        'subject': subject,
-        'students': students,
-    }
-    return render(request, 'faculty/mark_attendance.html', context)
+    else:
+        # --- PASS 'teacher' OBJECT TO THE FORM ON GET ---
+       form = TeacherNotificationForm(request.POST)
 
+    subjects = Subject.objects.filter(teacher=teacher)
+    sent_notifications = Notification.objects.filter(created_by=request.user).order_by('-created_at')[:5]
+
+    context = {
+        'teacher': teacher,
+        'form': form,
+        'sent_notifications': sent_notifications,
+        'subjects': subjects,
+    }
+    return render(request, 'faculty/dashboard_teacher.html', context)
+
+
+# --- Keep all your existing views below ---
+
+<<<<<<< HEAD
 # Existing Admin-facing views
+=======
+>>>>>>> efe1bb9f390217f5769482b5b4faf6f7723951f9
 def register_teacher(request):
     if request.method == 'POST':
         form = TeacherRegistrationForm(request.POST)
         if form.is_valid():
             form.save()
             messages.success(request, "Teacher registered successfully! You can now log in.")
-            return redirect('accounts:login')
+            return redirect('accounts:login')  # Use the name of the login URL
     else:
-        form = TeacherWithUserForm()
+        form = TeacherRegistrationForm()
     return render(request, 'faculty/register_teacher.html', {'form': form})
+<<<<<<< HEAD
 @login_required
 def teacher_dashboard(request):
     teacher = get_object_or_404(Teacher, user=request.user)
     return render(request, 'faculty/teacher_dashboard.html', {'teacher': teacher})
+=======
+
+def add_department(request):
+    if request.method == 'POST':
+        form = DepartmentForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('faculty:add_department')
+    else:
+        form = DepartmentForm()
+    return render(request, 'faculty/add_department.html', {'form': form})
+
+def add_course(request):
+    if request.method == 'POST':
+        form = CourseForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('faculty:add_course')
+    else:
+        form = CourseForm()
+    return render(request, 'faculty/add_course.html', {'form': form})
+
+def add_class(request):
+    if request.method == 'POST':
+        form = ClassForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('faculty:add_class')
+    else:
+        form = ClassForm()
+    return render(request, 'faculty/add_class.html', {'form': form})
+
+def add_teacher(request):
+    if request.method == 'POST':
+        form = TeacherForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('faculty:add_teacher')
+    else:
+        form = TeacherForm()
+    return render(request, 'faculty/add_teacher.html', {'form': form})
+>>>>>>> efe1bb9f390217f5769482b5b4faf6f7723951f9
