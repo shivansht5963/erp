@@ -1,29 +1,55 @@
+# File: accounts/admin.py
 from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin
-from .models import CustomUser
+from .models import CustomUser, Notification
+from .forms import NotificationAdminForm
 
-class CustomUserAdmin(UserAdmin):
-    # This is the configuration for the admin panel.
-    model = CustomUser
-    
-    # These fields will be displayed in the list view of users
-    list_display = ('email', 'username', 'first_name', 'last_name', 'role', 'is_staff', 'is_active')
-    
-    # These fields will be used for filtering users in the admin panel
-    list_filter = ('role', 'is_staff', 'is_active')
-    
-    # These fields will be searchable
-    search_fields = ('email', 'username', 'first_name', 'last_name')
-    
-    # The order of fields in the edit/creation form
-    fieldsets = (
-        (None, {'fields': ('email', 'password')}),
-        ('Personal info', {'fields': ('first_name', 'last_name', 'username', 'role')}),
-        ('Contact info', {'fields': ('phone', 'dob', 'address')}),
-        ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
-        ('Important dates', {'fields': ('last_login', 'date_joined')}),
-    )
+class NotificationAdmin(admin.ModelAdmin):
+    form = NotificationAdminForm
+    list_display = ('title', 'recipient', 'send_to_all_students', 'created_by', 'created_at')
+    list_filter = ('created_at', 'send_to_all_students')
+    fields = ('recipient', 'send_to_all_students', 'title', 'message', 'read')
 
-# Unregister the default User model if it was registered, and register our custom one with the new admin class.
-# Note: Since we use a custom user model from the start, we just need to register CustomUser.
-admin.site.register(CustomUser, CustomUserAdmin)
+    def save_model(self, request, obj, form, change):
+        """Automatically set the creator to the current user."""
+        obj.created_by = request.user
+        super().save_model(request, obj, form, change)
+
+    def get_queryset(self, request):
+        """
+        Filters the list of notifications:
+        - Superusers (admins) can see all notifications.
+        - Other staff (teachers) can only see notifications they created.
+        """
+        qs = super().get_queryset(request)
+        if request.user.is_superuser:
+            return qs
+        return qs.filter(created_by=request.user)
+
+    def has_module_permission(self, request):
+        """
+        Show the "Notifications" link ONLY to admins and faculty.
+        Students will not see this section.
+        """
+        return request.user.role in ['admin', 'faculty']
+
+    def has_change_permission(self, request, obj=None):
+        """
+        Allow changing a notification ONLY if the user is the one who created it.
+        Superusers can change anything.
+        """
+        if obj is not None and not request.user.is_superuser and obj.created_by != request.user:
+            return False
+        return True
+
+    def has_delete_permission(self, request, obj=None):
+        """
+        Allow deleting a notification ONLY if the user is the one who created it.
+        Superusers can delete anything.
+        """
+        if obj is not None and not request.user.is_superuser and obj.created_by != request.user:
+            return False
+        return True
+
+# Register your models with the admin site
+admin.site.register(CustomUser)
+admin.site.register(Notification, NotificationAdmin)

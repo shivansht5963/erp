@@ -116,12 +116,6 @@
           cursor: pointer;
           transition: all 0.3s ease;
           font-weight: 500;
-          text-decoration: none; /* Added for anchor tags */
-        }
-        
-        .cta-button a, .cta-button a:visited {
-            color: white;
-            text-decoration: none;
         }
 
         .cta-button:hover {
@@ -1122,22 +1116,21 @@
      <!-- Navigation -->
     <nav class="navbar">
         <div class="nav-container">
-            <!-- UPDATED: Added link to home -->
-            <a href="{% url 'home' %}" class="nav-logo" style="text-decoration: none;">
+            <div class="nav-logo">
                 <i class="fas fa-brain"></i>
                 <span>Academia</span>
-            </a>
+            </div>
             <div class="nav-menu">
-                <!-- UPDATED: Changed href to point to home URL -->
-                <a href="{% url 'home' %}" class="nav-link">Home</a>
+                <a href="#home" class="nav-link">Home</a>
                 <a href="#about" class="nav-link">About</a>
                 <a href="#modules" class="nav-link">Modules</a>
                 <a href="#ai-features" class="nav-link">AI Features</a>
                 <a href="#benefits" class="nav-link">Benefits</a>
-                <!-- UPDATED: Wrapped button in a link to the login page -->
-                <a href="{% url 'accounts:login' %}" style="text-decoration: none;">
-                    <button class="cta-button">Get Started</button>
+                <!-- START OF CHANGE 1 -->
+                <a href="{% url 'accounts:login' %}">
+                    <button class="cta-button">Login / Get Started</button>
                 </a>
+                <!-- END OF CHANGE 1 -->
             </div>
             <div class="hamburger">
                 <span></span>
@@ -1170,11 +1163,14 @@
                     Experience the future of educational administration with our AI-powered ERP system 
                     that predicts student performance and intelligently classifies study materials.
                 </p>
-                <!-- UPDATED: Changed button to a link pointing to the login page -->
-                <a href="{% url 'accounts:login' %}" class="hero-cta" style="text-decoration: none;">
-                    <span>Explore Features</span>
-                    <i class="fas fa-arrow-right"></i>
+                <!-- START OF CHANGE 2 -->
+                <a href="{% url 'accounts:login' %}" style="text-decoration: none;">
+                    <button class="hero-cta">
+                        <span>Login to Your Dashboard</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
                 </a>
+                <!-- END OF CHANGE 2 -->
             </div>
             <div class="hero-visual">
                 <div class="ai-illustration">

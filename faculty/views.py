@@ -1,8 +1,14 @@
+<<<<<<< HEAD
 from django.shortcuts import render, redirect, get_object_or_404
+=======
+# faculty/views.py
+
+from django.shortcuts import render, redirect
+>>>>>>> 8c12e2bd7ac120195293f49c24993eeea4e2968b
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required, user_passes_test
 from .forms import TeacherRegistrationForm, DepartmentForm, CourseForm, ClassForm, TeacherForm
 
+<<<<<<< HEAD
 # Import necessary forms and models
 from notifications.forms import TeacherNotificationForm
 from notifications.models import Notification
@@ -61,13 +67,15 @@ def teacher_dashboard(request):
 
 # --- Keep all your existing views below ---
 
+=======
+>>>>>>> 8c12e2bd7ac120195293f49c24993eeea4e2968b
 def register_teacher(request):
     if request.method == 'POST':
         form = TeacherRegistrationForm(request.POST)
         if form.is_valid():
             form.save()
             messages.success(request, "Teacher registered successfully! You can now log in.")
-            return redirect('accounts:login')  # Use the name of the login URL
+            return redirect('accounts:login')  # Corrected from 'login' to 'accounts:login' for clarity
     else:
         form = TeacherRegistrationForm()
     return render(request, 'faculty/register_teacher.html', {'form': form})
@@ -110,4 +118,8 @@ def add_teacher(request):
             return redirect('faculty:add_teacher')
     else:
         form = TeacherForm()
+<<<<<<< HEAD
     return render(request, 'faculty/add_teacher.html', {'form': form})
+=======
+    return render(request, 'faculty/add_teacher.html', {'form': form})
+>>>>>>> 8c12e2bd7ac120195293f49c24993eeea4e2968b

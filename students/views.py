@@ -1,16 +1,48 @@
-# students/views.py
-from accounts.forms import CustomUserCreationForm
-from .forms import StudentForm
-from django.contrib.auth import get_user_model
-from django.contrib import messages
+# File: students/views.py
+
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
+from accounts.forms import CustomUserCreationForm
+from .forms import StudentForm
 from .models import Student
-import json
+from attendance.models import AttendanceReport
+from accounts.models import Notification
+from django.contrib.auth import get_user_model
+from django.contrib import messages
+from django.db.models import Q  # <--- THIS IS THE MISSING LINE TO FIX THE ERROR
 
 User = get_user_model()
 
-# @user_passes_test(lambda u: u.is_staff)
+@login_required
+def student_dashboard(request):
+    """
+    Displays the dashboard for the logged-in student.
+    """
+    if request.user.role != 'student':
+        return redirect('accounts:login') 
+
+    try:
+        student = Student.objects.get(user=request.user)
+    except Student.DoesNotExist:
+        return render(request, 'error.html', {'message': 'Student profile not found.'})
+
+    attendance_reports = AttendanceReport.objects.filter(student=student)
+    
+    # This query now works because 'Q' is imported.
+    # It fetches notifications sent to the specific student OR to all students.
+    recent_notifications = Notification.objects.filter(
+        Q(recipient=request.user) | Q(send_to_all_students=True)
+    ).distinct().order_by('-created_at')[:5]
+
+    context = {
+        'student': student,
+        'attendance_reports': attendance_reports,
+        'notifications': recent_notifications,
+    }
+    return render(request, 'students/student_dashboard.html', context)
+
+
+# This is your existing function, it remains the same.
 def add_student(request):
     if request.method == "POST":
         user_form = CustomUserCreationForm(request.POST)
@@ -31,33 +63,3 @@ def add_student(request):
         'user_form': user_form,
         'student_form': student_form
     })
-
-
-@login_required
-def student_dashboard(request):
-    """
-    Displays the dashboard for the logged-in student, including personal details,
-    attendance reports, and a pie chart of attendance percentages.
-    """
-    try:
-        student = request.user.student
-    except Student.DoesNotExist:
-        # Handle cases where the user is not a student (e.g., faculty, admin)
-        # You can redirect them to an appropriate page or show an error.
-        messages.error(request, "You do not have a student profile.")
-        return redirect('accounts:login') # Or your home page
-
-    attendance_reports = student.view_attendance()
-
-    # Prepare data for the Chart.js pie chart
-    chart_labels = [report.subject.name for report in attendance_reports]
-    chart_data = [report.attendance_percentage for report in attendance_reports]
-
-    context = {
-        'student': student,
-        'attendance_reports': attendance_reports,
-        # Use json.dumps to safely pass Python lists to JavaScript
-        'chart_labels': json.dumps(chart_labels),
-        'chart_data': json.dumps(chart_data),
-    }
-    return render(request, 'students/dashboard.html', context)

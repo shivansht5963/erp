@@ -1,6 +1,8 @@
-from django.contrib.auth.models import AbstractUser, Group, Permission
+# accounts/models.py
+from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from django.conf import settings
 
 class CustomUser(AbstractUser):
     ROLE_CHOICES = (
@@ -14,31 +16,6 @@ class CustomUser(AbstractUser):
     phone = models.CharField(max_length=15, blank=True, null=True)
     dob = models.DateField(blank=True, null=True)
     address = models.TextField(blank=True, null=True)
-
-    # --- ADD THESE TWO FIELDS TO FIX THE CLASHING ERROR ---
-    # We are overriding the default fields from AbstractUser to provide
-    # a unique related_name. This tells Django how to create the "backwards"
-    # relationship from Group and Permission to your CustomUser model without
-    # conflicting with the built-in User model.
-    groups = models.ManyToManyField(
-        Group,
-        verbose_name=_('groups'),
-        blank=True,
-        help_text=_(
-            'The groups this user belongs to. A user will get all permissions '
-            'granted to each of their groups.'
-        ),
-        related_name="customuser_groups",  # Unique related_name
-        related_query_name="user",
-    )
-    user_permissions = models.ManyToManyField(
-        Permission,
-        verbose_name=_('user permissions'),
-        blank=True,
-        help_text=_('Specific permissions for this user.'),
-        related_name="customuser_permissions",  # Unique related_name
-        related_query_name="user",
-    )
     
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', 'first_name', 'last_name']
@@ -53,3 +30,45 @@ class CustomUser(AbstractUser):
     def logout(self):
         """Method for logout functionality"""
         pass
+
+class Notification(models.Model):
+    # The student who will RECEIVE the notification.
+    # This is now optional if sending to all students.
+    recipient = models.ForeignKey(
+        settings.AUTH_USER_MODEL, 
+        on_delete=models.CASCADE, 
+        related_name='notifications',
+        limit_choices_to={'role': 'student'}, # Ensures you can only select students
+        blank=True, # Make this field optional in forms
+        null=True   # Allow the database to store it as empty (NULL)
+    )
+    
+    # The new checkbox for sending a broadcast message.
+    send_to_all_students = models.BooleanField(
+        default=False,
+        help_text="Check this box to send the notification to ALL students."
+    )
+
+    # The admin or faculty who CREATED the notification.
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, 
+        on_delete=models.CASCADE, 
+        related_name='created_notifications'
+    )
+
+    title = models.CharField(max_length=255)
+    message = models.TextField()
+    read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        if self.send_to_all_students:
+            return f"To ALL STUDENTS: {self.title}"
+        # Handle cases where a specific recipient might not be selected
+        if self.recipient:
+            return f"To: {self.recipient.email} - {self.title}"
+        return f"Draft Notification: {self.title}"
+
+
+    class Meta:
+        ordering = ['-created_at']

@@ -74,3 +74,4 @@ class Teacher(models.Model):
     def declare_result(self):
         """Method for declaring results"""
         pass
+    

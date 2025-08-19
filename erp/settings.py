@@ -76,6 +76,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'accounts.context_processors.notifications', 
             ],
         },
     },
@@ -119,7 +120,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Kolkata'
 
 USE_I18N = True
 
@@ -131,7 +132,7 @@ USE_TZ = True
 AUTH_USER_MODEL = 'accounts.CustomUser'
 
 # Tells Django where to send users after they successfully log in.
-LOGIN_REDIRECT_URL = '/accounts/dashboard/' # We will create a 'home' URL next.
+LOGIN_REDIRECT_URL = 'dashboard_redirect' # We will create a 'home' URL next.
 
 
 

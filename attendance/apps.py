@@ -1,11 +1,11 @@
 # attendance/apps.py
-
 from django.apps import AppConfig
 
 class AttendanceConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'attendance'
 
-    # This 'ready' method is how Django discovers your signals
+    # --- Start of New Code ---
     def ready(self):
         import attendance.signals
+    # --- End of New Code ---
