@@ -6,9 +6,10 @@ from accounts.forms import CustomUserCreationForm
 from .forms import StudentForm
 from .models import Student
 from attendance.models import AttendanceReport
-from accounts.models import Notification  # Import your Notification model
+from accounts.models import Notification
 from django.contrib.auth import get_user_model
 from django.contrib import messages
+from django.db.models import Q  # <--- THIS IS THE MISSING LINE TO FIX THE ERROR
 
 User = get_user_model()
 
@@ -18,22 +19,20 @@ def student_dashboard(request):
     Displays the dashboard for the logged-in student.
     """
     if request.user.role != 'student':
-        # Redirect non-students away
         return redirect('accounts:login') 
 
     try:
         student = Student.objects.get(user=request.user)
     except Student.DoesNotExist:
-        # This is a fallback in case a user with role 'student' doesn't have a student profile.
         return render(request, 'error.html', {'message': 'Student profile not found.'})
 
-    # Fetch attendance reports for the student
     attendance_reports = AttendanceReport.objects.filter(student=student)
     
-    # --- START OF THE FIX ---
-    # Fetch the 5 most recent notifications sent ONLY to the currently logged-in user.
-    recent_notifications = Notification.objects.filter(user=request.user).order_by('-created_at')[:5]
-    # --- END OF THE FIX ---
+    # This query now works because 'Q' is imported.
+    # It fetches notifications sent to the specific student OR to all students.
+    recent_notifications = Notification.objects.filter(
+        Q(recipient=request.user) | Q(send_to_all_students=True)
+    ).distinct().order_by('-created_at')[:5]
 
     context = {
         'student': student,
@@ -44,7 +43,6 @@ def student_dashboard(request):
 
 
 # This is your existing function, it remains the same.
-# @user_passes_test(lambda u: u.is_staff)
 def add_student(request):
     if request.method == "POST":
         user_form = CustomUserCreationForm(request.POST)
