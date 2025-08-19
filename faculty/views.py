@@ -1,4 +1,8 @@
+<<<<<<< HEAD
+from django.shortcuts import render, redirect, get_object_or_404
+=======
 from django.shortcuts import render, redirect
+>>>>>>> efe1bb9f390217f5769482b5b4faf6f7723951f9
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from .forms import TeacherRegistrationForm, DepartmentForm, CourseForm, ClassForm, TeacherForm
@@ -61,6 +65,10 @@ def teacher_dashboard(request):
 
 # --- Keep all your existing views below ---
 
+<<<<<<< HEAD
+# Existing Admin-facing views
+=======
+>>>>>>> efe1bb9f390217f5769482b5b4faf6f7723951f9
 def register_teacher(request):
     if request.method == 'POST':
         form = TeacherRegistrationForm(request.POST)
@@ -71,6 +79,12 @@ def register_teacher(request):
     else:
         form = TeacherRegistrationForm()
     return render(request, 'faculty/register_teacher.html', {'form': form})
+<<<<<<< HEAD
+@login_required
+def teacher_dashboard(request):
+    teacher = get_object_or_404(Teacher, user=request.user)
+    return render(request, 'faculty/teacher_dashboard.html', {'teacher': teacher})
+=======
 
 def add_department(request):
     if request.method == 'POST':
@@ -111,3 +125,4 @@ def add_teacher(request):
     else:
         form = TeacherForm()
     return render(request, 'faculty/add_teacher.html', {'form': form})
+>>>>>>> efe1bb9f390217f5769482b5b4faf6f7723951f9
