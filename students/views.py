@@ -1,10 +1,12 @@
+# File: students/views.py
+
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from accounts.forms import CustomUserCreationForm
 from .forms import StudentForm
 from .models import Student
 from attendance.models import AttendanceReport
-from notifications.models import Notification  # Import your Notification model
+from accounts.models import Notification  # Import your Notification model
 from django.contrib.auth import get_user_model
 from django.contrib import messages
 
@@ -22,13 +24,16 @@ def student_dashboard(request):
     try:
         student = Student.objects.get(user=request.user)
     except Student.DoesNotExist:
+        # This is a fallback in case a user with role 'student' doesn't have a student profile.
         return render(request, 'error.html', {'message': 'Student profile not found.'})
 
     # Fetch attendance reports for the student
     attendance_reports = AttendanceReport.objects.filter(student=student)
     
-    # Fetch the 5 most recent notifications
-    recent_notifications = Notification.objects.all().order_by('-created_at')[:5]
+    # --- START OF THE FIX ---
+    # Fetch the 5 most recent notifications sent ONLY to the currently logged-in user.
+    recent_notifications = Notification.objects.filter(user=request.user).order_by('-created_at')[:5]
+    # --- END OF THE FIX ---
 
     context = {
         'student': student,
@@ -38,7 +43,7 @@ def student_dashboard(request):
     return render(request, 'students/student_dashboard.html', context)
 
 
-# This is your existing function, keep it as is.
+# This is your existing function, it remains the same.
 # @user_passes_test(lambda u: u.is_staff)
 def add_student(request):
     if request.method == "POST":

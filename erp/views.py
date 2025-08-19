@@ -1,18 +1,28 @@
-# erp/views.py
-from django.shortcuts import render
-from django.contrib.auth.decorators import login_required # <-- ADDED THIS IMPORT
+# File: erp/views.py
+
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
 
 def index(request):
     """
-    This view renders your public-facing landing page.
+    This view now correctly renders your main landing page.
     """
     return render(request, 'index.html')
 
-# --- ADDED THE ENTIRE VIEW FUNCTION BELOW ---
 @login_required
-def home(request):
+def dashboard_redirect(request):
     """
-    This view is the target for LOGIN_REDIRECT_URL.
-    It will only be accessible to logged-in users.
+    This view is now ONLY used after a successful login to redirect
+    users to their appropriate dashboard based on their role.
     """
-    return render(request, 'home.html')
+    if request.user.role == 'student':
+        return redirect('students:student_dashboard')
+    
+    elif request.user.role == 'faculty':
+        return redirect('admin:index')
+
+    elif request.user.role == 'admin':
+        return redirect('admin:index')
+        
+    else:
+        return redirect('accounts:login')
