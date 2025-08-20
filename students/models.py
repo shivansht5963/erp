@@ -13,6 +13,16 @@ class Student(models.Model):
     dob = models.DateField()
     contact_number = models.CharField(max_length=15)
     address = models.TextField(blank=True, null=True)
+    CATEGORY_CHOICES = [
+            ('GENERAL', 'General'),
+            ('SCST', 'SC/ST'),
+            ('TFWS', 'TFWS'),
+            ('OBC', 'OBC'),
+            ('EWS', 'EWS'),
+            ('MINORITY', 'Minority'),
+            ('OTHER', 'Other'),
+        ]
+    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='GENERAL')
 
     def __str__(self):
         return f"{self.roll_number} - {self.user.first_name} {self.user.last_name}"

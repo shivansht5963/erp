@@ -47,6 +47,33 @@
             </div>
         </div>
 
+        <!-- Fees Status Card -->
+        <div class="card">
+            <h2>My Fees Status</h2>
+            {% if fee_structure %}
+            <div class="student-info-grid">
+                <div class="info-item"><p><strong>Fee Category</strong>{{ fee_structure.category.name }}</p></div>
+                <div class="info-item"><p><strong>Academic Year</strong>{{ fee_structure.academic_year }}</p></div>
+                <div class="info-item"><p><strong>Total Fee</strong>₹{{ fee_structure.amount }}</p></div>
+                <div class="info-item"><p><strong>Amount Paid</strong>₹{{ fee_paid }}</p></div>
+                <div class="info-item"><p><strong>Remaining Amount</strong>₹{{ fee_due }}</p></div>
+                <div class="info-item"><p><strong>Status</strong>
+                    {% if fee_status == 'paid' %}
+                        <span style="color:green;font-weight:bold;">Paid</span>
+                    {% elif fee_status == 'partial' %}
+                        <span style="color:orange;font-weight:bold;">Partially Paid</span>
+                    {% elif fee_status == 'overdue' %}
+                        <span style="color:red;font-weight:bold;">Overdue</span>
+                    {% else %}
+                        <span style="color:#e63946;font-weight:bold;">Pending</span>
+                    {% endif %}
+                </p></div>
+            </div>
+            {% else %}
+                <p style="color:#e63946;">No fee structure found for your category and semester. Please contact admin.</p>
+            {% endif %}
+        </div>
+
         <div class="card">
             <h2>My Attendance Report</h2>
             <div class="attendance-section">
@@ -85,6 +112,37 @@
                 </div>
             </div>
         </div>
+
+            <!-- Marks Card -->
+            <div class="card">
+                <h2>My Marks Report</h2>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Subject</th>
+                                <th>Internal Marks</th>
+                                <th>Semester Marks</th>
+                                <th>Total Marks</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for mark in marks %}
+                            <tr>
+                                <td>{{ mark.subject.name }} ({{ mark.subject.code }})</td>
+                                <td>{{ mark.internal_marks }}</td>
+                                <td>{{ mark.semester_marks }}</td>
+                                <td>{{ mark.total_marks }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" style="text-align: center; padding: 20px; color: #6c757d;">No marks records found.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
     </div>
 
     <script>
