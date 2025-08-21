@@ -4,28 +4,142 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Dashboard - {{ student.user.get_full_name }}</title>
-    <!-- Include Chart.js from a CDN for the pie chart -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #0891b2;
-            --secondary-color: #10b981;
-            --accent-color: #059669;
-            --background-color: #ffffff;
-            --card-background: #f9fafb;
-            --text-primary: #1f2937;
-            --text-secondary: #4b5563;
-            --text-muted: #6b7280;
-            --border-color: #e5e7eb;
-            --success-color: #10b981;
-            --warning-color: #f59e0b;
-            --danger-color: #e53e3e;
-            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            /* Light Mode Colors */
+            --bg-primary: linear-gradient(135deg, #f8fafc 0%, #e0e7ff 50%, #e6f3ff 100%);
+            --bg-secondary: rgba(255, 255, 255, 0.95);
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --text-tertiary: #94a3b8;
+            --text-muted: #64748b;
+            --border-color: rgba(255, 255, 255, 0.2);
+            --border-light: #e2e8f0;
+            --border-lighter: #f1f5f9;
+            --hover-bg: #f8fafc;
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --modal-bg: rgba(0, 0, 0, 0.5);
+            --modal-content-bg: white;
+            
+            /* Status Colors Light */
+            --status-green-bg: #dcfce7;
+            --status-green-text: #166534;
+            --status-yellow-bg: #fef3c7;
+            --status-yellow-text: #92400e;
+            --status-red-bg: #fee2e2;
+            --status-red-text: #991b1b;
+            
+            /* Fee Metric Colors Light */
+            --fee-blue-bg: linear-gradient(135deg, #dbeafe, #bfdbfe);
+            --fee-blue-text: #1d4ed8;
+            --fee-green-bg: linear-gradient(135deg, #d1fae5, #a7f3d0);
+            --fee-green-text: #059669;
+            --fee-red-bg: linear-gradient(135deg, #fee2e2, #fecaca);
+            --fee-red-text: #dc2626;
+            --fee-purple-bg: linear-gradient(135deg, #ede9fe, #ddd6fe);
+            --fee-purple-text: #7c3aed;
+            
+            /* Section Icon Backgrounds Light */
+            --icon-orange-bg: #fed7aa;
+            --icon-orange-text: #ea580c;
+            --icon-green-bg: #dcfce7;
+            --icon-green-text: #16a34a;
+            --icon-yellow-bg: #fef3c7;
+            --icon-yellow-text: #d97706;
+            --icon-blue-bg: #dbeafe;
+            --icon-blue-text: #3b82f6;
+            --icon-red-bg: #fee2e2;
+            --icon-red-text: #dc2626;
+            
+            /* Progress Bar Colors Light */
+            --progress-bg: #e2e8f0;
+            --progress-green: linear-gradient(90deg, #10b981, #059669);
+            --progress-yellow: linear-gradient(90deg, #f59e0b, #d97706);
+            --progress-red: linear-gradient(90deg, #ef4444, #dc2626);
+            
+            /* Attendance Item Background Light */
+            --attendance-item-bg: #f8fafc;
+            --marks-item-bg: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            --marks-box-bg: white;
+            
+            /* Notification Colors Light */
+            --notification-button-bg: #dbeafe;
+            --notification-button-hover: #bfdbfe;
+            --notification-badge-bg: #ef4444;
+            
+            /* Table Colors Light */
+            --table-header-bg: #f8fafc;
+            --table-border: #e2e8f0;
+            --table-hover: #f8fafc;
+        }
+
+        [data-theme="dark"] {
+            /* Dark Mode Colors */
+            --bg-primary: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+            --bg-secondary: rgba(15, 23, 42, 0.95);
+            --text-primary: #f1f5f9;
+            --text-secondary: #cbd5e1;
+            --text-tertiary: #94a3b8;
+            --text-muted: #94a3b8;
+            --border-color: rgba(15, 23, 42, 0.8);
+            --border-light: #334155;
+            --border-lighter: #475569;
+            --hover-bg: #1e293b;
+            --card-bg: rgba(15, 23, 42, 0.95);
+            --modal-bg: rgba(0, 0, 0, 0.8);
+            --modal-content-bg: #1e293b;
+            
+            /* Status Colors Dark */
+            --status-green-bg: rgba(22, 163, 74, 0.2);
+            --status-green-text: #4ade80;
+            --status-yellow-bg: rgba(245, 158, 11, 0.2);
+            --status-yellow-text: #fbbf24;
+            --status-red-bg: rgba(239, 68, 68, 0.2);
+            --status-red-text: #f87171;
+            
+            /* Fee Metric Colors Dark */
+            --fee-blue-bg: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(59, 130, 246, 0.1));
+            --fee-blue-text: #60a5fa;
+            --fee-green-bg: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(16, 185, 129, 0.1));
+            --fee-green-text: #34d399;
+            --fee-red-bg: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(239, 68, 68, 0.1));
+            --fee-red-text: #f87171;
+            --fee-purple-bg: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(139, 92, 246, 0.1));
+            --fee-purple-text: #a78bfa;
+            
+            /* Section Icon Backgrounds Dark */
+            --icon-orange-bg: rgba(251, 146, 60, 0.2);
+            --icon-orange-text: #fb923c;
+            --icon-green-bg: rgba(34, 197, 94, 0.2);
+            --icon-green-text: #4ade80;
+            --icon-yellow-bg: rgba(245, 158, 11, 0.2);
+            --icon-yellow-text: #fbbf24;
+            --icon-blue-bg: rgba(59, 130, 246, 0.2);
+            --icon-blue-text: #60a5fa;
+            --icon-red-bg: rgba(239, 68, 68, 0.2);
+            --icon-red-text: #f87171;
+            
+            /* Progress Bar Colors Dark */
+            --progress-bg: #374151;
+            --progress-green: linear-gradient(90deg, #34d399, #10b981);
+            --progress-yellow: linear-gradient(90deg, #fbbf24, #f59e0b);
+            --progress-red: linear-gradient(90deg, #f87171, #ef4444);
+            
+            /* Attendance Item Background Dark */
+            --attendance-item-bg: #374151;
+            --marks-item-bg: linear-gradient(135deg, #374151, #4b5563);
+            --marks-box-bg: #475569;
+            
+            /* Notification Colors Dark */
+            --notification-button-bg: rgba(59, 130, 246, 0.2);
+            --notification-button-hover: rgba(59, 130, 246, 0.3);
+            --notification-badge-bg: #ef4444;
+            
+            /* Table Colors Dark */
+            --table-header-bg: #374151;
+            --table-border: #475569;
+            --table-hover: #374151;
         }
 
         * {
@@ -35,619 +149,883 @@
         }
 
         body {
-            font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: var(--bg-primary);
             color: var(--text-primary);
-            line-height: 1.6;
             min-height: 100vh;
+            line-height: 1.6;
+            transition: all 0.3s ease;
         }
 
-        .dashboard-container {
-            max-width: 1400px;
+        .container {
+            max-width: 1200px;
             margin: 0 auto;
-            padding: 2rem 1rem;
+            padding: 1.5rem;
         }
 
-        /* Header Styles */
-        .dashboard-header {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
-            border-radius: 1rem;
-            padding: 2rem;
-            margin-bottom: 2rem;
-            color: white;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .dashboard-header::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -50%;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-            border-radius: 50%;
-        }
-
-        .header-content {
-            position: relative;
-            z-index: 1;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 1rem;
-        }
-
-        .welcome-section h1 {
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 900;
-            font-size: 2.5rem;
-            margin-bottom: 0.5rem;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .welcome-section p {
-            font-size: 1.1rem;
-            opacity: 0.9;
-        }
-
-        /* Notification Badge */
-        .notification-badge {
-            position: relative;
-            background: rgba(255,255,255,0.2);
-            border-radius: 50%;
-            padding: 1rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-        }
-
-        .notification-badge:hover {
-            background: rgba(255,255,255,0.3);
-            transform: scale(1.05);
-        }
-
-        .notification-badge[data-count]:after {
-            content: attr(data-count);
-            position: absolute;
-            top: -8px;
-            right: -8px;
-            background: var(--danger-color);
-            color: white;
-            border-radius: 50%;
-            padding: 4px 8px;
-            font-size: 12px;
-            font-weight: 600;
-            min-width: 20px;
-            text-align: center;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
-
-        /* Card Styles */
+        /* Modern Card Styles */
         .card {
-            background: var(--background-color);
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
             border-radius: 1rem;
-            box-shadow: var(--shadow-lg);
-            padding: 2rem;
-            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
             border: 1px solid var(--border-color);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
             transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
         }
 
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+        [data-theme="dark"] .card {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
         }
 
         .card:hover {
             transform: translateY(-2px);
-            box-shadow: var(--shadow-xl);
+            box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
 
-        .card-header {
+        [data-theme="dark"] .card:hover {
+            box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Header Styles */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .header-controls {
             display: flex;
             align-items: center;
-            margin-bottom: 1.5rem;
-            padding-bottom: 1rem;
-            border-bottom: 2px solid var(--border-color);
+            gap: 1rem;
         }
 
-        .card-header h2 {
-            font-family: 'Montserrat', sans-serif;
+        .welcome-title {
+            font-size: 2rem;
             font-weight: 700;
-            font-size: 1.5rem;
-            color: var(--text-primary);
-            margin: 0;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .card-icon {
-            width: 2rem;
-            height: 2rem;
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            border-radius: 0.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-        }
-
-        /* Info Grid */
-        .info-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .info-item {
-            background: linear-gradient(135deg, var(--card-background) 0%, #ffffff 100%);
-            border-radius: 0.75rem;
-            padding: 1.5rem;
-            border: 1px solid var(--border-color);
-            transition: all 0.3s ease;
-            position: relative;
-        }
-
-        .info-item:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-            border-color: var(--primary-color);
-        }
-
-        .info-item strong {
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 600;
-            color: var(--primary-color);
-            font-size: 0.875rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            display: block;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
             margin-bottom: 0.5rem;
         }
 
-        .info-item p {
-            font-size: 1.125rem;
-            font-weight: 500;
-            color: var(--text-primary);
-            margin: 0;
+        [data-theme="dark"] .welcome-title {
+            background: linear-gradient(135deg, #60a5fa, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
-        /* Status Badges */
-        .status-badge {
-            display: inline-flex;
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+
+        /* Theme Toggle Button */
+        .theme-toggle {
+            background: var(--notification-button-bg);
+            border: none;
+            border-radius: 50%;
+            width: 3rem;
+            height: 3rem;
+            display: flex;
             align-items: center;
-            padding: 0.5rem 1rem;
-            border-radius: 2rem;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .theme-toggle:hover {
+            background: var(--notification-button-hover);
+            transform: scale(1.05);
+        }
+
+        /* Notification Bell */
+        .notification-button {
+            position: relative;
+            background: var(--notification-button-bg);
+            border: none;
+            border-radius: 50%;
+            width: 3rem;
+            height: 3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .notification-button:hover {
+            background: var(--notification-button-hover);
+            transform: scale(1.05);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -0.25rem;
+            right: -0.25rem;
+            background: var(--notification-badge-bg);
+            color: white;
+            border-radius: 50%;
+            width: 1.5rem;
+            height: 1.5rem;
+            font-size: 0.75rem;
             font-weight: 600;
-            font-size: 0.875rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .status-paid {
-            background: linear-gradient(135deg, var(--success-color), #059669);
-            color: white;
-        }
-
-        .status-partial {
-            background: linear-gradient(135deg, var(--warning-color), #d97706);
-            color: white;
-        }
-
-        .status-pending {
-            background: linear-gradient(135deg, var(--danger-color), #dc2626);
-            color: white;
-        }
-
-        /* Attendance Section */
-        .attendance-section {
+        /* Grid Layouts */
+        .grid {
             display: grid;
-            grid-template-columns: 1fr 2fr;
-            gap: 3rem;
-            align-items: flex-start;
+            gap: 1.5rem;
         }
 
-        .chart-container {
-            background: var(--card-background);
+        .grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+        .grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        .grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+        @media (min-width: 768px) {
+            .md-grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            .md-grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+            .md-grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+        }
+
+        @media (min-width: 1024px) {
+            .lg-grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            .lg-grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+            .lg-grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+        }
+
+        /* Info Cards */
+        .info-card {
             border-radius: 1rem;
-            padding: 2rem;
-            text-align: center;
-            border: 1px solid var(--border-color);
+            padding: 1.5rem;
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
         }
 
-        .chart-container canvas {
-            max-height: 300px !important;
+        .info-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .info-card.blue {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        }
+
+        .info-card.green {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        .info-card.purple {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+        }
+
+        [data-theme="dark"] .info-card.blue {
+            background: linear-gradient(135deg, #1e40af, #1e3a8a);
+        }
+
+        [data-theme="dark"] .info-card.green {
+            background: linear-gradient(135deg, #047857, #065f46);
+        }
+
+        [data-theme="dark"] .info-card.purple {
+            background: linear-gradient(135deg, #6d28d9, #581c87);
+        }
+
+        .info-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .info-icon {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 0.5rem;
+            padding: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .info-content p {
+            margin-bottom: 0.5rem;
+        }
+
+        .info-label {
+            opacity: 0.8;
+            font-size: 0.875rem;
+        }
+
+        /* Fee Status Cards */
+        .fee-metric {
+            border-radius: 0.75rem;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .fee-metric.blue-bg {
+            background: var(--fee-blue-bg);
+        }
+
+        .fee-metric.green-bg {
+            background: var(--fee-green-bg);
+        }
+
+        .fee-metric.red-bg {
+            background: var(--fee-red-bg);
+        }
+
+        .fee-metric.purple-bg {
+            background: var(--fee-purple-bg);
+        }
+
+        .fee-label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        .fee-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .blue-text { color: var(--fee-blue-text); }
+        .green-text { color: var(--fee-green-text); }
+        .red-text { color: var(--fee-red-text); }
+        .purple-text { color: var(--fee-purple-text); }
+
+        /* Section Headers */
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-icon {
+            border-radius: 0.5rem;
+            padding: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .section-icon.orange { background: var(--icon-orange-bg); }
+        .section-icon.green { background: var(--icon-green-bg); }
+        .section-icon.yellow { background: var(--icon-yellow-bg); }
+
+        .section-icon.orange svg { stroke: var(--icon-orange-text); }
+        .section-icon.green svg { stroke: var(--icon-green-text); }
+        .section-icon.yellow svg { stroke: var(--icon-yellow-text); }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
         }
 
         /* Table Styles */
         .table-container {
             overflow-x: auto;
-            border-radius: 0.75rem;
-            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            border: 1px solid var(--table-border);
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            background: white;
         }
 
-        thead {
-            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
-        }
-
-        thead th {
-            padding: 1rem 1.5rem;
-            color: white;
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 600;
-            font-size: 0.875rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+        th, td {
+            padding: 0.75rem 1rem;
             text-align: left;
+            border-bottom: 1px solid var(--table-border);
         }
 
-        tbody td {
-            padding: 1rem 1.5rem;
-            border-bottom: 1px solid var(--border-color);
+        th {
+            background: var(--table-header-bg);
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        tr:hover {
+            background: var(--table-hover);
+        }
+
+        /* Attendance Progress */
+        .attendance-item {
+            background: var(--attendance-item-bg);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .attendance-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .attendance-stats {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 0.5rem;
+            background: var(--progress-bg);
+            border-radius: 0.25rem;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 0.25rem;
+            transition: width 0.3s;
+        }
+
+        .progress-green { background: var(--progress-green); }
+        .progress-yellow { background: var(--progress-yellow); }
+        .progress-red { background: var(--progress-red); }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
             font-weight: 500;
         }
 
-        tbody tr:nth-child(even) {
-            background: var(--card-background);
+        .status-green {
+            background: var(--status-green-bg);
+            color: var(--status-green-text);
         }
 
-        tbody tr:hover {
-            background: #e0f2fe;
-            transform: scale(1.01);
-            transition: all 0.2s ease;
+        .status-yellow {
+            background: var(--status-yellow-bg);
+            color: var(--status-yellow-text);
         }
+
+        .status-red {
+            background: var(--status-red-bg);
+            color: var(--status-red-text);
+        }
+
+        /* Marks Cards */
+        .marks-item {
+            background: var(--marks-item-bg);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .marks-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .total-marks {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--fee-blue-text);
+        }
+
+        .marks-breakdown {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .marks-box {
+            background: var(--marks-box-bg);
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            text-align: center;
+        }
+
+        .marks-box-label {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .marks-box-value {
+            font-size: 1.125rem;
+            font-weight: 700;
+        }
+
+        .internal-marks { color: var(--fee-green-text); }
+        .semester-marks { color: var(--fee-blue-text); }
 
         /* Modal Styles */
-        .notification-modal {
-            display: none;
+        .modal {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.6);
-            z-index: 1000;
+            background: var(--modal-bg);
+            backdrop-filter: blur(4px);
+            display: none;
             align-items: center;
             justify-content: center;
-            backdrop-filter: blur(5px);
+            z-index: 1000;
+            padding: 1rem;
         }
 
-        .notification-content {
-            background: white;
-            padding: 2rem;
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--modal-content-bg);
             border-radius: 1rem;
-            max-width: 600px;
-            width: 90%;
+            max-width: 32rem;
+            width: 100%;
             max-height: 80vh;
-            overflow-y: auto;
-            box-shadow: var(--shadow-xl);
-            border: 1px solid var(--border-color);
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            animation: slideIn 0.3s ease-out;
         }
 
-        .notification-content h2 {
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 700;
+        [data-theme="dark"] .modal-content {
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+            max-height: 60vh;
+            overflow-y: auto;
             color: var(--text-primary);
-            margin-bottom: 1.5rem;
+        }
+
+        .modal-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--border-light);
+        }
+
+        .close-button {
+            background: var(--attendance-item-bg);
+            border: none;
+            border-radius: 50%;
+            width: 2rem;
+            height: 2rem;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.2s;
+            color: var(--text-primary);
         }
 
-        .notification-item {
-            padding: 1.5rem;
-            border-bottom: 1px solid var(--border-color);
-            transition: all 0.3s ease;
-            border-radius: 0.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .notification-item:last-child {
-            border-bottom: none;
-            margin-bottom: 0;
-        }
-
-        .notification-item:hover {
-            background: var(--card-background);
-            transform: translateX(5px);
-        }
-
-        .notification-item h3 {
-            margin: 0 0 0.5rem 0;
-            color: var(--primary-color);
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 600;
-        }
-
-        .notification-item p {
-            margin: 0.5rem 0;
-            color: var(--text-secondary);
-        }
-
-        .notification-item small {
-            color: var(--text-muted);
-            font-size: 0.875rem;
+        .close-button:hover {
+            background: var(--hover-bg);
         }
 
         /* Button Styles */
         .btn {
             display: inline-flex;
             align-items: center;
-            gap: 0.5rem;
-            padding: 0.75rem 1.5rem;
+            justify-content: center;
+            padding: 0.5rem 1rem;
             border: none;
             border-radius: 0.5rem;
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 600;
-            font-size: 0.875rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            font-weight: 500;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.2s;
             text-decoration: none;
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            background: var(--fee-blue-text);
             color: white;
         }
 
         .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
+            background: #2563eb;
+        }
+
+        [data-theme="dark"] .btn-primary:hover {
+            background: #3b82f6;
         }
 
         .btn-danger {
-            background: linear-gradient(135deg, var(--danger-color), #dc2626);
+            background: var(--fee-red-text);
             color: white;
         }
 
         .btn-danger:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
+            background: #dc2626;
         }
 
-        /* Responsive Design */
-        @media (max-width: 1024px) {
-            .attendance-section {
-                grid-template-columns: 1fr;
-                gap: 2rem;
-            }
-            
-            .chart-container {
-                margin-bottom: 0;
-            }
+        [data-theme="dark"] .btn-danger:hover {
+            background: #ef4444;
         }
 
+        .btn-full {
+            width: 100%;
+        }
+
+        /* Notification Items */
+        .notification-item {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-lighter);
+            transition: background 0.2s;
+        }
+
+        .notification-item:hover {
+            background: var(--hover-bg);
+        }
+
+        .notification-item:last-child {
+            border-bottom: none;
+        }
+
+        .notification-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .notification-message {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .notification-time {
+            color: var(--text-tertiary);
+            font-size: 0.75rem;
+        }
+
+        /* Chart Container */
+        .chart-container {
+            max-width: 400px;
+            margin: 0 auto 2rem;
+            height: 300px;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-secondary);
+        }
+
+        /* Fee reminder specific styles */
+        .fee-reminder-content {
+            background: var(--status-red-bg);
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            margin: 0.75rem 0;
+        }
+
+        /* Hide scrollbar but keep functionality */
+        .modal-body::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .modal-body::-webkit-scrollbar-track {
+            background: var(--border-lighter);
+        }
+
+        .modal-body::-webkit-scrollbar-thumb {
+            background: var(--text-tertiary);
+            border-radius: 2px;
+        }
+
+        .modal-body::-webkit-scrollbar-thumb:hover {
+            background: var(--text-secondary);
+        }
+
+        /* Responsive */
         @media (max-width: 768px) {
-            .dashboard-container {
+            .container {
                 padding: 1rem;
             }
-            
-            .welcome-section h1 {
-                font-size: 2rem;
+
+            .welcome-title {
+                font-size: 1.5rem;
             }
-            
-            .header-content {
+
+            .header {
                 flex-direction: column;
-                text-align: center;
+                gap: 1rem;
             }
-            
-            .info-grid {
+
+            .header-controls {
+                align-self: flex-end;
+            }
+
+            .grid-cols-2,
+            .grid-cols-3,
+            .grid-cols-4 {
                 grid-template-columns: 1fr;
             }
-            
-            .card {
-                padding: 1.5rem;
+
+            .md-grid-cols-2 {
+                grid-template-columns: 1fr;
+            }
+
+            .marks-breakdown {
+                grid-template-columns: 1fr;
             }
         }
 
-        /* Loading Animation */
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255,255,255,.3);
-            border-radius: 50%;
-            border-top-color: #fff;
-            animation: spin 1s ease-in-out infinite;
+        @media (min-width: 768px) {
+            .md-grid-cols-2 {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
         }
 
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+        @media (min-width: 1024px) {
+            .lg-grid-cols-2 {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        /* Smooth transitions for theme changes */
+        *, *::before, *::after {
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
         }
     </style>
 </head>
-<body>
+<body data-theme="light">
     {% csrf_token %}
     
-    <!-- Fee Reminder Popup -->
+    <!-- Fee Reminder Modal -->
     {% if fee_reminder_popup %}
-    <div id="feeReminderModal" class="notification-modal" style="display: flex;">
-        <div class="notification-content">
-            <h2 style="color: var(--danger-color);">
-                <span class="card-icon">💰</span>
-                Fee Payment Reminder
-            </h2>
-            <div style="margin: 1.5rem 0;">
-                <div class="info-item" style="margin-bottom: 1rem;">
-                    <strong>Payment Status</strong>
-                    <p style="color: var(--danger-color); font-weight: 600;">Your fee payment is pending</p>
+    <div id="feeReminderModal" class="modal show">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <div class="section-icon" style="background: var(--status-red-bg); padding: 0.5rem; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--status-red-text);">
+                            <rect width="20" height="14" x="2" y="5" rx="2"/>
+                            <line x1="2" x2="22" y1="10" y2="10"/>
+                        </svg>
+                    </div>
+                    <h2 style="color: var(--status-red-text); font-size: 1.25rem; font-weight: 600;">Fee Payment Reminder</h2>
                 </div>
-                <div class="info-item" style="margin-bottom: 1rem;">
-                    <strong>Due Amount</strong>
-                    <p style="font-size: 1.5rem; font-weight: 700; color: var(--danger-color);">₹{{ fee_reminder_popup.amount_due|floatformat:2 }}</p>
-                </div>
-                <div class="info-item" style="margin-bottom: 1rem;">
-                    <strong>Due Date</strong>
-                    <p style="font-weight: 600;">{{ fee_reminder_popup.due_date|date:"M d, Y" }}</p>
-                </div>
-                {% if fee_reminder_popup.message %}
-                <div class="info-item">
-                    <strong>Message</strong>
-                    <p style="font-style: italic;">{{ fee_reminder_popup.message }}</p>
-                </div>
-                {% endif %}
             </div>
-            <button class="btn btn-danger" onclick="dismissFeeReminder()">
-                Dismiss Reminder
-            </button>
+            <div class="modal-body">
+                <p style="margin-bottom: 1rem;">Your fee payment is pending.</p>
+                <div class="fee-reminder-content">
+                    <p style="margin-bottom: 0.5rem;"><strong>Due Amount:</strong> ₹{{ fee_reminder_popup.amount_due|floatformat:2 }}</p>
+                    <p style="margin-bottom: 0.5rem;"><strong>Due Date:</strong> {{ fee_reminder_popup.due_date|date:"M d, Y" }}</p>
+                    {% if fee_reminder_popup.message %}
+                    <p style="margin-top: 0.75rem; font-style: italic; font-size: 0.875rem;">{{ fee_reminder_popup.message }}</p>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger btn-full" onclick="dismissFeeReminder()">Dismiss</button>
+            </div>
         </div>
     </div>
     {% endif %}
 
     <!-- Notification Modal -->
-    <div id="notificationModal" class="notification-modal">
-        <div class="notification-content">
-            <h2>
-                <span class="card-icon">🔔</span>
-                Notifications
-            </h2>
-            <div id="notificationList">
-                {% for notification in notifications %}
-                    <div class="notification-item" id="notification-{{ notification.id }}">
-                        <h3>{{ notification.title }}</h3>
-                        <p>{{ notification.message }}</p>
-                        <small>{{ notification.created_at|timesince }} ago</small>
-                    </div>
-                {% empty %}
-                    <div class="notification-item">
-                        <p style="text-align: center; color: var(--text-muted);">No new notifications</p>
-                    </div>
-                {% endfor %}
+    <div id="notificationModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 style="font-size: 1.25rem; font-weight: 600;">Notifications</h2>
+                <button class="close-button" onclick="closeNotifications()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
             </div>
-            <button class="btn btn-primary" onclick="closeNotifications()">Dismiss All</button>
+            <div class="modal-body">
+                <div id="notificationList">
+                    {% for notification in notifications %}
+                    <div class="notification-item" id="notification-{{ notification.id }}">
+                        <div class="notification-title">{{ notification.title }}</div>
+                        <div class="notification-message">{{ notification.message }}</div>
+                        <div class="notification-time">{{ notification.created_at|timesince }} ago</div>
+                    </div>
+                    {% empty %}
+                    <div class="no-data">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin: 0 auto 1rem;">
+                            <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/>
+                            <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
+                        </svg>
+                        <p>No new notifications</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary btn-full" onclick="closeNotifications()">Mark All as Read</button>
+            </div>
         </div>
     </div>
 
-    <div class="dashboard-container">
-        <!-- Header Section -->
-        <div class="dashboard-header">
-            <div class="header-content">
-                <div class="welcome-section">
-                    <h1>Welcome Back!</h1>
-                    <p>{{ student.user.get_full_name }}</p>
-                </div>
-                <div class="notification-badge" data-count="{{ notifications|length }}" onclick="showNotifications()">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 22C13.1 22 14 21.1 14 20H10C10 21.1 10.9 22 12 22ZM18 16V11C18 7.93 16.37 5.36 13.5 4.68V4C13.5 3.17 12.83 2.5 12 2.5C11.17 2.5 10.5 3.17 10.5 4V4.68C7.64 5.36 6 7.92 6 11V16L4 18V19H20V18L18 16ZM16 17H8V11C8 8.52 9.51 6.5 12 6.5C14.49 6.5 16 8.52 16 11V17Z" fill="currentColor"/>
-                    </svg>
-                </div>
-            </div>
-        </div>
-
-        <!-- Student Information Card -->
+    <div class="container">
+        <!-- Header Card -->
         <div class="card">
-            <div class="card-header">
-                <span class="card-icon">👤</span>
-                <h2>Personal Information</h2>
-            </div>
-            <div class="info-grid">
-                <div class="info-item">
-                    <strong>Roll Number</strong>
-                    <p>{{ student.roll_number }}</p>
+            <div class="header">
+                <div>
+                    <h1 class="welcome-title">Welcome, {{ student.user.get_full_name }}</h1>
+                    <p class="subtitle">Here's your academic overview</p>
                 </div>
-                <div class="info-item">
-                    <strong>Course</strong>
-                    <p>{{ student.course.name }}</p>
-                </div>
-                <div class="info-item">
-                    <strong>Class</strong>
-                    <p>{{ student.class_enrolled.name }}</p>
-                </div>
-                <div class="info-item">
-                    <strong>Semester</strong>
-                    <p>{{ student.semester }}</p>
-                </div>
-                <div class="info-item">
-                    <strong>Contact</strong>
-                    <p>{{ student.contact_number }}</p>
-                </div>
-                <div class="info-item">
-                    <strong>Address</strong>
-                    <p>{{ student.address }}</p>
+                <div class="header-controls">
+                    <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">
+                        <svg id="theme-icon-light" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--icon-blue-text);">
+                            <circle cx="12" cy="12" r="4"/>
+                            <path d="m12 2 3 10L12 8 9 12l3-10Z"/>
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/>
+                        </svg>
+                        <svg id="theme-icon-dark" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--icon-blue-text); display: none;">
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/>
+                        </svg>
+                    </button>
+                    <button class="notification-button" onclick="showNotifications()">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--icon-blue-text);">
+                            <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/>
+                            <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
+                        </svg>
+                        {% if notifications|length > 0 %}
+                        <span class="notification-badge">{{ notifications|length }}</span>
+                        {% endif %}
+                    </button>
                 </div>
             </div>
         </div>
 
-        <!-- Fee Status Card -->
+        <!-- Student Info Cards -->
+        <div class="grid grid-cols-1 md-grid-cols-2 lg-grid-cols-3">
+            <div class="info-card blue">
+                <div class="info-header">
+                    <div class="info-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+                            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+                        </svg>
+                    </div>
+                    <h3>Academic Info</h3>
+                </div>
+                <div class="info-content">
+                    <p><span class="info-label">Roll:</span> {{ student.roll_number }}</p>
+                    <p><span class="info-label">Course:</span> {{ student.course.name }}</p>
+                    <p><span class="info-label">Semester:</span> {{ student.semester }}</p>
+                </div>
+            </div>
+
+            <div class="info-card green">
+                <div class="info-header">
+                    <div class="info-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                            <circle cx="9" cy="7" r="4"/>
+                            <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                        </svg>
+                    </div>
+                    <h3>Class Details</h3>
+                </div>
+                <div class="info-content">
+                    <p><span class="info-label">Class:</span> {{ student.class_enrolled.name }}</p>
+                    <p><span class="info-label">Category:</span> {{ student.get_category_display|default:"N/A" }}</p>
+                </div>
+            </div>
+
+            <div class="info-card purple">
+                <div class="info-header">
+                    <div class="info-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                        </svg>
+                    </div>
+                    <h3>Contact Info</h3>
+                </div>
+                <div class="info-content">
+                    <p><span class="info-label">Phone:</span> {{ student.contact_number }}</p>
+                    <p><span class="info-label">Address:</span> {{ student.address|truncatechars:30 }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fee Status -->
         {% load fee_tags %}
         {% get_fee_summary student as fee_summary %}
         <div class="card">
-            <div class="card-header">
-                <span class="card-icon">💳</span>
-                <h2>Fee Status</h2>
+            <div class="section-header">
+                <div class="section-icon orange">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect width="20" height="14" x="2" y="5" rx="2"/>
+                        <line x1="2" x2="22" y1="10" y2="10"/>
+                    </svg>
+                </div>
+                <h2 class="section-title">Fee Status</h2>
             </div>
+
             {% if fee_summary.total_fees >= 0 %}
-            <div class="info-grid">
-                <div class="info-item">
-                    <strong>Fee Category</strong>
-                    <p>{{ student.get_category_display|default:"N/A" }}</p>
+            <div class="grid grid-cols-1 md-grid-cols-2 lg-grid-cols-4" style="margin-bottom: 2rem;">
+                <div class="fee-metric blue-bg">
+                    <div class="fee-label blue-text">Total Fee</div>
+                    <div class="fee-value blue-text">₹{{ fee_summary.total_fees|floatformat:2 }}</div>
                 </div>
-                <div class="info-item">
-                    <strong>Academic Year</strong>
-                    <p>{{ fee_summary.academic_year|default:"N/A" }}</p>
+                <div class="fee-metric green-bg">
+                    <div class="fee-label green-text">Amount Paid</div>
+                    <div class="fee-value green-text">₹{{ fee_summary.amount_paid|floatformat:2 }}</div>
                 </div>
-                <div class="info-item">
-                    <strong>Total Fee</strong>
-                    <p style="font-size: 1.25rem; font-weight: 700;">₹{{ fee_summary.total_fees|floatformat:2 }}</p>
+                <div class="fee-metric red-bg">
+                    <div class="fee-label red-text">Amount Due</div>
+                    <div class="fee-value red-text">₹{{ fee_summary.amount_due|floatformat:2 }}</div>
                 </div>
-                <div class="info-item">
-                    <strong>Amount Paid</strong>
-                    <p style="color: var(--success-color); font-weight: 600;">₹{{ fee_summary.amount_paid|floatformat:2 }}</p>
+                <div class="fee-metric purple-bg">
+                    <div class="fee-label purple-text">Status</div>
+                    <div class="fee-value purple-text">
+                        {% with status=fee_summary.amount_due|get_fee_status:fee_summary.total_fees %}
+                            {% if status == 'paid' %}Paid
+                            {% elif status == 'partial' %}Partial
+                            {% else %}Pending
+                            {% endif %}
+                        {% endwith %}
+                    </div>
                 </div>
-                <div class="info-item">
-                    <strong>Remaining Amount</strong>
-                    <p style="color: var(--danger-color); font-weight: 600;">₹{{ fee_summary.amount_due|floatformat:2 }}</p>
-                </div>
-                <div class="info-item">
-                    <strong>Status</strong>
-                    {% with status=fee_summary.amount_due|get_fee_status:fee_summary.total_fees %}
-                        {% if status == 'paid' %}
-                            <span class="status-badge status-paid">Paid</span>
-                        {% elif status == 'partial' %}
-                            <span class="status-badge status-partial">Partially Paid</span>
-                        {% else %}
-                            <span class="status-badge status-pending">Pending</span>
-                        {% endif %}
-                    {% endwith %}
-                </div>
-                {% if fee_summary.next_due_date %}
-                <div class="info-item">
-                    <strong>Next Due Date</strong>
-                    <p style="font-weight: 600;">{{ fee_summary.next_due_date|date:"M d, Y" }}</p>
-                </div>
-                {% endif %}
             </div>
-            
-            <!-- Payment History -->
+
+            <!-- Recent Payments -->
             {% if fee_summary.recent_payments %}
-            <div style="margin-top: 2rem;">
-                <h3 style="font-family: 'Montserrat', sans-serif; font-weight: 600; margin-bottom: 1rem; color: var(--text-primary);">Recent Payments</h3>
+            <div>
+                <h3 style="font-size: 1.125rem; font-weight: 600; margin-bottom: 1rem; color: var(--text-primary);">Recent Payments</h3>
                 <div class="table-container">
                     <table>
                         <thead>
@@ -662,7 +1040,7 @@
                             {% for payment in fee_summary.recent_payments %}
                             <tr>
                                 <td>{{ payment.payment_date|date:"M d, Y" }}</td>
-                                <td style="font-weight: 600; color: var(--success-color);">₹{{ payment.amount|floatformat:2 }}</td>
+                                <td style="font-weight: 600;">₹{{ payment.amount|floatformat:2 }}</td>
                                 <td>{{ payment.get_payment_method_display }}</td>
                                 <td>{{ payment.transaction_id|default:"-" }}</td>
                             </tr>
@@ -673,98 +1051,157 @@
             </div>
             {% endif %}
             {% else %}
-                <div class="info-item" style="text-align: center; padding: 2rem;">
-                    <p style="color: var(--danger-color); font-weight: 600;">No fee information available. Please contact the accounts department.</p>
-                </div>
+            <p style="color: var(--status-red-text);">No fee information available. Please contact the accounts department.</p>
             {% endif %}
         </div>
 
-        <!-- Attendance Report Card -->
-        <div class="card">
-            <div class="card-header">
-                <span class="card-icon">📊</span>
-                <h2>Attendance Report</h2>
-            </div>
-            <div class="attendance-section">
-                <div class="chart-container">
-                    {% if chart_data and chart_data != '[]' %}
-                        <h3 style="font-family: 'Montserrat', sans-serif; font-weight: 600; margin-bottom: 1rem; color: var(--text-primary);">Attendance Overview</h3>
-                        <canvas id="attendancePieChart"></canvas>
-                    {% else %}
-                        <div style="text-align: center; padding: 2rem;">
-                            <p style="color: var(--text-muted); font-size: 1.1rem;">No attendance data available for chart.</p>
-                        </div>
-                    {% endif %}
+        <!-- Attendance & Marks Grid -->
+        <div class="grid grid-cols-1 lg-grid-cols-2">
+            <!-- Attendance Report -->
+            <div class="card">
+                <div class="section-header">
+                    <div class="section-icon green">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect width="18" height="18" x="3" y="4" rx="2" ry="2"/>
+                            <line x1="16" x2="16" y1="2" y2="6"/>
+                            <line x1="8" x2="8" y1="2" y2="6"/>
+                            <line x1="3" x2="21" y1="10" y2="10"/>
+                        </svg>
+                    </div>
+                    <h2 class="section-title">Attendance Report</h2>
                 </div>
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Subject</th>
-                                <th>Total Classes</th>
-                                <th>Classes Attended</th>
-                                <th>Percentage</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for report in attendance_reports %}
-                            <tr>
-                                <td style="font-weight: 600;">{{ report.subject.name }} ({{ report.subject.code }})</td>
-                                <td>{{ report.total_classes }}</td>
-                                <td style="color: var(--success-color); font-weight: 600;">{{ report.classes_attended }}</td>
-                                <td>
-                                    <span style="font-weight: 600; {% if report.attendance_percentage >= 75 %}color: var(--success-color);{% elif report.attendance_percentage >= 50 %}color: var(--warning-color);{% else %}color: var(--danger-color);{% endif %}">
-                                        {{ report.attendance_percentage|floatformat:2 }}%
-                                    </span>
-                                </td>
-                            </tr>
-                            {% empty %}
-                            <tr>
-                                <td colspan="4" style="text-align: center; padding: 2rem; color: var(--text-muted);">No attendance records found.</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
 
-        <!-- Marks Report Card -->
-        <div class="card">
-            <div class="card-header">
-                <span class="card-icon">🎓</span>
-                <h2>Marks Report</h2>
+                {% if chart_data and chart_data != '[]' %}
+                <div class="chart-container">
+                    <canvas id="attendancePieChart"></canvas>
+                </div>
+                {% else %}
+                <div class="no-data">No attendance data available for chart.</div>
+                {% endif %}
+
+                <div>
+                    {% for report in attendance_reports %}
+                    <div class="attendance-item">
+                        <div class="attendance-header">
+                            <h4 style="font-weight: 600; color: var(--text-primary);">{{ report.subject.name }} ({{ report.subject.code }})</h4>
+                            <span class="status-badge {% if report.attendance_percentage >= 90 %}status-green{% elif report.attendance_percentage >= 75 %}status-yellow{% else %}status-red{% endif %}">
+                                {{ report.attendance_percentage|floatformat:1 }}%
+                            </span>
+                        </div>
+                        <div class="attendance-stats">
+                            <span>Present: {{ report.classes_attended }}</span>
+                            <span>Total: {{ report.total_classes }}</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill {% if report.attendance_percentage >= 90 %}progress-green{% elif report.attendance_percentage >= 75 %}progress-yellow{% else %}progress-red{% endif %}" 
+                                 style="width: {{ report.attendance_percentage }}%"></div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="no-data">No attendance records found.</div>
+                    {% endfor %}
+                </div>
             </div>
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Subject</th>
-                            <th>Internal Marks</th>
-                            <th>Semester Marks</th>
-                            <th>Total Marks</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for mark in marks %}
-                        <tr>
-                            <td style="font-weight: 600;">{{ mark.subject.name }} ({{ mark.subject.code }})</td>
-                            <td>{{ mark.internal_marks }}</td>
-                            <td>{{ mark.semester_marks }}</td>
-                            <td style="font-weight: 700; color: var(--primary-color);">{{ mark.total_marks }}</td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="4" style="text-align: center; padding: 2rem; color: var(--text-muted);">No marks records found.</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+
+            <!-- Marks Report -->
+            <div class="card">
+                <div class="section-header">
+                    <div class="section-icon yellow">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/>
+                            <path d="M14 9h1.5a2.5 2.5 0 0 0 0-5H14"/>
+                            <path d="M6 9v8a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V9"/>
+                            <path d="M6 9h12"/>
+                            <path d="M12 16l2-2-2-2"/>
+                            <path d="M8 12l2 2-2 2"/>
+                        </svg>
+                    </div>
+                    <h2 class="section-title">Marks Report</h2>
+                </div>
+
+                <div>
+                    {% for mark in marks %}
+                    <div class="marks-item">
+                        <div class="marks-header">
+                            <h4 style="font-weight: 600; color: var(--text-primary);">{{ mark.subject.name }}</h4>
+                            <span class="total-marks">{{ mark.total_marks }}</span>
+                        </div>
+                        <div class="marks-breakdown">
+                            <div class="marks-box">
+                                <div class="marks-box-label">Internal</div>
+                                <div class="marks-box-value internal-marks">{{ mark.internal_marks }}</div>
+                            </div>
+                            <div class="marks-box">
+                                <div class="marks-box-label">Semester</div>
+                                <div class="marks-box-value semester-marks">{{ mark.semester_marks }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="no-data">No marks records found.</div>
+                    {% endfor %}
+                </div>
             </div>
         </div>
     </div>
 
     <script>
+        // Theme Toggle Functionality
+        function toggleTheme() {
+            const body = document.body;
+            const currentTheme = body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            
+            body.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            
+            // Toggle icons
+            const lightIcon = document.getElementById('theme-icon-light');
+            const darkIcon = document.getElementById('theme-icon-dark');
+            
+            if (newTheme === 'dark') {
+                lightIcon.style.display = 'none';
+                darkIcon.style.display = 'block';
+            } else {
+                lightIcon.style.display = 'block';
+                darkIcon.style.display = 'none';
+            }
+            
+            // Update chart colors if chart exists
+            updateChartColors();
+        }
+
+        // Load saved theme on page load
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.body.setAttribute('data-theme', savedTheme);
+            
+            const lightIcon = document.getElementById('theme-icon-light');
+            const darkIcon = document.getElementById('theme-icon-dark');
+            
+            if (savedTheme === 'dark') {
+                lightIcon.style.display = 'none';
+                darkIcon.style.display = 'block';
+            } else {
+                lightIcon.style.display = 'block';
+                darkIcon.style.display = 'none';
+            }
+        }
+
+        // Update chart colors based on theme
+        function updateChartColors() {
+            if (window.attendanceChart) {
+                const isDark = document.body.getAttribute('data-theme') === 'dark';
+                const chart = window.attendanceChart;
+                
+                // Update chart colors
+                chart.options.plugins.title.color = isDark ? '#f1f5f9' : '#1e293b';
+                chart.options.plugins.legend.labels.color = isDark ? '#cbd5e1' : '#475569';
+                chart.update();
+            }
+        }
+
+        // Fee Reminder Functions
         function dismissFeeReminder() {
             fetch('{% url "students:dismiss_fee_reminder" %}', {
                 method: 'POST',
@@ -774,43 +1211,93 @@
                 }
             }).then(response => {
                 if (response.ok) {
-                    document.getElementById('feeReminderModal').style.display = 'none';
+                    document.getElementById('feeReminderModal').classList.remove('show');
                 } else {
                     console.error('Failed to dismiss fee reminder');
                 }
             }).catch(error => {
                 console.error('Error dismissing fee reminder:', error);
             });
-            return false;
         }
 
-        // Close fee reminder modal when clicking outside
-        document.addEventListener('click', function(event) {
-            const modal = document.getElementById('feeReminderModal');
-            if (event.target === modal) {
-                modal.style.display = 'none';
+        // Notification Functions
+        function showNotifications() {
+            document.getElementById('notificationModal').classList.add('show');
+        }
+
+        function closeNotifications() {
+            // Send AJAX request to mark all notifications as read
+            fetch('/notifications/mark-all-read/', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                    'Content-Type': 'application/json'
+                }
+            }).then(response => {
+                if (response.ok) {
+                    document.getElementById('notificationModal').classList.remove('show');
+                    // Clear the notification badge
+                    const badge = document.querySelector('.notification-badge');
+                    if (badge) {
+                        badge.style.display = 'none';
+                    }
+                }
+            });
+        }
+
+        // Close modals when clicking outside
+        window.addEventListener('click', function(event) {
+            const feeModal = document.getElementById('feeReminderModal');
+            const notificationModal = document.getElementById('notificationModal');
+            
+            if (event.target === feeModal) {
+                feeModal.classList.remove('show');
+            }
+            if (event.target === notificationModal) {
+                notificationModal.classList.remove('show');
             }
         });
 
+        // Chart.js Implementation
         document.addEventListener('DOMContentLoaded', function () {
+            // Load theme first
+            loadTheme();
+            
             const chartData = {{ chart_data|safe }};
             const chartLabels = {{ chart_labels|safe }};
 
             if (chartData && chartData.length > 0) {
                 const ctx = document.getElementById('attendancePieChart').getContext('2d');
-                new Chart(ctx, {
-                    type: 'pie',
+                const isDark = document.body.getAttribute('data-theme') === 'dark';
+                
+                window.attendanceChart = new Chart(ctx, {
+                    type: 'doughnut',
                     data: {
                         labels: chartLabels,
                         datasets: [{
                             label: 'Attendance Percentage',
                             data: chartData,
                             backgroundColor: [
-                                '#0891b2', '#10b981', '#059669', '#06b6d4',
-                                '#14b8a6', '#0d9488', '#0f766e', '#115e59'
+                                'rgba(59, 130, 246, 0.8)',
+                                'rgba(16, 185, 129, 0.8)',
+                                'rgba(245, 158, 11, 0.8)',
+                                'rgba(239, 68, 68, 0.8)',
+                                'rgba(139, 92, 246, 0.8)',
+                                'rgba(236, 72, 153, 0.8)',
+                                'rgba(20, 184, 166, 0.8)',
+                                'rgba(251, 146, 60, 0.8)'
                             ],
-                            borderColor: '#ffffff',
-                            borderWidth: 3,
+                            borderColor: [
+                                'rgb(59, 130, 246)',
+                                'rgb(16, 185, 129)',
+                                'rgb(245, 158, 11)',
+                                'rgb(239, 68, 68)',
+                                'rgb(139, 92, 246)',
+                                'rgb(236, 72, 153)',
+                                'rgb(20, 184, 166)',
+                                'rgb(251, 146, 60)'
+                            ],
+                            borderWidth: 2,
                             hoverOffset: 8
                         }]
                     },
@@ -821,48 +1308,25 @@
                             legend: {
                                 position: 'bottom',
                                 labels: {
-                                    boxWidth: 15,
                                     padding: 20,
-                                    font: {
-                                        family: 'Open Sans',
-                                        size: 12
-                                    }
+                                    usePointStyle: true,
+                                    font: { size: 12 },
+                                    color: isDark ? '#cbd5e1' : '#475569'
                                 }
                             },
                             title: {
-                                display: false
+                                display: true,
+                                text: 'Attendance Overview',
+                                font: { size: 16, weight: 'bold' },
+                                padding: { bottom: 20 },
+                                color: isDark ? '#f1f5f9' : '#1e293b'
                             }
-                        }
+                        },
+                        cutout: '60%'
                     }
                 });
             }
         });
-
-        function showNotifications() {
-            document.getElementById('notificationModal').style.display = 'flex';
-        }
-
-        function closeNotifications() {
-            fetch('/notifications/mark-all-read/', {
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
-                    'Content-Type': 'application/json'
-                }
-            }).then(response => {
-                if (response.ok) {
-                    document.getElementById('notificationModal').style.display = 'none';
-                    document.querySelector('.notification-badge').removeAttribute('data-count');
-                }
-            });
-        }
-
-        // Close modal when clicking outside
-        window.onclick = function(event) {
-            if (event.target == document.getElementById('notificationModal')) {
-                document.getElementById('notificationModal').style.display = 'none';
-            }
-        }
 
         // Check for new notifications periodically
         setInterval(() => {
@@ -871,15 +1335,29 @@
                 .then(data => {
                     const badge = document.querySelector('.notification-badge');
                     if (data.count > 0) {
-                        badge.setAttribute('data-count', data.count);
-                        if (document.getElementById('notificationModal').style.display === 'flex') {
+                        if (!badge) {
+                            // Create badge if it doesn't exist
+                            const button = document.querySelector('.notification-button');
+                            const newBadge = document.createElement('span');
+                            newBadge.className = 'notification-badge';
+                            newBadge.textContent = data.count;
+                            button.appendChild(newBadge);
+                        } else {
+                            badge.textContent = data.count;
+                            badge.style.display = 'flex';
+                        }
+                        // Update notification list if modal is open
+                        if (document.getElementById('notificationModal').classList.contains('show')) {
                             document.getElementById('notificationList').innerHTML = data.notifications_html;
                         }
                     } else {
-                        badge.removeAttribute('data-count');
+                        if (badge) {
+                            badge.style.display = 'none';
+                        }
                     }
-                });
-        }, 60000);
+                })
+                .catch(error => console.error('Error checking notifications:', error));
+        }, 60000); // Check every minute
     </script>
 </body>
 </html>
