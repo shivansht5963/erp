@@ -50,5 +50,7 @@ def create_fee_payment_reminder(sender, instance, created, **kwargs):
                         "You can make the payment through the student portal or by visiting the accounts office.\n\n"
                         "Thank you for your prompt attention to this matter."
                     ),
-                    created_by=instance.created_by
+                    created_by=instance.created_by,
+                    amount_due=fee_summary['amount_due'],
+                    due_date=instance.fee_structure.due_date  # Using the fee structure's due date
                 )
