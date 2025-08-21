@@ -17,34 +17,6 @@ def add_user(request):
     return render(request, 'accounts/add_user.html', {'form': form})
 
 
-# --- THIS IS THE CORRECTED AND COMPLETED STUDENT DASHBOARD VIEW ---
-@login_required
-def student_dashboard(request):
-    try:
-        student = request.user.student
-    except Student.DoesNotExist:
-        return redirect('home') 
-
-    # Fetch all necessary data
-    student_notifications = Notification.objects.filter(recipient=student).order_by('-created_at')[:5]
-    attendance_reports = student.view_attendance()
-
-    # --- NEW: Prepare data specifically for the Chart.js pie chart ---
-    chart_labels = [report.subject.name for report in attendance_reports]
-    chart_data = [report.attendance_percentage for report in attendance_reports]
-
-    # Pass all the data into the template context.
-    context = {
-        'student': student,
-        'notifications': student_notifications,
-        'attendance_reports': attendance_reports,
-        # We use json.dumps to safely pass the lists to the template's JavaScript
-        'chart_labels_json': json.dumps(chart_labels),
-        'chart_data_json': json.dumps(chart_data),
-    }
-    
-    return render(request, 'students/student_dashboard.html', context)
-
 @login_required
 def dashboard(request):
     """
@@ -54,7 +26,7 @@ def dashboard(request):
     
     if user.role == 'student':
         # If the user's role is 'student', send them to the student dashboard.
-        return redirect('accounts:student_dashboard')
+        return redirect('students:dashboard')
         
     elif user.role == 'faculty':
         # For now, faculty and admins will be sent to the main admin site.

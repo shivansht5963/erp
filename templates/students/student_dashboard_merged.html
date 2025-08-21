@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard - {{ student.user.get_full_name }}</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; 
+            background-color: #f0f2f5; 
+            color: #333; 
+            margin: 0; 
+        }
+        .container { 
+            max-width: 1200px; 
+            margin: 30px auto; 
+            padding: 0 20px; 
+        }
+        .card { 
+            background-color: #ffffff; 
+            border-radius: 12px; 
+            box-shadow: 0 6px 20px rgba(0,0,0,0.07); 
+            padding: 30px; 
+            margin-bottom: 30px; 
+        }
+        h1, h2, h3 { 
+            color: #1d3557; 
+            margin-top: 0;
+        }
+        h1 { 
+            font-size: 2rem; 
+            margin-bottom: 20px; 
+        }
+        h2 { 
+            font-size: 1.5rem; 
+            border-bottom: 2px solid #e9ecef; 
+            padding-bottom: 10px; 
+            margin-bottom: 20px; 
+        }
+        h3 {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+        }
+        .student-info-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
+            gap: 20px; 
+        }
+        .info-item p { 
+            margin: 0; 
+            line-height: 1.6; 
+        }
+        .info-item strong { 
+            color: #457b9d; 
+            display: block; 
+            margin-bottom: 4px; 
+            font-size: 0.9rem; 
+        }
+        .attendance-section { 
+            display: grid; 
+            grid-template-columns: 1fr 2fr; 
+            gap: 40px; 
+            align-items: flex-start; 
+        }
+        .chart-container { 
+            max-width: 400px; 
+            margin: 0 auto; 
+        }
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-top: 10px;
+        }
+        th, td { 
+            padding: 12px 15px; 
+            border-bottom: 1px solid #dee2e6; 
+            text-align: left; 
+        }
+        thead th { 
+            background-color: #457b9d; 
+            color: white; 
+            font-weight: 600; 
+            font-size: 0.9rem; 
+            text-transform: uppercase; 
+        }
+        tbody tr:nth-child(even) { 
+            background-color: #f8f9fa; 
+        }
+        tbody tr:hover { 
+            background-color: #e9ecef; 
+        }
+        .notification-item {
+            border-bottom: 1px solid #eee;
+            padding: 15px 0;
+        }
+        .notification-item:last-child {
+            border-bottom: none;
+        }
+        .notification-item strong {
+            display: block;
+            color: #1d3557;
+            margin-bottom: 5px;
+        }
+        .notification-item p {
+            margin: 5px 0;
+        }
+        .notification-item small {
+            color: #666;
+            font-size: 0.85em;
+        }
+        .fee-reminder-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0,0,0,0.5);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .fee-reminder-content {
+            background: #fff;
+            padding: 2rem;
+            border-radius: 10px;
+            max-width: 400px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+        .dismiss-button {
+            margin-top: 1rem;
+            padding: 0.5rem 1.5rem;
+            background: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .dismiss-button:hover {
+            background: #0056b3;
+        }
+        @media (max-width: 992px) {
+            .attendance-section { 
+                grid-template-columns: 1fr; 
+            }
+            .chart-container { 
+                margin-bottom: 40px; 
+            }
+        }
+    </style>
+</head>
+<body>
+    {% if fee_reminder_popup %}
+    <div class="fee-reminder-modal" id="fee-reminder-modal">
+        <div class="fee-reminder-content">
+            <h2>Fee Reminder</h2>
+            <p>{{ fee_reminder_popup.message|linebreaks }}</p>
+            <button class="dismiss-button" onclick="dismissFeeReminder()">Dismiss</button>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="container">
+        <div class="card">
+            <h1>Welcome, {{ student.user.get_full_name }}!</h1>
+            <div class="student-info-grid">
+                <div class="info-item"><p><strong>Roll Number</strong>{{ student.roll_number }}</p></div>
+                <div class="info-item"><p><strong>Email Address</strong>{{ student.user.email }}</p></div>
+                <div class="info-item"><p><strong>Course</strong>{{ student.course.name }}</p></div>
+                <div class="info-item"><p><strong>Current Semester</strong>{{ student.semester }}</p></div>
+                <div class="info-item"><p><strong>Department</strong>{{ student.course.department.name }}</p></div>
+                {% if student.class_enrolled %}
+                    <div class="info-item"><p><strong>Class / Section</strong>{{ student.class_enrolled.section }}</p></div>
+                {% endif %}
+            </div>
+        </div>
+
+        {% load fee_tags %}
+        {% get_fee_summary student as fee_summary %}
+        <div class="card">
+            <h2>Fee Information</h2>
+            <div class="student-info-grid">
+                <div class="info-item">
+                    <p><strong>Fee Category</strong>{{ student.get_category_display|default:"N/A" }}</p>
+                </div>
+                <div class="info-item">
+                    <p><strong>Academic Year</strong>{{ fee_summary.academic_year|default:"N/A" }}</p>
+                </div>
+                <div class="info-item">
+                    <p><strong>Total Fee</strong>₹{{ fee_summary.total_fees|floatformat:2 }}</p>
+                </div>
+                <div class="info-item">
+                    <p><strong>Amount Paid</strong>₹{{ fee_summary.amount_paid|floatformat:2 }}</p>
+                </div>
+                <div class="info-item">
+                    <p><strong>Amount Due</strong>₹{{ fee_summary.amount_due|floatformat:2 }}</p>
+                </div>
+                <div class="info-item">
+                    <p><strong>Status</strong>
+                        {% with status=fee_summary.fee_status %}
+                            {% if status == 'paid' %}
+                                <span style="color:green;font-weight:bold;">Paid</span>
+                            {% elif status == 'partial' %}
+                                <span style="color:orange;font-weight:bold;">Partially Paid</span>
+                            {% else %}
+                                <span style="color:#e63946;font-weight:bold;">Pending</span>
+                            {% endif %}
+                        {% endwith %}
+                    </p>
+                </div>
+                {% if fee_summary.next_due_date %}
+                <div class="info-item">
+                    <p><strong>Next Due Date</strong>{{ fee_summary.next_due_date|date:"F d, Y" }}</p>
+                </div>
+                {% endif %}
+            </div>
+            
+            {% if fee_summary.recent_payments %}
+            <h3>Recent Payments</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Amount</th>
+                        <th>Payment Method</th>
+                        <th>Transaction ID</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for payment in fee_summary.recent_payments %}
+                    <tr>
+                        <td>{{ payment.payment_date|date:"F d, Y" }}</td>
+                        <td>₹{{ payment.amount|floatformat:2 }}</td>
+                        <td>{{ payment.get_payment_method_display }}</td>
+                        <td>{{ payment.transaction_id|default:"-" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% endif %}
+        </div>
+
+        <div class="card">
+            <h2>Attendance Report</h2>
+            <div class="attendance-section">
+                <div class="chart-container">
+                    {% if chart_data and chart_data != '[]' %}
+                        <canvas id="attendancePieChart"></canvas>
+                    {% else %}
+                        <p style="text-align: center; padding: 20px; color: #6c757d;">No attendance data available for chart.</p>
+                    {% endif %}
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Subject</th>
+                                <th>Total Classes</th>
+                                <th>Classes Attended</th>
+                                <th>Percentage</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for report in attendance_reports %}
+                            <tr>
+                                <td>{{ report.subject.name }} ({{ report.subject.code }})</td>
+                                <td>{{ report.total_classes }}</td>
+                                <td>{{ report.classes_attended }}</td>
+                                <td>{{ report.attendance_percentage|floatformat:2 }}%</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" style="text-align: center; padding: 20px; color: #6c757d;">
+                                    No attendance records found.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Academic Performance</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Subject</th>
+                            <th>Internal Marks</th>
+                            <th>Semester Marks</th>
+                            <th>Total Marks</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for mark in marks %}
+                        <tr>
+                            <td>{{ mark.subject.name }} ({{ mark.subject.code }})</td>
+                            <td>{{ mark.internal_marks }}</td>
+                            <td>{{ mark.semester_marks }}</td>
+                            <td>{{ mark.total_marks }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" style="text-align: center; padding: 20px; color: #6c757d;">
+                                No marks records found.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Recent Announcements</h2>
+            {% for notif in notifications %}
+                <div class="notification-item">
+                    <strong>{{ notif.title }}</strong>
+                    <p>{{ notif.message }}</p>
+                    <small>From: {{ notif.sender.get_full_name }} | {{ notif.created_at|date:"F d, Y, P" }}</small>
+                </div>
+            {% empty %}
+                <p style="text-align: center; padding: 20px; color: #6c757d;">
+                    No new announcements at this time.
+                </p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <script>
+        // Fee Reminder Popup Functionality
+        function dismissFeeReminder() {
+            document.getElementById('fee-reminder-modal').style.display = 'none';
+            // Send AJAX request to mark reminder as sent
+            fetch('/students/dismiss_fee_reminder/', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            });
+        }
+
+        // Attendance Chart
+        document.addEventListener('DOMContentLoaded', function () {
+            const chartData = {{ chart_data|safe }};
+            const chartLabels = {{ chart_labels|safe }};
+
+            if (chartData && chartData.length > 0) {
+                const ctx = document.getElementById('attendancePieChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: chartLabels,
+                        datasets: [{
+                            label: 'Attendance Percentage',
+                            data: chartData,
+                            backgroundColor: [
+                                '#1d3557', '#457b9d', '#a8dadc', '#f1faee',
+                                '#e63946', '#fb8500', '#ffb703', '#219ebc', '#8ecae6'
+                            ],
+                            borderColor: '#ffffff',
+                            borderWidth: 2,
+                            hoverOffset: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'right',
+                                labels: {
+                                    boxWidth: 20,
+                                    padding: 15
+                                }
+                            },
+                            title: {
+                                display: true,
+                                text: 'Attendance Percentage by Subject',
+                                font: { size: 16 },
+                                padding: { top: 10, bottom: 20 }
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

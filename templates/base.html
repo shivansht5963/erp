@@ -93,7 +93,21 @@
     </style>
 </head>
 <body>
-    <header class="header-bar"></header>
+    <header class="header-bar">
+        <nav style="max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;">
+            <div style="color: white; font-size: 1.25rem;">Academia ERP</div>
+            <div>
+                {% if user.is_authenticated %}
+                    {% if user.role == 'student' %}
+                        <a href="{% url 'students:dashboard' %}" style="color: white; text-decoration: none; margin-right: 1rem;">Dashboard</a>
+                    {% endif %}
+                    <a href="{% url 'accounts:logout' %}" style="color: white; text-decoration: none;">Logout</a>
+                {% else %}
+                    <a href="{% url 'accounts:login' %}" style="color: white; text-decoration: none;">Login</a>
+                {% endif %}
+            </div>
+        </nav>
+    </header>
     <main class="container">
         {% block content %}{% endblock %}
     </main>

@@ -350,6 +350,14 @@ class FeeReminder(models.Model):
         blank=True,
         help_text='When the reminder was actually sent'
     )
+    amount_due = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        help_text='Amount due for payment'
+    )
+    due_date = models.DateField(
+        help_text='Due date for the payment'
+    )
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,

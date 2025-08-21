@@ -1,0 +1,9 @@
+{% for notification in notifications %}
+    <div class="notification-item" id="notification-{{ notification.id }}">
+        <h3>{{ notification.title }}</h3>
+        <p>{{ notification.message }}</p>
+        <small>{{ notification.created_at|timesince }} ago</small>
+    </div>
+{% empty %}
+    <p>No new notifications</p>
+{% endfor %}

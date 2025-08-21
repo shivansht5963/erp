@@ -84,6 +84,23 @@
 </head>
 <body>
 
+{% if fee_reminder_popup %}
+<div id="fee-reminder-modal" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.5);z-index:9999;display:flex;align-items:center;justify-content:center;">
+    <div style="background:#fff;padding:2rem;border-radius:10px;max-width:400px;box-shadow:0 8px 32px rgba(0,0,0,0.2);text-align:center;">
+        <h2>Fee Reminder</h2>
+        <p>{{ fee_reminder_popup.message|linebreaks }}</p>
+        <button onclick="dismissFeeReminder()" style="margin-top:1rem;padding:0.5rem 1.5rem;background:#007bff;color:#fff;border:none;border-radius:5px;cursor:pointer;">Dismiss</button>
+    </div>
+</div>
+<script>
+function dismissFeeReminder() {
+    document.getElementById('fee-reminder-modal').style.display = 'none';
+    // Optionally, send an AJAX request to mark the reminder as sent
+    fetch('/students/dismiss_fee_reminder/', {method: 'POST', headers: {'X-CSRFToken': '{{ csrf_token }}'}});
+}
+</script>
+{% endif %}
+
 <div class="container">
     <h1>Welcome, {{ student.user.first_name }} {{ student.user.last_name }}!</h1>
     

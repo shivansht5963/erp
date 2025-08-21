@@ -6,127 +6,694 @@
     <title>My Dashboard - {{ student.user.get_full_name }}</title>
     <!-- Include Chart.js from a CDN for the pie chart -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background-color: #f0f2f5; color: #333; margin: 0; }
-        .container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
-        .card { background-color: #ffffff; border-radius: 12px; box-shadow: 0 6px 20px rgba(0,0,0,0.07); padding: 30px; margin-bottom: 30px; }
-        h1, h2 { color: #1d3557; }
-        h1 { font-size: 2rem; margin-bottom: 20px; }
-        h2 { font-size: 1.5rem; border-bottom: 2px solid #e9ecef; padding-bottom: 10px; margin-bottom: 20px; }
-        .student-info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
-        .info-item p { margin: 0; line-height: 1.6; }
-        .info-item strong { color: #457b9d; display: block; margin-bottom: 4px; font-size: 0.9rem; }
-        .attendance-section { display: grid; grid-template-columns: 1fr 2fr; gap: 40px; align-items: flex-start; }
-        .chart-container { max-width: 400px; margin: 0 auto; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { padding: 12px 15px; border-bottom: 1px solid #dee2e6; text-align: left; }
-        thead th { background-color: #457b9d; color: white; font-weight: 600; font-size: 0.9rem; text-transform: uppercase; }
-        tbody tr:nth-child(even) { background-color: #f8f9fa; }
-        tbody tr:hover { background-color: #e9ecef; }
-        @media (max-width: 992px) {
-            .attendance-section { grid-template-columns: 1fr; }
-            .chart-container { margin-bottom: 40px; }
+        :root {
+            --primary-color: #0891b2;
+            --secondary-color: #10b981;
+            --accent-color: #059669;
+            --background-color: #ffffff;
+            --card-background: #f9fafb;
+            --text-primary: #1f2937;
+            --text-secondary: #4b5563;
+            --text-muted: #6b7280;
+            --border-color: #e5e7eb;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #e53e3e;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        /* Header Styles */
+        .dashboard-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dashboard-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .welcome-section h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .welcome-section p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        /* Notification Badge */
+        .notification-badge {
+            position: relative;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .notification-badge:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.05);
+        }
+
+        .notification-badge[data-count]:after {
+            content: attr(data-count);
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: var(--danger-color);
+            color: white;
+            border-radius: 50%;
+            padding: 4px 8px;
+            font-size: 12px;
+            font-weight: 600;
+            min-width: 20px;
+            text-align: center;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        /* Card Styles */
+        .card {
+            background: var(--background-color);
+            border-radius: 1rem;
+            box-shadow: var(--shadow-lg);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .card-header h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--text-primary);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-icon {
+            width: 2rem;
+            height: 2rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        /* Info Grid */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .info-item {
+            background: linear-gradient(135deg, var(--card-background) 0%, #ffffff 100%);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .info-item:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary-color);
+        }
+
+        .info-item strong {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            color: var(--primary-color);
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .info-item p {
+            font-size: 1.125rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        /* Status Badges */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            font-weight: 600;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-paid {
+            background: linear-gradient(135deg, var(--success-color), #059669);
+            color: white;
+        }
+
+        .status-partial {
+            background: linear-gradient(135deg, var(--warning-color), #d97706);
+            color: white;
+        }
+
+        .status-pending {
+            background: linear-gradient(135deg, var(--danger-color), #dc2626);
+            color: white;
+        }
+
+        /* Attendance Section */
+        .attendance-section {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 3rem;
+            align-items: flex-start;
+        }
+
+        .chart-container {
+            background: var(--card-background);
+            border-radius: 1rem;
+            padding: 2rem;
+            text-align: center;
+            border: 1px solid var(--border-color);
+        }
+
+        .chart-container canvas {
+            max-height: 300px !important;
+        }
+
+        /* Table Styles */
+        .table-container {
+            overflow-x: auto;
+            border-radius: 0.75rem;
+            border: 1px solid var(--border-color);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        thead {
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+        }
+
+        thead th {
+            padding: 1rem 1.5rem;
+            color: white;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            text-align: left;
+        }
+
+        tbody td {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            font-weight: 500;
+        }
+
+        tbody tr:nth-child(even) {
+            background: var(--card-background);
+        }
+
+        tbody tr:hover {
+            background: #e0f2fe;
+            transform: scale(1.01);
+            transition: all 0.2s ease;
+        }
+
+        /* Modal Styles */
+        .notification-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .notification-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-xl);
+            border: 1px solid var(--border-color);
+        }
+
+        .notification-content h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .notification-item {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .notification-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .notification-item:hover {
+            background: var(--card-background);
+            transform: translateX(5px);
+        }
+
+        .notification-item h3 {
+            margin: 0 0 0.5rem 0;
+            color: var(--primary-color);
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+        }
+
+        .notification-item p {
+            margin: 0.5rem 0;
+            color: var(--text-secondary);
+        }
+
+        .notification-item small {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+
+        /* Button Styles */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger-color), #dc2626);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .attendance-section {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+            
+            .chart-container {
+                margin-bottom: 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-container {
+                padding: 1rem;
+            }
+            
+            .welcome-section h1 {
+                font-size: 2rem;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .card {
+                padding: 1.5rem;
+            }
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="card">
-            <h1>Welcome, {{ student.user.get_full_name }}!</h1>
-            <div class="student-info-grid">
-                <div class="info-item"><p><strong>Roll Number</strong>{{ student.roll_number }}</p></div>
-                <div class="info-item"><p><strong>Email Address</strong>{{ student.user.email }}</p></div>
-                <div class="info-item"><p><strong>Course</strong>{{ student.course.name }}</p></div>
-                <div class="info-item"><p><strong>Current Semester</strong>{{ student.semester }}</p></div>
-                {% if student.class_enrolled %}
-                    <div class="info-item"><p><strong>Department</strong>{{ student.class_enrolled.department.name }}</p></div>
-                    <div class="info-item"><p><strong>Class / Section</strong>{{ student.class_enrolled.section }}</p></div>
-                {% else %}
-                    <div class="info-item"><p><strong>Class / Section</strong>Not Assigned</p></div>
+    {% csrf_token %}
+    
+    <!-- Fee Reminder Popup -->
+    {% if fee_reminder_popup %}
+    <div id="feeReminderModal" class="notification-modal" style="display: flex;">
+        <div class="notification-content">
+            <h2 style="color: var(--danger-color);">
+                <span class="card-icon">💰</span>
+                Fee Payment Reminder
+            </h2>
+            <div style="margin: 1.5rem 0;">
+                <div class="info-item" style="margin-bottom: 1rem;">
+                    <strong>Payment Status</strong>
+                    <p style="color: var(--danger-color); font-weight: 600;">Your fee payment is pending</p>
+                </div>
+                <div class="info-item" style="margin-bottom: 1rem;">
+                    <strong>Due Amount</strong>
+                    <p style="font-size: 1.5rem; font-weight: 700; color: var(--danger-color);">₹{{ fee_reminder_popup.amount_due|floatformat:2 }}</p>
+                </div>
+                <div class="info-item" style="margin-bottom: 1rem;">
+                    <strong>Due Date</strong>
+                    <p style="font-weight: 600;">{{ fee_reminder_popup.due_date|date:"M d, Y" }}</p>
+                </div>
+                {% if fee_reminder_popup.message %}
+                <div class="info-item">
+                    <strong>Message</strong>
+                    <p style="font-style: italic;">{{ fee_reminder_popup.message }}</p>
+                </div>
                 {% endif %}
+            </div>
+            <button class="btn btn-danger" onclick="dismissFeeReminder()">
+                Dismiss Reminder
+            </button>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Notification Modal -->
+    <div id="notificationModal" class="notification-modal">
+        <div class="notification-content">
+            <h2>
+                <span class="card-icon">🔔</span>
+                Notifications
+            </h2>
+            <div id="notificationList">
+                {% for notification in notifications %}
+                    <div class="notification-item" id="notification-{{ notification.id }}">
+                        <h3>{{ notification.title }}</h3>
+                        <p>{{ notification.message }}</p>
+                        <small>{{ notification.created_at|timesince }} ago</small>
+                    </div>
+                {% empty %}
+                    <div class="notification-item">
+                        <p style="text-align: center; color: var(--text-muted);">No new notifications</p>
+                    </div>
+                {% endfor %}
+            </div>
+            <button class="btn btn-primary" onclick="closeNotifications()">Dismiss All</button>
+        </div>
+    </div>
+
+    <div class="dashboard-container">
+        <!-- Header Section -->
+        <div class="dashboard-header">
+            <div class="header-content">
+                <div class="welcome-section">
+                    <h1>Welcome Back!</h1>
+                    <p>{{ student.user.get_full_name }}</p>
+                </div>
+                <div class="notification-badge" data-count="{{ notifications|length }}" onclick="showNotifications()">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 22C13.1 22 14 21.1 14 20H10C10 21.1 10.9 22 12 22ZM18 16V11C18 7.93 16.37 5.36 13.5 4.68V4C13.5 3.17 12.83 2.5 12 2.5C11.17 2.5 10.5 3.17 10.5 4V4.68C7.64 5.36 6 7.92 6 11V16L4 18V19H20V18L18 16ZM16 17H8V11C8 8.52 9.51 6.5 12 6.5C14.49 6.5 16 8.52 16 11V17Z" fill="currentColor"/>
+                    </svg>
+                </div>
             </div>
         </div>
 
+        <!-- Student Information Card -->
+        <div class="card">
+            <div class="card-header">
+                <span class="card-icon">👤</span>
+                <h2>Personal Information</h2>
+            </div>
+            <div class="info-grid">
+                <div class="info-item">
+                    <strong>Roll Number</strong>
+                    <p>{{ student.roll_number }}</p>
+                </div>
+                <div class="info-item">
+                    <strong>Course</strong>
+                    <p>{{ student.course.name }}</p>
+                </div>
+                <div class="info-item">
+                    <strong>Class</strong>
+                    <p>{{ student.class_enrolled.name }}</p>
+                </div>
+                <div class="info-item">
+                    <strong>Semester</strong>
+                    <p>{{ student.semester }}</p>
+                </div>
+                <div class="info-item">
+                    <strong>Contact</strong>
+                    <p>{{ student.contact_number }}</p>
+                </div>
+                <div class="info-item">
+                    <strong>Address</strong>
+                    <p>{{ student.address }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fee Status Card -->
         {% load fee_tags %}
         {% get_fee_summary student as fee_summary %}
         <div class="card">
-            <h2>My Fees Status</h2>
+            <div class="card-header">
+                <span class="card-icon">💳</span>
+                <h2>Fee Status</h2>
+            </div>
             {% if fee_summary.total_fees >= 0 %}
-            <div class="student-info-grid">
+            <div class="info-grid">
                 <div class="info-item">
-                    <p><strong>Fee Category</strong>{{ student.get_category_display|default:"N/A" }}</p>
+                    <strong>Fee Category</strong>
+                    <p>{{ student.get_category_display|default:"N/A" }}</p>
                 </div>
                 <div class="info-item">
-                    <p><strong>Academic Year</strong>{{ fee_summary.academic_year|default:"N/A" }}</p>
+                    <strong>Academic Year</strong>
+                    <p>{{ fee_summary.academic_year|default:"N/A" }}</p>
                 </div>
                 <div class="info-item">
-                    <p><strong>Total Fee</strong>₹{{ fee_summary.total_fees|floatformat:2 }}</p>
+                    <strong>Total Fee</strong>
+                    <p style="font-size: 1.25rem; font-weight: 700;">₹{{ fee_summary.total_fees|floatformat:2 }}</p>
                 </div>
                 <div class="info-item">
-                    <p><strong>Amount Paid</strong>₹{{ fee_summary.amount_paid|floatformat:2 }}</p>
+                    <strong>Amount Paid</strong>
+                    <p style="color: var(--success-color); font-weight: 600;">₹{{ fee_summary.amount_paid|floatformat:2 }}</p>
                 </div>
                 <div class="info-item">
-                    <p><strong>Remaining Amount</strong>₹{{ fee_summary.amount_due|floatformat:2 }}</p>
+                    <strong>Remaining Amount</strong>
+                    <p style="color: var(--danger-color); font-weight: 600;">₹{{ fee_summary.amount_due|floatformat:2 }}</p>
                 </div>
                 <div class="info-item">
-                    <p><strong>Status</strong>
-                        {% with status=fee_summary.amount_due|get_fee_status:fee_summary.total_fees %}
-                            {% if status == 'paid' %}
-                                <span style="color:green;font-weight:bold;">Paid</span>
-                            {% elif status == 'partial' %}
-                                <span style="color:orange;font-weight:bold;">Partially Paid</span>
-                            {% else %}
-                                <span style="color:#e63946;font-weight:bold;">Pending</span>
-                            {% endif %}
-                        {% endwith %}
-                    </p>
+                    <strong>Status</strong>
+                    {% with status=fee_summary.amount_due|get_fee_status:fee_summary.total_fees %}
+                        {% if status == 'paid' %}
+                            <span class="status-badge status-paid">Paid</span>
+                        {% elif status == 'partial' %}
+                            <span class="status-badge status-partial">Partially Paid</span>
+                        {% else %}
+                            <span class="status-badge status-pending">Pending</span>
+                        {% endif %}
+                    {% endwith %}
                 </div>
                 {% if fee_summary.next_due_date %}
                 <div class="info-item">
-                    <p><strong>Next Due Date</strong>{{ fee_summary.next_due_date|date:"M d, Y" }}</p>
+                    <strong>Next Due Date</strong>
+                    <p style="font-weight: 600;">{{ fee_summary.next_due_date|date:"M d, Y" }}</p>
                 </div>
                 {% endif %}
             </div>
             
             <!-- Payment History -->
             {% if fee_summary.recent_payments %}
-            <div style="margin-top: 20px;">
-                <h3>Recent Payments</h3>
-                <table style="width: 100%; margin-top: 10px;">
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Amount</th>
-                            <th>Method</th>
-                            <th>Transaction ID</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for payment in fee_summary.recent_payments %}
-                        <tr>
-                            <td>{{ payment.payment_date|date:"M d, Y" }}</td>
-                            <td>₹{{ payment.amount|floatformat:2 }}</td>
-                            <td>{{ payment.get_payment_method_display }}</td>
-                            <td>{{ payment.transaction_id|default:"-" }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+            <div style="margin-top: 2rem;">
+                <h3 style="font-family: 'Montserrat', sans-serif; font-weight: 600; margin-bottom: 1rem; color: var(--text-primary);">Recent Payments</h3>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Amount</th>
+                                <th>Method</th>
+                                <th>Transaction ID</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for payment in fee_summary.recent_payments %}
+                            <tr>
+                                <td>{{ payment.payment_date|date:"M d, Y" }}</td>
+                                <td style="font-weight: 600; color: var(--success-color);">₹{{ payment.amount|floatformat:2 }}</td>
+                                <td>{{ payment.get_payment_method_display }}</td>
+                                <td>{{ payment.transaction_id|default:"-" }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
             {% endif %}
             {% else %}
-                <p style="color:#e63946;">No fee information available. Please contact the accounts department.</p>
+                <div class="info-item" style="text-align: center; padding: 2rem;">
+                    <p style="color: var(--danger-color); font-weight: 600;">No fee information available. Please contact the accounts department.</p>
+                </div>
             {% endif %}
         </div>
 
+        <!-- Attendance Report Card -->
         <div class="card">
-            <h2>My Attendance Report</h2>
+            <div class="card-header">
+                <span class="card-icon">📊</span>
+                <h2>Attendance Report</h2>
+            </div>
             <div class="attendance-section">
                 <div class="chart-container">
                     {% if chart_data and chart_data != '[]' %}
+                        <h3 style="font-family: 'Montserrat', sans-serif; font-weight: 600; margin-bottom: 1rem; color: var(--text-primary);">Attendance Overview</h3>
                         <canvas id="attendancePieChart"></canvas>
                     {% else %}
-                        <p style="text-align: center; padding: 20px; color: #6c757d;">No attendance data available for chart.</p>
+                        <div style="text-align: center; padding: 2rem;">
+                            <p style="color: var(--text-muted); font-size: 1.1rem;">No attendance data available for chart.</p>
+                        </div>
                     {% endif %}
                 </div>
                 <div class="table-container">
@@ -142,14 +709,18 @@
                         <tbody>
                             {% for report in attendance_reports %}
                             <tr>
-                                <td>{{ report.subject.name }} ({{ report.subject.code }})</td>
+                                <td style="font-weight: 600;">{{ report.subject.name }} ({{ report.subject.code }})</td>
                                 <td>{{ report.total_classes }}</td>
-                                <td>{{ report.classes_attended }}</td>
-                                <td>{{ report.attendance_percentage|floatformat:2 }}%</td>
+                                <td style="color: var(--success-color); font-weight: 600;">{{ report.classes_attended }}</td>
+                                <td>
+                                    <span style="font-weight: 600; {% if report.attendance_percentage >= 75 %}color: var(--success-color);{% elif report.attendance_percentage >= 50 %}color: var(--warning-color);{% else %}color: var(--danger-color);{% endif %}">
+                                        {{ report.attendance_percentage|floatformat:2 }}%
+                                    </span>
+                                </td>
                             </tr>
                             {% empty %}
                             <tr>
-                                <td colspan="4" style="text-align: center; padding: 20px; color: #6c757d;">No attendance records found.</td>
+                                <td colspan="4" style="text-align: center; padding: 2rem; color: var(--text-muted);">No attendance records found.</td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -158,39 +729,69 @@
             </div>
         </div>
 
-            <!-- Marks Card -->
-            <div class="card">
-                <h2>My Marks Report</h2>
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Subject</th>
-                                <th>Internal Marks</th>
-                                <th>Semester Marks</th>
-                                <th>Total Marks</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for mark in marks %}
-                            <tr>
-                                <td>{{ mark.subject.name }} ({{ mark.subject.code }})</td>
-                                <td>{{ mark.internal_marks }}</td>
-                                <td>{{ mark.semester_marks }}</td>
-                                <td>{{ mark.total_marks }}</td>
-                            </tr>
-                            {% empty %}
-                            <tr>
-                                <td colspan="4" style="text-align: center; padding: 20px; color: #6c757d;">No marks records found.</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
+        <!-- Marks Report Card -->
+        <div class="card">
+            <div class="card-header">
+                <span class="card-icon">🎓</span>
+                <h2>Marks Report</h2>
             </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Subject</th>
+                            <th>Internal Marks</th>
+                            <th>Semester Marks</th>
+                            <th>Total Marks</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for mark in marks %}
+                        <tr>
+                            <td style="font-weight: 600;">{{ mark.subject.name }} ({{ mark.subject.code }})</td>
+                            <td>{{ mark.internal_marks }}</td>
+                            <td>{{ mark.semester_marks }}</td>
+                            <td style="font-weight: 700; color: var(--primary-color);">{{ mark.total_marks }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" style="text-align: center; padding: 2rem; color: var(--text-muted);">No marks records found.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
     <script>
+        function dismissFeeReminder() {
+            fetch('{% url "students:dismiss_fee_reminder" %}', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                    'Content-Type': 'application/json'
+                }
+            }).then(response => {
+                if (response.ok) {
+                    document.getElementById('feeReminderModal').style.display = 'none';
+                } else {
+                    console.error('Failed to dismiss fee reminder');
+                }
+            }).catch(error => {
+                console.error('Error dismissing fee reminder:', error);
+            });
+            return false;
+        }
+
+        // Close fee reminder modal when clicking outside
+        document.addEventListener('click', function(event) {
+            const modal = document.getElementById('feeReminderModal');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+
         document.addEventListener('DOMContentLoaded', function () {
             const chartData = {{ chart_data|safe }};
             const chartLabels = {{ chart_labels|safe }};
@@ -205,12 +806,12 @@
                             label: 'Attendance Percentage',
                             data: chartData,
                             backgroundColor: [
-                                '#1d3557', '#457b9d', '#a8dadc', '#f1faee',
-                                '#e63946', '#fb8500', '#ffb703', '#219ebc', '#8ecae6'
+                                '#0891b2', '#10b981', '#059669', '#06b6d4',
+                                '#14b8a6', '#0d9488', '#0f766e', '#115e59'
                             ],
                             borderColor: '#ffffff',
-                            borderWidth: 2,
-                            hoverOffset: 4
+                            borderWidth: 3,
+                            hoverOffset: 8
                         }]
                     },
                     options: {
@@ -218,23 +819,67 @@
                         maintainAspectRatio: false,
                         plugins: {
                             legend: {
-                                position: 'right',
+                                position: 'bottom',
                                 labels: {
-                                    boxWidth: 20,
-                                    padding: 15
+                                    boxWidth: 15,
+                                    padding: 20,
+                                    font: {
+                                        family: 'Open Sans',
+                                        size: 12
+                                    }
                                 }
                             },
                             title: {
-                                display: true,
-                                text: 'Attendance Percentage by Subject',
-                                font: { size: 16 },
-                                padding: { top: 10, bottom: 20 }
+                                display: false
                             }
                         }
                     }
                 });
             }
         });
+
+        function showNotifications() {
+            document.getElementById('notificationModal').style.display = 'flex';
+        }
+
+        function closeNotifications() {
+            fetch('/notifications/mark-all-read/', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                    'Content-Type': 'application/json'
+                }
+            }).then(response => {
+                if (response.ok) {
+                    document.getElementById('notificationModal').style.display = 'none';
+                    document.querySelector('.notification-badge').removeAttribute('data-count');
+                }
+            });
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            if (event.target == document.getElementById('notificationModal')) {
+                document.getElementById('notificationModal').style.display = 'none';
+            }
+        }
+
+        // Check for new notifications periodically
+        setInterval(() => {
+            fetch('/notifications/check-new/')
+                .then(response => response.json())
+                .then(data => {
+                    const badge = document.querySelector('.notification-badge');
+                    if (data.count > 0) {
+                        badge.setAttribute('data-count', data.count);
+                        if (document.getElementById('notificationModal').style.display === 'flex') {
+                            document.getElementById('notificationList').innerHTML = data.notifications_html;
+                        }
+                    } else {
+                        badge.removeAttribute('data-count');
+                    }
+                });
+        }, 60000);
     </script>
 </body>
 </html>
