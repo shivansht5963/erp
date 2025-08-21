@@ -47,30 +47,75 @@
             </div>
         </div>
 
-        <!-- Fees Status Card -->
+        {% load fee_tags %}
+        {% get_fee_summary student as fee_summary %}
         <div class="card">
             <h2>My Fees Status</h2>
-            {% if fee_structure %}
+            {% if fee_summary.total_fees >= 0 %}
             <div class="student-info-grid">
-                <div class="info-item"><p><strong>Fee Category</strong>{{ fee_structure.category.name }}</p></div>
-                <div class="info-item"><p><strong>Academic Year</strong>{{ fee_structure.academic_year }}</p></div>
-                <div class="info-item"><p><strong>Total Fee</strong>₹{{ fee_structure.amount }}</p></div>
-                <div class="info-item"><p><strong>Amount Paid</strong>₹{{ fee_paid }}</p></div>
-                <div class="info-item"><p><strong>Remaining Amount</strong>₹{{ fee_due }}</p></div>
-                <div class="info-item"><p><strong>Status</strong>
-                    {% if fee_status == 'paid' %}
-                        <span style="color:green;font-weight:bold;">Paid</span>
-                    {% elif fee_status == 'partial' %}
-                        <span style="color:orange;font-weight:bold;">Partially Paid</span>
-                    {% elif fee_status == 'overdue' %}
-                        <span style="color:red;font-weight:bold;">Overdue</span>
-                    {% else %}
-                        <span style="color:#e63946;font-weight:bold;">Pending</span>
-                    {% endif %}
-                </p></div>
+                <div class="info-item">
+                    <p><strong>Fee Category</strong>{{ student.get_category_display|default:"N/A" }}</p>
+                </div>
+                <div class="info-item">
+                    <p><strong>Academic Year</strong>{{ fee_summary.academic_year|default:"N/A" }}</p>
+                </div>
+                <div class="info-item">
+                    <p><strong>Total Fee</strong>₹{{ fee_summary.total_fees|floatformat:2 }}</p>
+                </div>
+                <div class="info-item">
+                    <p><strong>Amount Paid</strong>₹{{ fee_summary.amount_paid|floatformat:2 }}</p>
+                </div>
+                <div class="info-item">
+                    <p><strong>Remaining Amount</strong>₹{{ fee_summary.amount_due|floatformat:2 }}</p>
+                </div>
+                <div class="info-item">
+                    <p><strong>Status</strong>
+                        {% with status=fee_summary.amount_due|get_fee_status:fee_summary.total_fees %}
+                            {% if status == 'paid' %}
+                                <span style="color:green;font-weight:bold;">Paid</span>
+                            {% elif status == 'partial' %}
+                                <span style="color:orange;font-weight:bold;">Partially Paid</span>
+                            {% else %}
+                                <span style="color:#e63946;font-weight:bold;">Pending</span>
+                            {% endif %}
+                        {% endwith %}
+                    </p>
+                </div>
+                {% if fee_summary.next_due_date %}
+                <div class="info-item">
+                    <p><strong>Next Due Date</strong>{{ fee_summary.next_due_date|date:"M d, Y" }}</p>
+                </div>
+                {% endif %}
             </div>
+            
+            <!-- Payment History -->
+            {% if fee_summary.recent_payments %}
+            <div style="margin-top: 20px;">
+                <h3>Recent Payments</h3>
+                <table style="width: 100%; margin-top: 10px;">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Amount</th>
+                            <th>Method</th>
+                            <th>Transaction ID</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for payment in fee_summary.recent_payments %}
+                        <tr>
+                            <td>{{ payment.payment_date|date:"M d, Y" }}</td>
+                            <td>₹{{ payment.amount|floatformat:2 }}</td>
+                            <td>{{ payment.get_payment_method_display }}</td>
+                            <td>{{ payment.transaction_id|default:"-" }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% endif %}
             {% else %}
-                <p style="color:#e63946;">No fee structure found for your category and semester. Please contact admin.</p>
+                <p style="color:#e63946;">No fee information available. Please contact the accounts department.</p>
             {% endif %}
         </div>
 

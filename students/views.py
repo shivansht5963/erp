@@ -55,25 +55,9 @@ def student_dashboard(request):
     from exams.models import Marks
     marks = Marks.objects.filter(student=student).select_related('subject')
 
-    # --- Fees logic ---
-    from fees.models import FeeCategory, FeeStructure, FeePayment
-    fee_category = FeeCategory.objects.filter(name__iexact=student.category).first()
-    fee_structure = None
-    fee_payment = None
-    fee_paid = 0
-    fee_due = 0
-    fee_status = 'N/A'
-    if fee_category:
-        fee_structure = FeeStructure.objects.filter(
-            category=fee_category,
-            course=student.course.name,
-            semester=student.semester
-        ).order_by('-academic_year').first()
-        if fee_structure:
-            fee_payment = FeePayment.objects.filter(student=student, fee_structure=fee_structure).first()
-            fee_paid = fee_payment.amount_paid if fee_payment else 0
-            fee_due = fee_structure.amount - fee_paid
-            fee_status = fee_payment.payment_status if fee_payment else 'pending'
+    # Get fee summary for the student
+    from fees.models import FeePayment
+    fee_summary = FeePayment.get_student_fee_summary(student)
 
     context = {
         'student': student,
@@ -81,10 +65,6 @@ def student_dashboard(request):
         'chart_labels': json.dumps(chart_labels),
         'chart_data': json.dumps(chart_data),
         'marks': marks,
-        'fee_structure': fee_structure,
-        'fee_payment': fee_payment,
-        'fee_paid': fee_paid,
-        'fee_due': fee_due,
-        'fee_status': fee_status,
+        'fee_summary': fee_summary,
     }
     return render(request, 'students/dashboard.html', context)

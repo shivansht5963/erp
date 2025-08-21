@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Receipt - {{ payment.transaction_id|default:'Fee Payment' }}</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f7fa;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #4caf50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 5px 5px 0 0;
+        }
+        .content {
+            background-color: white;
+            padding: 25px;
+            border-radius: 0 0 5px 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .receipt-details {
+            margin: 20px 0;
+            border: 1px solid #e0e0e0;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        .receipt-row {
+            display: flex;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .receipt-row:last-child {
+            border-bottom: none;
+        }
+        .receipt-label {
+            flex: 1;
+            padding: 12px 15px;
+            background-color: #f8f9fa;
+            font-weight: 500;
+            border-right: 1px solid #e0e0e0;
+        }
+        .receipt-value {
+            flex: 2;
+            padding: 12px 15px;
+        }
+        .amount-highlight {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #2e7d32;
+        }
+        .footer {
+            text-align: center;
+            color: #6c757d;
+            font-size: 0.8em;
+            margin-top: 30px;
+            padding-top: 15px;
+            border-top: 1px solid #e9ecef;
+        }
+        .btn {
+            display: inline-block;
+            background-color: #4caf50;
+            color: white !important;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            margin: 15px 0;
+            font-weight: 500;
+        }
+        .thank-you {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 1.1em;
+            color: #2e7d32;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 style="margin: 0; font-weight: 500;">Payment Receipt</h1>
+            <p style="margin: 5px 0 0; opacity: 0.9; font-size: 0.9em;">
+                Transaction #{{ payment.transaction_id|default:'N/A' }}
+            </p>
+        </div>
+        
+        <div class="content">
+            <div class="thank-you">
+                Thank you for your payment!
+            </div>
+            
+            <p>Dear {{ payment.student.user.get_full_name|default:payment.student.user.username }},</p>
+            
+            <p>This email confirms that we have received your payment. Below are the details of your transaction:</p>
+            
+            <div class="receipt-details">
+                <div class="receipt-row">
+                    <div class="receipt-label">Student ID</div>
+                    <div class="receipt-value">{{ payment.student.roll_number }}</div>
+                </div>
+                <div class="receipt-row">
+                    <div class="receipt-label">Fee Category</div>
+                    <div class="receipt-value">
+                        {{ payment.fee_structure.category.name }} ({{ payment.fee_structure.academic_year }} - Semester {{ payment.fee_structure.semester }})
+                    </div>
+                </div>
+                <div class="receipt-row">
+                    <div class="receipt-label">Payment Date</div>
+                    <div class="receipt-value">{{ payment.payment_date|date:"F d, Y" }}</div>
+                </div>
+                <div class="receipt-row">
+                    <div class="receipt-label">Payment Method</div>
+                    <div class="receipt-value">{{ payment.get_payment_method_display }}</div>
+                </div>
+                <div class="receipt-row">
+                    <div class="receipt-label">Amount Paid</div>
+                    <div class="receipt-value amount-highlight">₹{{ payment.amount|floatformat:2 }}</div>
+                </div>
+                {% if payment.transaction_id %}
+                <div class="receipt-row">
+                    <div class="receipt-label">Transaction ID</div>
+                    <div class="receipt-value">{{ payment.transaction_id }}</div>
+                </div>
+                {% endif %}
+                {% if payment.remarks %}
+                <div class="receipt-row">
+                    <div class="receipt-label">Remarks</div>
+                    <div class="receipt-value">{{ payment.remarks }}</div>
+                </div>
+                {% endif %}
+            </div>
+            
+            <p>You can view and download this receipt anytime from your student portal. Please keep this receipt for your records.</p>
+            
+            <p style="text-align: center;">
+                <a href="{{ receipt_url|default:'#' }}" class="btn">View Receipt in Portal</a>
+            </p>
+            
+            <p>If you have any questions about this payment, please contact our accounts department at {{ accounts_email|default:'accounts@example.com' }}.</p>
+            
+            <p>Thank you for your prompt payment and for choosing {{ site_name|default:'our institution' }}.</p>
+            
+            <p>Best regards,<br>
+            {{ site_name|default:"College Administration" }}</p>
+        </div>
+        
+        <div class="footer">
+            <p>This is an automated message. Please do not reply to this email.</p>
+            <p>© {% now "Y" %} {{ site_name|default:"College ERP System" }}. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>

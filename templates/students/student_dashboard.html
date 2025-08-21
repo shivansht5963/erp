@@ -136,6 +136,43 @@
         </div>
 
         <div class="card full-width">
+            <h2>Fee Information</h2>
+            <div class="student-info-grid">
+                <div><strong>Total Fees ({{ fee_summary.academic_year }}):</strong> ₹{{ fee_summary.total_fees|floatformat:2 }}</div>
+                <div><strong>Amount Paid:</strong> ₹{{ fee_summary.amount_paid|floatformat:2 }}</div>
+                <div><strong>Amount Due:</strong> ₹{{ fee_summary.amount_due|floatformat:2 }}</div>
+                <div><strong>Fee Status:</strong> {{ fee_summary.fee_status|title }}</div>
+                {% if fee_summary.next_due_date %}
+                    <div><strong>Next Due Date:</strong> {{ fee_summary.next_due_date|date:"F d, Y" }}</div>
+                {% endif %}
+            </div>
+            
+            {% if fee_summary.recent_payments %}
+            <h3>Recent Payments</h3>
+            <table class="detail-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Amount</th>
+                        <th>Payment Method</th>
+                        <th>Transaction ID</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for payment in fee_summary.recent_payments %}
+                    <tr>
+                        <td>{{ payment.payment_date|date:"F d, Y" }}</td>
+                        <td>₹{{ payment.amount|floatformat:2 }}</td>
+                        <td>{{ payment.get_payment_method_display }}</td>
+                        <td>{{ payment.transaction_id|default:"-" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% endif %}
+        </div>
+
+        <div class="card full-width">
             <h2>Recent Announcements</h2>
             {% for notif in notifications %}
                 <div class="notification-item">
