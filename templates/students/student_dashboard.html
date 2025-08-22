@@ -2,252 +2,154 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Dashboard</title>
-    <!-- We need the Chart.js library to create the pie chart -->
+    <!-- We'll use Chart.js for the donut chart -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            background-color: #eef1f5;
-            margin: 0;
-            padding: 2rem;
+        :root {
+            --bg-main: #eef2f7; --card-bg: #ffffff; --text-primary: #1e293b; --text-secondary: #64748b;
+            --blue: #4f46e5; --green: #10b981; --purple: #8b5cf6; --red: #ef4444; --light-blue: #c7d2fe;
+            --light-green: #a7f3d0; --light-purple: #ddd6fe; --light-red: #fecaca;
         }
-        .container {
-            max-width: 1200px;
-            margin: auto;
-        }
-        h1, h2 {
-            color: #333;
-        }
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            grid-template-rows: auto;
-            gap: 1.5rem;
-        }
-        .card {
-            background: #fff;
-            padding: 1.5rem;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-        }
-        .full-width {
-            grid-column: 1 / -1; /* Make this card span the full width */
-        }
-        /* Student Info Card Styles */
-        .student-info-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-        }
-        .student-info-grid div {
-            padding: 5px 0;
-        }
-        .student-info-grid strong {
-            color: #555;
-            display: block;
-        }
-        /* Table Styles */
-        .detail-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 1rem;
-        }
-        .detail-table th, .detail-table td {
-            text-align: left;
-            padding: 12px;
-            border-bottom: 1px solid #ddd;
-        }
-        .detail-table thead th {
-            background-color: #007bff;
-            color: white;
-        }
-        /* Notification Styles */
-        .notification-item {
-            border-bottom: 1px solid #eee;
-            padding: 1rem 0;
-        }
-        .notification-item:last-child {
-            border-bottom: none;
-        }
-        .notification-item strong { font-size: 1.1em; }
-        .notification-item p { margin: 0.5rem 0; }
-        .notification-item small { color: #777; }
-        .no-records { color: #555; }
-        
-        @media (max-width: 992px) {
-            .dashboard-grid {
-                grid-template-columns: 1fr;
-            }
-        }
+        body { font-family: 'Poppins', sans-serif; background-color: var(--bg-main); margin: 0; padding: 2rem; color: var(--text-primary); }
+        .dashboard-container { max-width: 1200px; margin: auto; display: grid; gap: 1.5rem; }
+        .grid-span-2 { grid-column: span 2; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+        h1 { font-size: 1.8rem; font-weight: 600; margin: 0; }
+        p { margin: 0; color: var(--text-secondary); }
+        .card { background-color: var(--card-bg); border-radius: 1rem; padding: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1); }
+        .info-cards { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; }
+        .info-grid { display: grid; gap: 1rem; }
+        .info-card { padding: 1.5rem; border-radius: 1rem; }
+        .info-card.blue { background-color: var(--blue); color: white; }
+        .info-card.green { background-color: var(--green); color: white; }
+        .info-card.purple { background-color: var(--purple); color: white; }
+        .info-card h3 { font-size: 0.9rem; font-weight: 500; margin: 0 0 0.5rem 0; opacity: 0.8; }
+        .info-card p { font-size: 1rem; font-weight: 600; color: white; margin-bottom: 0.25rem;}
+        .fee-card-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+        .fee-card { text-align: center; padding: 1rem; border-radius: 0.75rem; }
+        .fee-card p { font-size: 0.9rem; margin-bottom: 0.5rem; }
+        .fee-card span { font-size: 1.25rem; font-weight: 600; }
+        .fee-card.total { background-color: var(--light-blue); } .fee-card.paid { background-color: var(--light-green); }
+        .fee-card.due { background-color: var(--light-red); } .fee-card.status { background-color: var(--light-purple); }
+        .fee-card.due span { color: var(--red); }
+        .reports-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+        .report-card h2 { font-size: 1.1rem; font-weight: 600; margin: 0 0 1.5rem 0; text-align: center; }
+        .chart-container { position: relative; height: 200px; width: 200px; margin: 0 auto 1.5rem auto; }
+        .subject-item { margin-bottom: 1.5rem; }
+        .subject-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
+        .subject-name { font-weight: 500; } .subject-percent { font-weight: 600; }
+        .progress-bar { height: 8px; background-color: #e5e7eb; border-radius: 4px; overflow: hidden; }
+        .progress-bar-inner { height: 100%; background-color: var(--blue); }
+        .subject-stats { color: var(--text-secondary); font-size: 0.8rem; margin-top: 0.25rem; }
+        .marks-grid { display: flex; justify-content: space-between; background-color: #f8fafc; padding: 1rem; border-radius: 0.75rem; }
+        .marks-item { text-align: center; }
+        .marks-item p { font-size: 0.9rem; } .marks-item span { font-size: 1.1rem; font-weight: 600; }
     </style>
 </head>
 <body>
-
-{% if fee_reminder_popup %}
-<div id="fee-reminder-modal" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.5);z-index:9999;display:flex;align-items:center;justify-content:center;">
-    <div style="background:#fff;padding:2rem;border-radius:10px;max-width:400px;box-shadow:0 8px 32px rgba(0,0,0,0.2);text-align:center;">
-        <h2>Fee Reminder</h2>
-        <p>{{ fee_reminder_popup.message|linebreaks }}</p>
-        <button onclick="dismissFeeReminder()" style="margin-top:1rem;padding:0.5rem 1.5rem;background:#007bff;color:#fff;border:none;border-radius:5px;cursor:pointer;">Dismiss</button>
-    </div>
-</div>
-<script>
-function dismissFeeReminder() {
-    document.getElementById('fee-reminder-modal').style.display = 'none';
-    // Optionally, send an AJAX request to mark the reminder as sent
-    fetch('/students/dismiss_fee_reminder/', {method: 'POST', headers: {'X-CSRFToken': '{{ csrf_token }}'}});
-}
-</script>
-{% endif %}
-
-<div class="container">
-    <h1>Welcome, {{ student.user.first_name }} {{ student.user.last_name }}!</h1>
-    
-    <div class="dashboard-grid">
-        
-        <div class="card">
-            <h2>Student Information</h2>
-            <div class="student-info-grid">
-                <div><strong>Roll Number:</strong> {{ student.roll_number }}</div>
-                <div><strong>Email:</strong> {{ student.user.email }}</div>
-                <div><strong>Course:</strong> {{ student.course.name }}</div>
-                <div><strong>Department:</strong> {{ student.course.department.name }}</div>
-                <div><strong>Semester:</strong> {{ student.semester }}</div>
-            </div>
+    <div class="dashboard-container">
+        <div class="header grid-span-2">
+            <h1>Welcome, {{ student.user.get_full_name }}!</h1>
+            <p>Here's your academic overview.</p>
         </div>
 
-        <div class="card">
-            <h2>Overall Attendance Summary</h2>
-            <div class="chart-container" style="position: relative; height:250px;">
-                <canvas id="attendanceChart"></canvas>
-            </div>
-        </div>
-
-        <div class="card full-width">
-            <h2>Detailed Attendance Report</h2>
-            <table class="detail-table">
-                <thead>
-                    <tr>
-                        <th>Subject</th>
-                        <th>Total Classes</th>
-                        <th>Classes Attended</th>
-                        <th>Percentage</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for report in attendance_reports %}
-                        <tr>
-                            <td>{{ report.subject.name }} ({{ report.subject.code }})</td>
-                            <td>{{ report.total_classes }}</td>
-                            <td>{{ report.classes_attended }}</td>
-                            <td>{{ report.attendance_percentage|floatformat:2 }}%</td>
-                        </tr>
-                    {% empty %}
-                        <tr>
-                            <td colspan="4" class="no-records">No attendance records found.</td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-
-        <div class="card full-width">
-            <h2>Fee Information</h2>
-            <div class="student-info-grid">
-                <div><strong>Total Fees ({{ fee_summary.academic_year }}):</strong> ₹{{ fee_summary.total_fees|floatformat:2 }}</div>
-                <div><strong>Amount Paid:</strong> ₹{{ fee_summary.amount_paid|floatformat:2 }}</div>
-                <div><strong>Amount Due:</strong> ₹{{ fee_summary.amount_due|floatformat:2 }}</div>
-                <div><strong>Fee Status:</strong> {{ fee_summary.fee_status|title }}</div>
-                {% if fee_summary.next_due_date %}
-                    <div><strong>Next Due Date:</strong> {{ fee_summary.next_due_date|date:"F d, Y" }}</div>
-                {% endif %}
-            </div>
-            
-            {% if fee_summary.recent_payments %}
-            <h3>Recent Payments</h3>
-            <table class="detail-table">
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Amount</th>
-                        <th>Payment Method</th>
-                        <th>Transaction ID</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for payment in fee_summary.recent_payments %}
-                    <tr>
-                        <td>{{ payment.payment_date|date:"F d, Y" }}</td>
-                        <td>₹{{ payment.amount|floatformat:2 }}</td>
-                        <td>{{ payment.get_payment_method_display }}</td>
-                        <td>{{ payment.transaction_id|default:"-" }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            {% endif %}
-        </div>
-
-        <div class="card full-width">
-            <h2>Recent Announcements</h2>
-            {% for notif in notifications %}
-                <div class="notification-item">
-                    <strong>{{ notif.title }}</strong>
-                    <p>{{ notif.message }}</p>
-                    <small>From: {{ notif.sender.username }} | Received: {{ notif.created_at|date:"F d, Y, P" }}</small>
+        <div class="info-cards grid-span-2">
+            <div class="info-grid">
+                <div class="info-card blue">
+                    <h3>Academic Info</h3>
+                    <p>Roll: {{ student.roll_number }}</p>
+                    <p>Course: {{ student.course.name }}</p>
+                    <p>Semester: {{ student.semester }}</p>
                 </div>
-            {% empty %}
-                <p class="no-records">You have no new announcements at this time.</p>
-            {% endfor %}
+                <div class="info-card purple">
+                    <h3>Contact Info</h3>
+                    <p>Phone: {{ student.user.phone|default:"N/A" }}</p>
+                    <p>Address: {{ student.user.address|default:"N/A" }}</p>
+                </div>
+            </div>
+            <div class="info-card green">
+                <h3>Class Details</h3>
+                <p>Class: General</p>
+                <p>Category: General</p>
+            </div>
         </div>
 
+        <div class="card grid-span-2">
+            <div class="fee-card-grid">
+                <div class="fee-card total"><p>Total Fee</p><span>₹{{ total_fee|floatformat:2 }}</span></div>
+                <div class="fee-card paid"><p>Amount Paid</p><span>₹{{ amount_paid|floatformat:2 }}</span></div>
+                <div class="fee-card due"><p>Amount Due</p><span>₹{{ amount_due|floatformat:2 }}</span></div>
+                <div class="fee-card status"><p>Status</p><span>{{ fee_payment.get_payment_status_display|default:"Pending" }}</span></div>
+            </div>
+        </div>
+
+        <div class="reports-grid grid-span-2">
+            <div class="card report-card">
+                <h2>Attendance Report</h2>
+                <div class="chart-container"><canvas id="attendanceChart"></canvas></div>
+                {% for report in attendance_reports %}
+                <div class="subject-item">
+                    <div class="subject-header">
+                        <span class="subject-name">{{ report.subject.name }} ({{ report.subject.code }})</span>
+                        <!-- THIS LINE IS NOW CORRECTED -->
+                        <span class="subject-percent">{{ report.attendance_percentage|floatformat:1 }}%</span>
+                    </div>
+                    <div class="progress-bar"><div class="progress-bar-inner" style="width: {{ report.attendance_percentage }}%;"></div></div>
+                    <div class="subject-stats">Present: {{ report.classes_attended }} / Total: {{ report.total_classes }}</div>
+                </div>
+                {% empty %}
+                <p>No attendance reports found.</p>
+                {% endfor %}
+            </div>
+
+            <div class="card report-card">
+                <h2>Marks Report</h2>
+                {% for report in marks_reports %}
+                <div class="subject-item">
+                    <div class="subject-header">
+                        <span class="subject-name">{{ report.subject.name }} ({{ report.subject.code }})</span>
+                        <span class="subject-percent" style="color: var(--blue)">{{ report.total_marks|floatformat:1 }}</span>
+                    </div>
+                    <div class="marks-grid">
+                        <div class="marks-item"><p>Internal</p><span>{{ report.internal_marks|floatformat:1 }}</span></div>
+                        <div class="marks-item"><p>Semester</p><span>{{ report.semester_marks|floatformat:1 }}</span></div>
+                    </div>
+                </div>
+                {% empty %}
+                <p>No marks reports found.</p>
+                {% endfor %}
+            </div>
+        </div>
     </div>
-</div>
 
-<!-- This script builds the pie chart -->
-<script>
-    const ctx = document.getElementById('attendanceChart');
-    
-    // Get the data prepared by our Django view
-    const labels = JSON.parse('{{ chart_labels_json|safe }}');
-    const data = JSON.parse('{{ chart_data_json|safe }}');
-
-    new Chart(ctx, {
-        type: 'pie',
-        data: {
-            labels: labels,
-            datasets: [{
-                label: 'Attendance %',
-                data: data,
-                backgroundColor: [
-                    'rgba(255, 99, 132, 0.8)',
-                    'rgba(54, 162, 235, 0.8)',
-                    'rgba(255, 206, 86, 0.8)',
-                    'rgba(75, 192, 192, 0.8)',
-                    'rgba(153, 102, 255, 0.8)',
-                ],
-                borderColor: [
-                    'rgba(255, 99, 132, 1)',
-                    'rgba(54, 162, 235, 1)',
-                    'rgba(255, 206, 86, 1)',
-                    'rgba(75, 192, 192, 1)',
-                    'rgba(153, 102, 255, 1)',
-                ],
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    position: 'top',
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const ctx = document.getElementById('attendanceChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: {{ chart_labels|safe }},
+                    datasets: [{
+                        label: 'Attendance %',
+                        data: {{ chart_data|safe }},
+                        backgroundColor: ['#4f46e5', '#10b981', '#f97316', '#8b5cf6', '#3b82f6'],
+                        borderColor: '#ffffff',
+                        borderWidth: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                        legend: { position: 'bottom', labels: { boxWidth: 12, padding: 15 } }
+                    }
                 }
-            }
-        }
-    });
-</script>
-
+            });
+        });
+    </script>
 </body>
 </html>

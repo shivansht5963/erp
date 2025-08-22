@@ -6,6 +6,7 @@ class Attendance(models.Model):
     """
     Records a daily attendance entry. Now tracks the number of classes.
     """
+    status = models.BooleanField(default=False)
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
     date = models.DateField()

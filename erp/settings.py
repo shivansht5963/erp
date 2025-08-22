@@ -131,7 +131,7 @@ USE_TZ = True
 AUTH_USER_MODEL = 'accounts.CustomUser'
 
 # Tells Django where to send users after they successfully log in.
-LOGIN_REDIRECT_URL = '/accounts/dashboard/' # We will create a 'home' URL next.
+LOGIN_REDIRECT_URL = 'dashboard_redirect' # We will create a 'home' URL next.
 
 
 

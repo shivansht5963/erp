@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage {{ subject.name }}</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #f0f2f5; --card-bg: #ffffff; --text-color: #333; --text-secondary: #777;
+            --primary-color: #4a6cf7; --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); --border-radius: 12px;
+        }
+        body { font-family: 'Poppins', sans-serif; background-color: var(--bg-color); margin: 0; padding: 20px; }
+        .container { max-width: 1100px; margin: 0 auto; }
+        .page-header { margin-bottom: 24px; }
+        .page-header h1 { margin: 0; font-weight: 600; }
+        .page-header p { margin: 5px 0 0 0; color: var(--text-secondary); }
+        .back-link { display: inline-block; margin-bottom: 20px; color: var(--primary-color); text-decoration: none; font-weight: 500; }
+        .back-link:hover { text-decoration: underline; }
+        .tabs { display: flex; border-bottom: 2px solid #ddd; margin-bottom: 24px; }
+        .tab-link { padding: 12px 20px; cursor: pointer; border-bottom: 3px solid transparent; font-weight: 500; color: var(--text-secondary); }
+        .tab-link.active { border-bottom-color: var(--primary-color); color: var(--primary-color); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .card { background-color: var(--card-bg); border-radius: var(--border-radius); box-shadow: var(--card-shadow); padding: 24px; }
+        .card-header { font-size: 18px; font-weight: 600; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #eee; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #eee; }
+        tr:last-child td { border-bottom: none; }
+        th { font-weight: 600; color: #555; }
+        .form-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .date-input, .marks-input { padding: 8px; border: 1px solid #ccc; border-radius: 6px; width: 100px; text-align: center; }
+        .checkbox-label input { width: 1.2em; height: 1.2em; cursor: pointer; }
+        .btn { background-color: var(--primary-color); color: white; border: none; padding: 10px 20px; border-radius: 25px; cursor: pointer; font-weight: 500; transition: background-color 0.2s ease; }
+        .btn:hover { background-color: #3a5bde; }
+        .messages { list-style: none; padding: 0; margin-bottom: 20px; }
+        .messages .success { padding: 15px; background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; border-radius: 8px; }
+        .messages .warning { padding: 15px; background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; border-radius: 8px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="{% url 'faculty:teacher_dashboard' %}" class="back-link"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+        
+        {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+            <li class="{{ message.tags }}">{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+        <div class="page-header">
+            <h1>{{ subject.name }} <span style="font-weight:400; color: #777">({{ subject.code }})</span></h1>
+            <p>{{ subject.course.name }} - Semester {{ subject.semester }}</p>
+        </div>
+
+        <div class="tabs">
+            <div class="tab-link active" onclick="openTab(event, 'attendance')">Attendance</div>
+            <div class="tab-link" onclick="openTab(event, 'students')">Students</div>
+            <div class="tab-link" onclick="openTab(event, 'marks')">Marks</div>
+        </div>
+
+        <!-- ATTENDANCE TAB (No changes here) -->
+        <div id="attendance" class="tab-content active card">
+            <form action="{% url 'faculty:mark_attendance_for_class' subject.id %}" method="POST">
+                {% csrf_token %}
+                <div class="form-header">
+                    <h3 class="card-header" style="border:none; padding:0; margin:0;">Mark Attendance</h3>
+                    <input type="date" name="attendance_date" value="{{ today|date:'Y-m-d' }}" class="date-input">
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Roll Number</th>
+                            <th>Student Name</th>
+                            <th><label class="checkbox-label"><input type="checkbox" id="select-all-attendance"> Present All</label></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for student in students %}
+                        <tr>
+                            <td>{{ student.roll_number }}</td>
+                            <td>{{ student.user.get_full_name }}</td>
+                            <td><label class="checkbox-label"><input type="checkbox" name="status_{{ student.id }}" class="attendance-checkbox" {% if student.status %}checked{% endif %}></label></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <div style="text-align: right; margin-top: 20px;"><button type="submit" class="btn">Save Attendance</button></div>
+            </form>
+        </div>
+
+        <!-- STUDENTS TAB (No changes here) -->
+        <div id="students" class="tab-content card">
+            <h3 class="card-header">Student List ({{ students|length }})</h3>
+             <table>
+                <thead><tr><th>Roll Number</th><th>Name</th><th>Email</th><th>Contact</th></tr></thead>
+                <tbody>
+                    {% for student in students %}
+                    <tr>
+                        <td>{{ student.roll_number }}</td>
+                        <td>{{ student.user.get_full_name }}</td>
+                        <td>{{ student.user.email }}</td>
+                        <td>{{ student.contact_number }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="4">No students found for this class.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- MARKS TAB (UPDATED) -->
+        <div id="marks" class="tab-content card">
+            <h3 class="card-header">Manage Marks</h3>
+            <form action="{% url 'faculty:save_marks_for_class' subject.id %}" method="POST">
+                {% csrf_token %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Roll Number</th>
+                            <th>Student Name</th>
+                            <th>Internal Marks</th>
+                            <th>Semester Marks</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for student in students %}
+                        <tr>
+                            <td>{{ student.roll_number }}</td>
+                            <td>{{ student.user.get_full_name }}</td>
+                            <!-- UPDATED INPUT FIELDS -->
+                            <td><input type="text" inputmode="decimal" placeholder="e.g., 18.5" name="internal_marks_{{ student.id }}" value="{{ student.marks_instance.internal_marks|default_if_none:'' }}" class="marks-input"></td>
+                            <td><input type="text" inputmode="decimal" placeholder="e.g., 75" name="semester_marks_{{ student.id }}" value="{{ student.marks_instance.semester_marks|default_if_none:'' }}" class="marks-input"></td>
+                            <td>{{ student.marks_instance.total_marks|default_if_none:'-' }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <div style="text-align: right; margin-top: 20px;"><button type="submit" class="btn">Save Marks</button></div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openTab(evt, tabName) {
+            let i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabcontent.length; i++) { tabcontent[i].style.display = "none"; }
+            tablinks = document.getElementsByClassName("tab-link");
+            for (i = 0; i < tablinks.length; i++) { tablinks[i].className = tablinks[i].className.replace(" active", ""); }
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " active";
+        }
+        document.getElementById('select-all-attendance').addEventListener('change', function(event) {
+            const checkboxes = document.querySelectorAll('.attendance-checkbox');
+            checkboxes.forEach(checkbox => { checkbox.checked = event.target.checked; });
+        });
+    </script>
+</body>
+</html>

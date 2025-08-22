@@ -1,76 +1,20 @@
-from django.views.decorators.csrf import csrf_exempt
-from django.http import JsonResponse
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth import get_user_model
-from django.contrib import messages
-from django.shortcuts import render, redirect
-from django.utils import timezone
-from .forms import StudentForm, CustomUserCreationForm
-from .models import Student
-from exams.models import Marks
-from fees.models import FeePayment, FeeReminder
-from notifications.models import Notification
-import json
-@login_required
-@csrf_exempt
-def dismiss_fee_reminder(request):
-    """
-    View to handle dismissing fee reminders.
-    """
-    if request.method == 'POST':
-        try:
-            from django.utils import timezone
-            from fees.models import FeeReminder
-            
-            student = request.user.student
-            
-            # Get all unread reminders for the student
-            reminders = FeeReminder.objects.filter(
-                student=student,
-                sent=False
-            )
-            
-            if reminders.exists():
-                current_time = timezone.now()
-                # Mark all unread reminders as sent
-                reminders.update(sent=True, sent_date=current_time)
-                return JsonResponse({
-                    'status': 'ok',
-                    'message': 'Fee reminders dismissed successfully'
-                })
-            return JsonResponse({
-                'status': 'no_reminder',
-                'message': 'No pending reminders found'
-            })
-            
-        except Exception as e:
-            import traceback
-            print('Error in dismiss_fee_reminder:', str(e))
-            print(traceback.format_exc())
-            return JsonResponse({
-                'status': 'error',
-                'message': 'An error occurred while dismissing the reminder'
-            }, status=500)
-            
-    return JsonResponse({
-        'status': 'error',
-        'message': 'Invalid request method'
-    }, status=400)
 # students/views.py
-# from django.views.decorators.csrf import csrf_exempt
-# from django.http import JsonResponse
-# from django.contrib.auth.decorators import login_required
-# from django.contrib.auth import get_user_model
-# from django.contrib import messages
-# from django.shortcuts import render, redirect
-# from .forms import StudentForm
-# from .models import Student
-# import json
 
-User = get_user_model()
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from .forms import StudentForm
+from accounts.forms import CustomUserCreationForm
+from attendance.models import AttendanceReport
+from exams.models import Marks
+from fees.models import FeePayment
+from .models import Student
+import json
 
-# @user_passes_test(lambda u: u.is_staff)
 def add_student(request):
+    """
+    Handles the creation of a new student and their associated user account.
+    """
     if request.method == "POST":
         user_form = CustomUserCreationForm(request.POST)
         student_form = StudentForm(request.POST)
@@ -78,14 +22,17 @@ def add_student(request):
             user = user_form.save(commit=False)
             user.role = 'student'
             user.save()
+            
             student = student_form.save(commit=False)
             student.user = user
             student.save()
+            
             messages.success(request, "Student added successfully.")
             return redirect('students:add_student')
     else:
         user_form = CustomUserCreationForm()
         student_form = StudentForm()
+        
     return render(request, 'students/add_student.html', {
         'user_form': user_form,
         'student_form': student_form
@@ -94,51 +41,41 @@ def add_student(request):
 
 @login_required
 def student_dashboard(request):
-    """
-    Displays the dashboard for the logged-in student, including personal details,
-    attendance reports, and a pie chart of attendance percentages.
-    """
-    try:
-        student = request.user.student
-    except Student.DoesNotExist:
-        # Handle cases where the user is not a student (e.g., faculty, admin)
-        # You can redirect them to an appropriate page or show an error.
-        messages.error(request, "You do not have a student profile.")
-        return redirect('accounts:login') # Or your home page
+    if not hasattr(request.user, 'student'):
+        messages.error(request, "No student profile is associated with your account.")
+        return redirect('accounts:login')
 
-    attendance_reports = student.view_attendance()
+    student = request.user.student
+    
+    attendance_reports = AttendanceReport.objects.filter(student=student)
+    marks_reports = Marks.objects.filter(student=student)
+    fee_payment = FeePayment.objects.filter(student=student).order_by('-fee_structure__due_date').first()
 
-    # Prepare data for the Chart.js pie chart
-    chart_labels = [report.subject.name for report in attendance_reports]
-    chart_data = [report.attendance_percentage for report in attendance_reports]
-    from exams.models import Marks
-    marks = Marks.objects.filter(student=student).select_related('subject')
-
-    # Get fee summary for the student
-    from fees.models import FeePayment
-    fee_summary = FeePayment.get_student_fee_summary(student)
-
-    # Check for unsent fee reminder
-    from fees.models import FeeReminder
-    fee_reminder_popup = FeeReminder.objects.filter(student=student, sent=False).order_by('-reminder_date').first()
-
+    if fee_payment and fee_payment.fee_structure:
+        total_fee = fee_payment.fee_structure.amount
+        amount_paid = fee_payment.amount_paid
+        amount_due = total_fee - amount_paid
+    else:
+        total_fee, amount_paid, amount_due = 0, 0, 0
+    
+    # Prepare data for the donut chart
+    chart_labels = []
+    chart_data = []
+    for report in attendance_reports:
+        chart_labels.append(report.subject.name)
+        chart_data.append(report.attendance_percentage)
+        
     context = {
         'student': student,
         'attendance_reports': attendance_reports,
+        'marks_reports': marks_reports,
+        'fee_payment': fee_payment,
+        'total_fee': total_fee,
+        'amount_paid': amount_paid,
+        'amount_due': amount_due,
+        # Pass chart data to the template, safely converted to JSON
         'chart_labels': json.dumps(chart_labels),
         'chart_data': json.dumps(chart_data),
-        'marks': marks,
-        'fee_summary': fee_summary,
-        'fee_reminder_popup': fee_reminder_popup,
     }
-    # Get recent announcements
-    from notifications.models import Notification
-    notifications = Notification.objects.filter(
-        recipient=student,
-        is_read=False
-    ).order_by('-created_at')[:5]
     
-    # Add notifications to context
-    context['notifications'] = notifications
-    
-    return render(request, 'students/dashboard.html', context)
+    return render(request, 'students/student_dashboard.html', context)
