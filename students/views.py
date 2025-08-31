@@ -49,14 +49,13 @@ def student_dashboard(request):
     
     attendance_reports = AttendanceReport.objects.filter(student=student)
     marks_reports = Marks.objects.filter(student=student)
-    fee_payment = FeePayment.objects.filter(student=student).order_by('-fee_structure__due_date').first()
-
-    if fee_payment and fee_payment.fee_structure:
-        total_fee = fee_payment.fee_structure.amount
-        amount_paid = fee_payment.amount_paid
-        amount_due = total_fee - amount_paid
-    else:
-        total_fee, amount_paid, amount_due = 0, 0, 0
+    
+    # Get fee summary using the helper method
+    fee_summary = FeePayment.get_student_fee_summary(student)
+    total_fee = fee_summary['total_fees']
+    amount_paid = fee_summary['amount_paid']
+    amount_due = fee_summary['amount_due']
+    fee_payment = fee_summary['recent_payments'].first() if fee_summary['recent_payments'].exists() else None
     
     # Prepare data for the donut chart
     chart_labels = []
