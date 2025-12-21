@@ -8,15 +8,32 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             background-color: #0a1929;
             color: white;
-            margin: 0;
             height: 100vh;
-            display: grid;
-            place-items: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             overflow: hidden;
             position: relative;
+            padding: 1rem;
+        }
+
+        .container-wrapper {
+            display: flex;
+            gap: 1.5rem;
+            width: 100%;
+            max-width: 1200px;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
         }
 
         .login-card {
@@ -49,6 +66,17 @@
             margin-bottom: 1.2rem;
         }
 
+        .form-control::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .form-control:focus {
+            background-color: rgba(255, 255, 255, 0.05);
+            border-color: #4e95ff;
+            color: white;
+            box-shadow: 0 0 0 0.2rem rgba(78, 149, 255, 0.25);
+        }
+
         .btn-login {
             background: #4e95ff;
             border: none;
@@ -57,6 +85,13 @@
             border-radius: 8px;
             width: 100%;
             margin-top: 1.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .btn-login:hover {
+            background: #3a7dd8;
         }
 
         .error-message {
@@ -68,9 +103,7 @@
 
         /* DEV INFO PANEL */
         .dev-info {
-            position: absolute;
-            bottom: 25px;
-            left: 25px;
+            width: 100%;
             max-width: 380px;
             background: rgba(255, 255, 255, 0.04);
             backdrop-filter: blur(10px);
@@ -78,48 +111,192 @@
             padding: 1.2rem;
             border: 1px solid rgba(255,255,255,0.1);
             font-size: 0.85rem;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .dev-info::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .dev-info::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+
+        .dev-info::-webkit-scrollbar-thumb {
+            background: rgba(78, 149, 255, 0.5);
+            border-radius: 10px;
+        }
+
+        .dev-info::-webkit-scrollbar-thumb:hover {
+            background: rgba(78, 149, 255, 0.8);
         }
 
         .dev-title {
             color: #4e95ff;
             font-weight: 600;
-            margin-bottom: 0.2rem;
+            margin-bottom: 0.8rem;
         }
 
         .role {
             font-weight: 600;
-            margin-top: 0.8rem;
+            margin-top: 1rem;
             display: block;
+            color: #8364e8;
         }
 
         .cred-row {
             background: rgba(255,255,255,0.03);
             border: 1px solid rgba(255,255,255,0.08);
             border-radius: 6px;
-            padding: 0.4rem 0.5rem;
+            padding: 0.5rem;
             margin-bottom: 0.4rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
             font-family: monospace;
+            font-size: 0.8rem;
+            word-break: break-all;
         }
 
         .cred-label {
-            font-size: 0.65rem;
+            font-size: 0.7rem;
             color: rgba(255,255,255,0.6);
-            margin-bottom: 2px;
+            margin-bottom: 0.3rem;
+            display: block;
         }
 
         .cred-block {
-            margin-bottom: 0.4rem;
+            margin-bottom: 0.8rem;
         }
 
         .cred-row button {
             background: none;
             border: none;
             color: #4e95ff;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             cursor: pointer;
+            padding: 0.2rem 0.4rem;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .cred-row button:hover {
+            color: #8364e8;
+        }
+
+        .admin-link {
+            color: #4e95ff;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .admin-link:hover {
+            color: #8364e8;
+        }
+
+        /* RESPONSIVE STYLES */
+        @media (max-width: 768px) {
+            body {
+                padding: 0.5rem;
+            }
+
+            .container-wrapper {
+                gap: 1rem;
+            }
+
+            .login-card {
+                padding: 2rem;
+            }
+
+            .login-title {
+                font-size: 1.8rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .dev-info {
+                max-height: 50vh;
+                font-size: 0.8rem;
+            }
+
+            .cred-row {
+                padding: 0.4rem;
+                font-size: 0.75rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 0.5rem;
+                height: auto;
+                min-height: 100vh;
+            }
+
+            .container-wrapper {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .login-card {
+                padding: 1.5rem;
+                width: 100%;
+            }
+
+            .login-title {
+                font-size: 1.6rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .form-control {
+                padding: 0.7rem 0.8rem;
+                margin-bottom: 1rem;
+                font-size: 1rem;
+            }
+
+            .btn-login {
+                padding: 0.7rem;
+                margin-top: 1rem;
+            }
+
+            .dev-info {
+                width: 100%;
+                max-height: 45vh;
+                font-size: 0.75rem;
+                padding: 1rem;
+            }
+
+            .role {
+                margin-top: 0.8rem;
+                font-size: 0.9rem;
+            }
+
+            .cred-block {
+                margin-bottom: 0.6rem;
+            }
+
+            .cred-row {
+                padding: 0.35rem;
+                font-size: 0.7rem;
+                flex-wrap: wrap;
+                gap: 0.3rem;
+            }
+
+            .cred-row button {
+                font-size: 0.65rem;
+            }
+
+            .cred-label {
+                font-size: 0.65rem;
+                margin-bottom: 0.2rem;
+            }
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+            font-weight: 500;
         }
     </style>
 </head>
@@ -127,81 +304,83 @@
 {% load form_tags %}
 <body>
 
-    <!-- LOGIN CARD -->
-    <div class="login-card">
-        <h1 class="login-title">Welcome Back</h1>
+    <div class="container-wrapper">
+        <!-- LOGIN CARD -->
+        <div class="login-card">
+            <h1 class="login-title">Welcome Back</h1>
 
-        <form method="POST">
-            {% csrf_token %}
+            <form method="POST">
+                {% csrf_token %}
 
-            <label>Username</label>
-            {{ form.username|addclass:"form-control" }}
-            {% if form.username.errors %}
-                <div class="error-message">{{ form.username.errors.0 }}</div>
-            {% endif %}
+                <label>Username</label>
+                {{ form.username|addclass:"form-control" }}
+                {% if form.username.errors %}
+                    <div class="error-message">{{ form.username.errors.0 }}</div>
+                {% endif %}
 
-            <label>Password</label>
-            {{ form.password|addclass:"form-control" }}
-            {% if form.password.errors %}
-                <div class="error-message">{{ form.password.errors.0 }}</div>
-            {% endif %}
+                <label>Password</label>
+                {{ form.password|addclass:"form-control" }}
+                {% if form.password.errors %}
+                    <div class="error-message">{{ form.password.errors.0 }}</div>
+                {% endif %}
 
-            <button type="submit" class="btn btn-login">Sign In</button>
-        </form>
-    </div>
-
-    <!-- DEV INFO -->
-    <div class="dev-info">
-        <div class="dev-title">🚧 Development Build</div>
-        Demo credentials below.<br>
-        Admin panel: <a href="https://erp-9pbn.onrender.com/admin/" target="_blank">/admin</a>
-
-        <span class="role">Students</span>
-
-        <div class="cred-block">
-            <div class="cred-label">User ID (Email)</div>
-            <div class="cred-row"><span>rishab@gmail.com</span><button onclick="copyText('rishab@gmail.com')">Copy</button></div>
-            <div class="cred-label">Password</div>
-            <div class="cred-row"><span>rishu1234</span><button onclick="copyText('rishu1234')">Copy</button></div>
+                <button type="submit" class="btn btn-login">Sign In</button>
+            </form>
         </div>
 
-        <div class="cred-block">
-            <div class="cred-label">User ID (Email)</div>
-            <div class="cred-row"><span>rutuja@gmail.com</span><button onclick="copyText('rutuja@gmail.com')">Copy</button></div>
-            <div class="cred-label">Password</div>
-            <div class="cred-row"><span>rutu12345</span><button onclick="copyText('rutu12345')">Copy</button></div>
-        </div>
+        <!-- DEV INFO -->
+        <div class="dev-info">
+            <div class="dev-title">🚧 Development Build</div>
+            Demo credentials below.<br>
+            Admin panel: <a class="admin-link" href="https://erp-9pbn.onrender.com/admin/" target="_blank">/admin</a>
 
-        <div class="cred-block">
-            <div class="cred-label">User ID (Email)</div>
-            <div class="cred-row"><span>aaditya@gmail.com</span><button onclick="copyText('aaditya@gmail.com')">Copy</button></div>
-            <div class="cred-label">Password</div>
-            <div class="cred-row"><span>aadi1234</span><button onclick="copyText('aadi1234')">Copy</button></div>
-        </div>
+            <span class="role">Students</span>
 
-        <span class="role">Teachers</span>
+            <div class="cred-block">
+                <div class="cred-label">User ID (Email)</div>
+                <div class="cred-row"><span>rishab@gmail.com</span><button onclick="copyText('rishab@gmail.com')">Copy</button></div>
+                <div class="cred-label">Password</div>
+                <div class="cred-row"><span>rishu1234</span><button onclick="copyText('rishu1234')">Copy</button></div>
+            </div>
 
-        <div class="cred-block">
-            <div class="cred-label">User ID (Email)</div>
-            <div class="cred-row"><span>sanchitajarare@gmail.com</span><button onclick="copyText('sanchitajarare@gmail.com')">Copy</button></div>
-            <div class="cred-label">Password</div>
-            <div class="cred-row"><span>sanchuj123</span><button onclick="copyText('sanchuj123')">Copy</button></div>
-        </div>
+            <div class="cred-block">
+                <div class="cred-label">User ID (Email)</div>
+                <div class="cred-row"><span>rutuja@gmail.com</span><button onclick="copyText('rutuja@gmail.com')">Copy</button></div>
+                <div class="cred-label">Password</div>
+                <div class="cred-row"><span>rutu12345</span><button onclick="copyText('rutu12345')">Copy</button></div>
+            </div>
 
-        <div class="cred-block">
-            <div class="cred-label">User ID (Email)</div>
-            <div class="cred-row"><span>yashmhatre@gmail.com</span><button onclick="copyText('yashmhatre@gmail.com')">Copy</button></div>
-            <div class="cred-label">Password</div>
-            <div class="cred-row"><span>mhatre123</span><button onclick="copyText('mhatre123')">Copy</button></div>
-        </div>
+            <div class="cred-block">
+                <div class="cred-label">User ID (Email)</div>
+                <div class="cred-row"><span>aaditya@gmail.com</span><button onclick="copyText('aaditya@gmail.com')">Copy</button></div>
+                <div class="cred-label">Password</div>
+                <div class="cred-row"><span>aadi1234</span><button onclick="copyText('aadi1234')">Copy</button></div>
+            </div>
 
-        <span class="role">Admin</span>
+            <span class="role">Teachers</span>
 
-        <div class="cred-block">
-            <div class="cred-label">User ID (Email)</div>
-            <div class="cred-row"><span>admin@erp.com</span><button onclick="copyText('admin@erp.com')">Copy</button></div>
-            <div class="cred-label">Password</div>
-            <div class="cred-row"><span>adminpass</span><button onclick="copyText('adminpass')">Copy</button></div>
+            <div class="cred-block">
+                <div class="cred-label">User ID (Email)</div>
+                <div class="cred-row"><span>sanchitajarare@gmail.com</span><button onclick="copyText('sanchitajarare@gmail.com')">Copy</button></div>
+                <div class="cred-label">Password</div>
+                <div class="cred-row"><span>sanchuj123</span><button onclick="copyText('sanchuj123')">Copy</button></div>
+            </div>
+
+            <div class="cred-block">
+                <div class="cred-label">User ID (Email)</div>
+                <div class="cred-row"><span>yashmhatre@gmail.com</span><button onclick="copyText('yashmhatre@gmail.com')">Copy</button></div>
+                <div class="cred-label">Password</div>
+                <div class="cred-row"><span>mhatre123</span><button onclick="copyText('mhatre123')">Copy</button></div>
+            </div>
+
+            <span class="role">Admin</span>
+
+            <div class="cred-block">
+                <div class="cred-label">User ID (Email)</div>
+                <div class="cred-row"><span>admin@erp.com</span><button onclick="copyText('admin@erp.com')">Copy</button></div>
+                <div class="cred-label">Password</div>
+                <div class="cred-row"><span>adminpass</span><button onclick="copyText('adminpass')">Copy</button></div>
+            </div>
         </div>
     </div>
 
