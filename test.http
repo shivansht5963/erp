@@ -252,6 +252,17 @@ Authorization: Token @token
 GET https://erp-9pbn.onrender.com/api/v1/notifications/1/
 Authorization: Token @token
 
+### 0. Create Notification - POST /notifications/
+POST https://erp-9pbn.onrender.com/api/v1/notifications/
+Authorization: Token @token
+Content-Type: application/json
+
+{
+  "recipient": 1,
+  "title": "Exam Schedule Reminder",
+  "message": "Dear student, your exam is scheduled on 2026-01-10 at 10:00 AM."
+}
+
 ### 3. Mark Notification as Read - PUT /notifications/{id}/mark_read/
 PUT https://erp-9pbn.onrender.com/api/v1/notifications/1/mark_read/
 Authorization: Token @token
