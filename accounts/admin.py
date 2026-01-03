@@ -1,8 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from .models import CustomUser
-from rest_framework_api_key.admin import APIKeyModelAdmin
-from rest_framework_api_key.models import APIKey
 
 class CustomUserAdmin(UserAdmin):
     model = CustomUser
