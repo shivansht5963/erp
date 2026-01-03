@@ -1,0 +1,324 @@
+### ERP API Test Suite
+### Base URL: http://127.0.0.1:8000/api/v1/
+### Tests for all 36 APIs
+
+### ============================================================
+### IMPORTANT: TOKEN WORKFLOW
+### ============================================================
+### 1. First, run the LOGIN request below to get the auth_token
+### 2. Copy the auth_token value from the response
+### 3. Replace TOKEN_VALUE with the copied token in all other requests
+### 4. All Bearer token requests will now work
+### ============================================================
+
+### ============================================================
+### AUTHENTICATION ENDPOINTS (6 APIs)
+### ============================================================
+
+### 1. Login - POST /auth/login/
+### ⭐ RUN THIS FIRST TO GET TOKEN ⭐
+POST http://127.0.0.1:8000/api/v1/auth/login/
+Content-Type: application/json
+
+{
+  "email": "sanchitajarare@gmail.com",
+  "password": "sanchuj123"
+}
+
+### SAVE THE auth_token FROM RESPONSE AND USE BELOW:
+@token = bd097d4c4106cfcbf7dd5215752d6f2bc201713c
+
+### 2. Get User Profile - GET /auth/profile/
+GET http://127.0.0.1:8000/api/v1/auth/profile/
+Authorization: Token @token
+
+### 3. Update Profile - PUT /auth/profile/
+PUT http://127.0.0.1:8000/api/v1/auth/profile/
+Authorization: Token @token
+Content-Type: application/json
+
+{
+  "first_name": "Rutuja",
+  "last_name": "Updated",
+  "phone": "9876543210",
+  "address": "New Address"
+}
+
+### 4. Change Password - POST /auth/change-password/
+POST http://127.0.0.1:8000/api/v1/auth/change-password/
+Authorization: Token @token
+Content-Type: application/json
+
+{
+  "old_password": "rutu12345",
+  "new_password": "newpassword123",
+  "confirm_password": "newpassword123"
+}
+
+### 5. Logout - POST /auth/logout/
+POST http://127.0.0.1:8000/api/v1/auth/logout/
+Authorization: Token @token
+
+### 6. Refresh Token - POST /auth/refresh-token/
+POST http://127.0.0.1:8000/api/v1/auth/refresh-token/
+Authorization: Token @token
+Content-Type: application/json
+
+{
+  "refresh": "old_refresh_token_here"
+}
+
+### ============================================================
+### STUDENT ENDPOINTS (6 APIs)
+### ============================================================
+
+### 1. List All Students - GET /students/
+GET http://127.0.0.1:8000/api/v1/students/
+Authorization: Token @token
+
+### 2. Get Student Details - GET /students/{id}/
+GET http://127.0.0.1:8000/api/v1/students/1/
+Authorization: Token @token
+
+### 3. Get Student Attendance - GET /students/{id}/attendance/
+GET http://127.0.0.1:8000/api/v1/students/1/attendance/
+Authorization: Token @token
+
+### 4. Get Student Marks - GET /students/{id}/marks/
+GET http://127.0.0.1:8000/api/v1/students/1/marks/
+Authorization: Token @token
+
+### 5. Get Student Fee Status - GET /students/{id}/fees/
+GET http://127.0.0.1:8000/api/v1/students/1/fees/
+Authorization: Token @token
+
+### 6. Get Student Fee Payments History - GET /students/{id}/fee-payments/
+GET http://127.0.0.1:8000/api/v1/students/1/fee-payments/
+Authorization: Token @token
+
+### ============================================================
+### FACULTY ENDPOINTS (5 APIs)
+### ============================================================
+
+### 1. List All Departments - GET /departments/
+GET http://127.0.0.1:8000/api/v1/departments/
+Authorization: Token @token
+
+### 2. List All Courses - GET /courses/
+GET http://127.0.0.1:8000/api/v1/courses/
+Authorization: Token @token
+
+### 3. List All Subjects - GET /subjects/
+GET http://127.0.0.1:8000/api/v1/subjects/
+Authorization: Token @token
+
+### 4. List All Classes - GET /classes/
+GET http://127.0.0.1:8000/api/v1/classes/
+Authorization: Token @token
+
+### 5. Get Teacher's Assigned Subjects - GET /teachers/{id}/subjects/
+GET http://127.0.0.1:8000/api/v1/teachers/1/subjects/
+Authorization: Token @token
+
+### ============================================================
+### ATTENDANCE ENDPOINTS (3 APIs)
+### ============================================================
+
+### 1. List Attendance Records - GET /attendance/
+GET http://127.0.0.1:8000/api/v1/attendance/
+Authorization: Token @token
+
+### 1b. List Attendance by Student - GET /attendance/?student_id=1
+GET http://127.0.0.1:8000/api/v1/attendance/?student_id=1
+Authorization: Token @token
+
+### 2. Mark Attendance - POST /attendance/
+POST http://127.0.0.1:8000/api/v1/attendance/
+Authorization: Token @token
+Content-Type: application/json
+
+{
+  "student": 1,
+  "subject": 1,
+  "date": "2026-01-03",
+  "status": true,
+  "classes_held": 2,
+  "classes_attended": 2,
+  "marked_by": 1
+}
+
+### 3. Delete Attendance - DELETE /attendance/{id}/
+DELETE http://127.0.0.1:8000/api/v1/attendance/1/
+Authorization: Token @token
+
+### ============================================================
+### FEES ENDPOINTS (4 APIs)
+### ============================================================
+
+### 1. Record Fee Payment - POST /fees/payments/
+POST http://127.0.0.1:8000/api/v1/fees/payments/
+Authorization: Token @token
+Content-Type: application/json
+
+{
+  "student": 1,
+  "amount": "5000.00",
+  "payment_date": "2026-01-03",
+  "payment_method": "online",
+  "transaction_id": "TXN123456",
+  "status": "paid"
+}
+
+### 2. Get Student Payment History - GET /fees/payments/?student_id=1
+GET http://127.0.0.1:8000/api/v1/fees/payments/?student_id=1
+Authorization: Token @token
+
+### Alternative: Get Student Payment History (via action)
+GET http://127.0.0.1:8000/api/v1/fees/payments/student_payments/?student_id=1
+Authorization: Token @token
+
+### 3. Get Student Due Fees - GET /fees/student_due/?student_id=1
+GET http://127.0.0.1:8000/api/v1/fees/payments/student_due/?student_id=1
+Authorization: Token @token
+
+### 4. Send Fee Reminder - POST /fees/payments/send_reminder/
+POST http://127.0.0.1:8000/api/v1/fees/payments/send_reminder/
+Authorization: Token @token
+Content-Type: application/json
+
+{
+  "student_id": 1
+}
+
+### ============================================================
+### MARKS/EXAMS ENDPOINTS (8 APIs)
+### ============================================================
+
+### 1. List All Marks - GET /marks/
+GET http://127.0.0.1:8000/api/v1/marks/
+Authorization: Token @token
+
+### 2. Create Marks Entry - POST /marks/
+POST http://127.0.0.1:8000/api/v1/marks/
+Authorization: Token @token
+Content-Type: application/json
+
+{
+  "student": 1,
+  "subject": 1,
+  "internal_marks": 40,
+  "semester_marks": 60
+}
+
+### 3. Get Mark Details - GET /marks/{id}/
+GET http://127.0.0.1:8000/api/v1/marks/1/
+Authorization: Token @token
+
+### 4. Update Marks - PUT /marks/{id}/
+PUT http://127.0.0.1:8000/api/v1/marks/1/
+Authorization: Token @token
+Content-Type: application/json
+
+{
+  "internal_marks": 42,
+  "semester_marks": 65
+}
+
+### 5. Delete Marks - DELETE /marks/{id}/
+DELETE http://127.0.0.1:8000/api/v1/marks/1/
+Authorization: Token @token
+
+### 6. Get Student Marks - GET /marks/by_student/?student_id=1
+GET http://127.0.0.1:8000/api/v1/marks/by_student/?student_id=1
+Authorization: Token @token
+
+### 7. Get Subject Marks - GET /marks/by_subject/?subject_id=1
+GET http://127.0.0.1:8000/api/v1/marks/by_subject/?subject_id=1
+Authorization: Token @token
+
+### 8. Get Result Card - GET /results/?student_id=1
+GET http://127.0.0.1:8000/api/v1/results/?student_id=1
+Authorization: Token @token
+
+### ============================================================
+### NOTIFICATION ENDPOINTS (4 APIs)
+### ============================================================
+
+### 1. List Notifications - GET /notifications/
+GET http://127.0.0.1:8000/api/v1/notifications/
+Authorization: Token @token
+
+### 2. Get Notification Details - GET /notifications/{id}/
+GET http://127.0.0.1:8000/api/v1/notifications/1/
+Authorization: Token @token
+
+### 3. Mark Notification as Read - PUT /notifications/{id}/mark_read/
+PUT http://127.0.0.1:8000/api/v1/notifications/1/mark_read/
+Authorization: Token @token
+
+### 4. Delete Notification - DELETE /notifications/{id}/
+DELETE http://127.0.0.1:8000/api/v1/notifications/1/
+Authorization: Token @token
+
+### ============================================================
+### QUICK REFERENCE - API SUMMARY (36 APIS)
+### ============================================================
+
+### AUTHENTICATION (6)
+### POST   /auth/login/                     - Login user
+### GET    /auth/profile/                   - Get user profile
+### PUT    /auth/profile/                   - Update profile
+### POST   /auth/change-password/           - Change password
+### POST   /auth/logout/                    - Logout user
+### POST   /auth/refresh-token/             - Refresh authentication token
+
+### STUDENTS (6)
+### GET    /students/                       - List all students
+### GET    /students/{id}/                  - Get student details
+### GET    /students/{id}/attendance/       - Get student attendance
+### GET    /students/{id}/marks/            - Get student marks
+### GET    /students/{id}/fees/             - Get student fee status
+### GET    /students/{id}/fee-payments/     - Get student payment history
+
+### FACULTY (5)
+### GET    /departments/                    - List all departments
+### GET    /courses/                        - List all courses
+### GET    /subjects/                       - List all subjects
+### GET    /classes/                        - List all classes
+### GET    /teachers/{id}/subjects/         - Get teacher's assigned subjects
+
+### ATTENDANCE (3)
+### GET    /attendance/                     - List attendance records
+### POST   /attendance/                     - Mark attendance
+### DELETE /attendance/{id}/                - Delete attendance record
+
+### FEES (4)
+### POST   /fees/payments/                  - Record fee payment
+### GET    /fees/payments/?student_id={id}  - Get student payment history
+### GET    /fees/payments/student_due/      - Calculate student due fees
+### POST   /fees/payments/send_reminder/    - Send fee reminder email
+
+### MARKS/EXAMS (8)
+### GET    /marks/                          - List all marks
+### POST   /marks/                          - Create marks entry
+### GET    /marks/{id}/                     - Get mark details
+### PUT    /marks/{id}/                     - Update marks
+### DELETE /marks/{id}/                     - Delete marks
+### GET    /marks/by_student/?student_id={id} - Get student marks
+### GET    /marks/by_subject/?subject_id={id} - Get subject marks
+### GET    /results/?student_id={id}        - Get result card
+
+### NOTIFICATIONS (4)
+### GET    /notifications/                  - List notifications
+### GET    /notifications/{id}/             - Get notification details
+### PUT    /notifications/{id}/mark_read/   - Mark notification as read
+### DELETE /notifications/{id}/             - Delete notification
+
+### ============================================================
+### NOTES:
+### - Replace YOUR_TOKEN_HERE with actual authentication token
+### - Replace {id} with actual resource ID
+### - All endpoints require authentication (except login)
+### - Use appropriate HTTP methods: GET (read), POST (create), PUT (update), DELETE (remove)
+### - Content-Type: application/json for POST/PUT requests
+### ============================================================
