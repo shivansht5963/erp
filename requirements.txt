@@ -3,3 +3,6 @@ django-extensions
 weasyprint
 gunicorn
 whitenoise
+djangorestframework==3.14.0
+djangorestframework-api-key==3.7.1
+djangorestframework-authtoken==1.1.0
