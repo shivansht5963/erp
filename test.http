@@ -17,16 +17,16 @@
 
 ### 1. Login - POST /auth/login/
 ### ⭐ RUN THIS FIRST TO GET TOKEN ⭐
-POST https://erp-9pbn.onrender.com/api/v1/auth/login/
+POST http://127.0.0.1:8000/api/v1/auth/login/
 Content-Type: application/json
 
 {
-  "email": "sanchitajarare@gmail.com",
-  "password": "sanchuj123"
+  "email": "yashmhatre@gmail.com",
+  "password": "mhatre123"
 }
 
 ### SAVE THE auth_token FROM RESPONSE AND USE BELOW:
-@token = bd097d4c4106cfcbf7dd5215752d6f2bc201713c
+@token = b9bf0ef150bb81f5606ce61c1839827fddf6eb8c
 
 ### 2. Get User Profile - GET /auth/profile/
 GET https://erp-9pbn.onrender.com/api/v1/auth/profile/
@@ -252,17 +252,6 @@ Authorization: Token @token
 GET https://erp-9pbn.onrender.com/api/v1/notifications/1/
 Authorization: Token @token
 
-### 0. Create Notification - POST /notifications/
-POST https://erp-9pbn.onrender.com/api/v1/notifications/
-Authorization: Token @token
-Content-Type: application/json
-
-{
-  "recipient": 1,
-  "title": "Exam Schedule Reminder",
-  "message": "Dear student, your exam is scheduled on 2026-01-10 at 10:00 AM."
-}
-
 ### 3. Mark Notification as Read - PUT /notifications/{id}/mark_read/
 PUT https://erp-9pbn.onrender.com/api/v1/notifications/1/mark_read/
 Authorization: Token @token
@@ -270,6 +259,31 @@ Authorization: Token @token
 ### 4. Delete Notification - DELETE /notifications/{id}/
 DELETE https://erp-9pbn.onrender.com/api/v1/notifications/1/
 Authorization: Token @token
+
+### 5. Send Announcement to a Specific STUDENT
+POST https://erp-9pbn.onrender.com/api/v1/notifications/send-announcement/
+Authorization: Token {{token}}
+Content-Type: application/json
+
+{
+  "target_type": "student",
+  "target_id": 1, 
+  "title": "Individual Alert",
+  "message": "Hey, your specific assignment for OSY is pending."
+}
+
+
+### 6. Send Announcement to an Entire CLASS
+POST http://127.0.0.1:8000/api/v1/notifications/send-announcement/
+Authorization: Token {{token}}
+Content-Type: application/json
+
+{
+  "target_type": "class",
+  "target_id": 1,
+  "title": "Class Notice",
+  "message": "The lecture scheduled for 2 PM is moved to 4 PM."
+}
 
 ### ============================================================
 ### QUICK REFERENCE - API SUMMARY (36 APIS)
