@@ -1,5 +1,5 @@
 ### ERP API Test Suite
-### Base URL: https://erp-9pbn.onrender.com/api/v1/
+### Base URL: http://127.0.0.1:8000/api/v1/
 ### Tests for all 36 APIs
 
 ### ============================================================
@@ -21,19 +21,19 @@ POST http://127.0.0.1:8000/api/v1/auth/login/
 Content-Type: application/json
 
 {
-  "email": "yashmhatre@gmail.com",
-  "password": "mhatre123"
+  "email": "rishab@gmail.com",
+  "password": "rishu1234"
 }
 
 ### SAVE THE auth_token FROM RESPONSE AND USE BELOW:
-@token = b9bf0ef150bb81f5606ce61c1839827fddf6eb8c
+@token = 5a743e38ec213f224e20026ea1fa69a75700aa50
 
 ### 2. Get User Profile - GET /auth/profile/
-GET https://erp-9pbn.onrender.com/api/v1/auth/profile/
+GET http://127.0.0.1:8000/api/v1/auth/profile/
 Authorization: Token @token
 
 ### 3. Update Profile - PUT /auth/profile/
-PUT https://erp-9pbn.onrender.com/api/v1/auth/profile/
+PUT http://127.0.0.1:8000/api/v1/auth/profile/
 Authorization: Token @token
 Content-Type: application/json
 
@@ -45,7 +45,7 @@ Content-Type: application/json
 }
 
 ### 4. Change Password - POST /auth/change-password/
-POST https://erp-9pbn.onrender.com/api/v1/auth/change-password/
+POST http://127.0.0.1:8000/api/v1/auth/change-password/
 Authorization: Token @token
 Content-Type: application/json
 
@@ -56,11 +56,11 @@ Content-Type: application/json
 }
 
 ### 5. Logout - POST /auth/logout/
-POST https://erp-9pbn.onrender.com/api/v1/auth/logout/
+POST http://127.0.0.1:8000/api/v1/auth/logout/
 Authorization: Token @token
 
 ### 6. Refresh Token - POST /auth/refresh-token/
-POST https://erp-9pbn.onrender.com/api/v1/auth/refresh-token/
+POST http://127.0.0.1:8000/api/v1/auth/refresh-token/
 Authorization: Token @token
 Content-Type: application/json
 
@@ -73,27 +73,27 @@ Content-Type: application/json
 ### ============================================================
 
 ### 1. List All Students - GET /students/
-GET https://erp-9pbn.onrender.com/api/v1/students/
+GET http://127.0.0.1:8000/api/v1/students/
 Authorization: Token @token
 
 ### 2. Get Student Details - GET /students/{id}/
-GET https://erp-9pbn.onrender.com/api/v1/students/1/
+GET http://127.0.0.1:8000/api/v1/students/1/
 Authorization: Token @token
 
 ### 3. Get Student Attendance - GET /students/{id}/attendance/
-GET https://erp-9pbn.onrender.com/api/v1/students/1/attendance/
+GET http://127.0.0.1:8000/api/v1/students/1/attendance/
 Authorization: Token @token
 
 ### 4. Get Student Marks - GET /students/{id}/marks/
-GET https://erp-9pbn.onrender.com/api/v1/students/1/marks/
+GET http://127.0.0.1:8000/api/v1/students/1/marks/
 Authorization: Token @token
 
 ### 5. Get Student Fee Status - GET /students/{id}/fees/
-GET https://erp-9pbn.onrender.com/api/v1/students/1/fees/
+GET http://127.0.0.1:8000/api/v1/students/1/fees/
 Authorization: Token @token
 
 ### 6. Get Student Fee Payments History - GET /students/{id}/fee-payments/
-GET https://erp-9pbn.onrender.com/api/v1/students/1/fee-payments/
+GET http://127.0.0.1:8000/api/v1/students/1/fee-payments/
 Authorization: Token @token
 
 ### ============================================================
@@ -101,23 +101,23 @@ Authorization: Token @token
 ### ============================================================
 
 ### 1. List All Departments - GET /departments/
-GET https://erp-9pbn.onrender.com/api/v1/departments/
+GET http://127.0.0.1:8000/api/v1/departments/
 Authorization: Token @token
 
 ### 2. List All Courses - GET /courses/
-GET https://erp-9pbn.onrender.com/api/v1/courses/
+GET http://127.0.0.1:8000/api/v1/courses/
 Authorization: Token @token
 
 ### 3. List All Subjects - GET /subjects/
-GET https://erp-9pbn.onrender.com/api/v1/subjects/
+GET http://127.0.0.1:8000/api/v1/subjects/
 Authorization: Token @token
 
 ### 4. List All Classes - GET /classes/
-GET https://erp-9pbn.onrender.com/api/v1/classes/
+GET http://127.0.0.1:8000/api/v1/classes/
 Authorization: Token @token
 
 ### 5. Get Teacher's Assigned Subjects - GET /teachers/{id}/subjects/
-GET https://erp-9pbn.onrender.com/api/v1/teachers/1/subjects/
+GET http://127.0.0.1:8000/api/v1/teachers/1/subjects/
 Authorization: Token @token
 
 ### ============================================================
@@ -125,15 +125,15 @@ Authorization: Token @token
 ### ============================================================
 
 ### 1. List Attendance Records - GET /attendance/
-GET https://erp-9pbn.onrender.com/api/v1/attendance/
+GET http://127.0.0.1:8000/api/v1/attendance/
 Authorization: Token @token
 
 ### 1b. List Attendance by Student - GET /attendance/?student_id=1
-GET https://erp-9pbn.onrender.com/api/v1/attendance/?student_id=1
+GET http://127.0.0.1:8000/api/v1/attendance/?student_id=1
 Authorization: Token @token
 
 ### 2. Mark Attendance - POST /attendance/
-POST https://erp-9pbn.onrender.com/api/v1/attendance/
+POST http://127.0.0.1:8000/api/v1/attendance/
 Authorization: Token @token
 Content-Type: application/json
 
@@ -156,7 +156,7 @@ Authorization: Token @token
 ### ============================================================
 
 ### 1. Record Fee Payment - POST /fees/payments/
-POST https://erp-9pbn.onrender.com/api/v1/fees/payments/
+POST http://127.0.0.1:8000/api/v1/fees/payments/
 Authorization: Token @token
 Content-Type: application/json
 
@@ -170,7 +170,7 @@ Content-Type: application/json
 }
 
 ### 2. Get Student Payment History - GET /fees/payments/?student_id=1
-GET https://erp-9pbn.onrender.com/api/v1/fees/payments/?student_id=1
+GET http://127.0.0.1:8000/api/v1/fees/payments/?student_id=1
 Authorization: Token @token
 
 ### Alternative: Get Student Payment History (via action)
@@ -178,11 +178,11 @@ GET https://erp-9pbn.onrender.com/api/v1/fees/payments/student_payments/?student
 Authorization: Token @token
 
 ### 3. Get Student Due Fees - GET /fees/student_due/?student_id=1
-GET https://erp-9pbn.onrender.com/api/v1/fees/payments/student_due/?student_id=1
+GET http://127.0.0.1:8000/api/v1/fees/payments/student_due/?student_id=1
 Authorization: Token @token
 
 ### 4. Send Fee Reminder - POST /fees/payments/send_reminder/
-POST https://erp-9pbn.onrender.com/api/v1/fees/payments/send_reminder/
+POST http://127.0.0.1:8000/api/v1/fees/payments/send_reminder/
 Authorization: Token @token
 Content-Type: application/json
 
@@ -195,11 +195,11 @@ Content-Type: application/json
 ### ============================================================
 
 ### 1. List All Marks - GET /marks/
-GET https://erp-9pbn.onrender.com/api/v1/marks/
+GET http://127.0.0.1:8000/api/v1/marks/
 Authorization: Token @token
 
 ### 2. Create Marks Entry - POST /marks/
-POST https://erp-9pbn.onrender.com/api/v1/marks/
+POST http://127.0.0.1:8000/api/v1/marks/
 Authorization: Token @token
 Content-Type: application/json
 
@@ -211,11 +211,11 @@ Content-Type: application/json
 }
 
 ### 3. Get Mark Details - GET /marks/{id}/
-GET https://erp-9pbn.onrender.com/api/v1/marks/1/
+GET http://127.0.0.1:8000/api/v1/marks/1/
 Authorization: Token @token
 
 ### 4. Update Marks - PUT /marks/{id}/
-PUT https://erp-9pbn.onrender.com/api/v1/marks/1/
+PUT http://127.0.0.1:8000/api/v1/marks/1/
 Authorization: Token @token
 Content-Type: application/json
 
@@ -225,19 +225,19 @@ Content-Type: application/json
 }
 
 ### 5. Delete Marks - DELETE /marks/{id}/
-DELETE https://erp-9pbn.onrender.com/api/v1/marks/1/
+DELETE http://127.0.0.1:8000/api/v1/marks/1/
 Authorization: Token @token
 
 ### 6. Get Student Marks - GET /marks/by_student/?student_id=1
-GET https://erp-9pbn.onrender.com/api/v1/marks/by_student/?student_id=1
+GET http://127.0.0.1:8000/api/v1/marks/by_student/?student_id=1
 Authorization: Token @token
 
 ### 7. Get Subject Marks - GET /marks/by_subject/?subject_id=1
-GET https://erp-9pbn.onrender.com/api/v1/marks/by_subject/?subject_id=1
+GET http://127.0.0.1:8000/api/v1/marks/by_subject/?subject_id=1
 Authorization: Token @token
 
 ### 8. Get Result Card - GET /results/?student_id=1
-GET https://erp-9pbn.onrender.com/api/v1/results/?student_id=1
+GET http://127.0.0.1:8000/api/v1/results/?student_id=1
 Authorization: Token @token
 
 ### ============================================================
@@ -245,23 +245,23 @@ Authorization: Token @token
 ### ============================================================
 
 ### 1. List Notifications - GET /notifications/
-GET https://erp-9pbn.onrender.com/api/v1/notifications/
+GET http://127.0.0.1:8000/api/v1/notifications/
 Authorization: Token @token
 
 ### 2. Get Notification Details - GET /notifications/{id}/
-GET https://erp-9pbn.onrender.com/api/v1/notifications/1/
+GET http://127.0.0.1:8000/api/v1/notifications/1/
 Authorization: Token @token
 
 ### 3. Mark Notification as Read - PUT /notifications/{id}/mark_read/
-PUT https://erp-9pbn.onrender.com/api/v1/notifications/1/mark_read/
+PUT http://127.0.0.1:8000/api/v1/notifications/1/mark_read/
 Authorization: Token @token
 
 ### 4. Delete Notification - DELETE /notifications/{id}/
-DELETE https://erp-9pbn.onrender.com/api/v1/notifications/1/
+DELETE http://127.0.0.1:8000/api/v1/notifications/1/
 Authorization: Token @token
 
 ### 5. Send Announcement to a Specific STUDENT
-POST https://erp-9pbn.onrender.com/api/v1/notifications/send-announcement/
+POST http://127.0.0.1:8000/api/v1/notifications/send-announcement/
 Authorization: Token {{token}}
 Content-Type: application/json
 

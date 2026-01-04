@@ -100,6 +100,28 @@ class AuthViewSet(viewsets.ViewSet):
         token, _ = Token.objects.get_or_create(user=user)
         return Response({'token': token.key, 'role': user.role})
 
+    @action(detail=False, methods=['post'], permission_classes=[IsAuthenticated])
+    def logout(self, request):
+        """Logout by deleting the user's token."""
+        try:
+            token = Token.objects.get(user=request.user)
+            token.delete()
+        except Token.DoesNotExist:
+            pass
+        return Response({'detail': 'Successfully logged out.'}, status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=['post'], permission_classes=[AllowAny])
+    def debug_auth(self, request):
+        """Debug endpoint: echo the Authorization header and parsed request.auth."""
+        auth_header = request.META.get('HTTP_AUTHORIZATION', 'NOT_SET')
+        request_auth = str(request.auth) if request.auth else 'None'
+        return Response({
+            'HTTP_AUTHORIZATION_header': auth_header,
+            'request.auth': request_auth,
+            'request.user': str(request.user),
+            'is_authenticated': request.user.is_authenticated
+        })
+
 class NotificationViewSet(viewsets.ModelViewSet):
     serializer_class = NotificationSerializer
     permission_classes = [IsAuthenticated]
