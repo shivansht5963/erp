@@ -177,3 +177,28 @@ REST_FRAMEWORK = {
         "rest_framework.permissions.IsAuthenticated",
     ]
 }
+
+# CORS Configuration - Dev Mode (Allow All for Hackathon/Testing)
+if DEBUG:
+    # Development: Allow all origins
+    CORS_ALLOW_ALL_ORIGINS = True
+else:
+    # Production: Restrict to specific origins
+    CORS_ALLOWED_ORIGINS = [
+        "https://erp-9pbn.onrender.com",
+        "https://*.render.com",
+    ]
+
+CORS_ALLOW_CREDENTIALS = True
+
+CORS_ALLOW_HEADERS = [
+    "accept",
+    "accept-encoding",
+    "authorization",
+    "content-type",
+    "dnt",
+    "origin",
+    "user-agent",
+    "x-csrftoken",
+    "x-requested-with",
+]

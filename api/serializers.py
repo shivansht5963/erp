@@ -154,6 +154,11 @@ class ResultCardSerializer(serializers.Serializer):
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField(write_only=True)
+    
+    def validate(self, data):
+        """Convert email to username since CustomUser uses email as username field"""
+        data['username'] = data['email']
+        return data
 
 class ProfileUpdateSerializer(serializers.ModelSerializer):
     class Meta:

@@ -32,8 +32,8 @@ Content-Type: application/json
 GET http://127.0.0.1:8000/api/v1/auth/profile/
 Authorization: Token @token
 
-### 3. Update Profile - PUT /auth/profile/
-PUT http://127.0.0.1:8000/api/v1/auth/profile/
+### 3. Update Profile - PUT /auth/update-profile/
+PUT http://127.0.0.1:8000/api/v1/auth/update-profile/
 Authorization: Token @token
 Content-Type: application/json
 
