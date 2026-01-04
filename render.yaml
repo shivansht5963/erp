@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: erp-app
+    env: python
+    plan: free
+    pythonVersion: 3.11
+    
+    # Build command - collect static files before running
+    buildCommand: >
+      pip install -r requirements.txt &&
+      python manage.py migrate &&
+      python manage.py collectstatic --noinput
+    
+    # Start command
+    startCommand: gunicorn erp.wsgi:application
+    
+    # Environment variables
+    envVars:
+      - key: DEBUG
+        value: "False"
+      - key: PYTHON_VERSION
+        value: "3.11.0"
+      - key: SECRET_KEY
+        fromService:
+          name: erp-app
+          property: SECRET_KEY

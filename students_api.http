@@ -1,0 +1,58 @@
+### ============================================================
+### STUDENTS API TEST FILE
+### ============================================================
+### Base URL Variable
+### ============================================================
+@baseurl = https://erp-9pbn.onrender.com/api/v1
+@token = your_token_here
+
+### ============================================================
+### STEP 1: LOGIN FIRST TO GET TOKEN
+### ============================================================
+
+### Login - POST /auth/login/
+POST @baseurl/auth/login/
+Content-Type: application/json
+
+{
+  "email": "rishab@gmail.com",
+  "password": "rishu1234"
+}
+
+### ============================================================
+### COPY auth_token FROM LOGIN RESPONSE AND PASTE ABOVE AS @token
+### ============================================================
+
+### ============================================================
+### STUDENT LIST & DETAIL ENDPOINTS
+### ============================================================
+
+### 1. List All Students - GET /students/
+GET @baseurl/students/
+Authorization: Token @token
+
+### 2. Get Single Student - GET /students/{id}/
+GET @baseurl/students/1/
+Authorization: Token @token
+
+### ============================================================
+### STUDENT ACTIONS (Detail Routes)
+### ============================================================
+
+### 3. Get Student's Attendance - GET /students/{id}/attendance/
+GET @baseurl/students/1/attendance/
+Authorization: Token @token
+
+### 4. Get Student's Marks - GET /students/{id}/marks/
+GET @baseurl/students/1/marks/
+Authorization: Token @token
+
+### ============================================================
+### TESTING NOTES
+### ============================================================
+### 1. Run LOGIN request first
+### 2. Copy the auth_token value from response
+### 3. Replace "your_token_here" with the copied token in @token variable
+### 4. Run any other request - it will use the token automatically
+### 5. All responses include student data with roll_number, course, class, etc.
+### ============================================================
