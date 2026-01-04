@@ -1,0 +1,269 @@
+### TEACHER-ONLY API TEST SUITE
+### Base URL: http://127.0.0.1:8000/api/v1/
+### Tests for teacher-specific APIs
+
+### ============================================================
+### IMPORTANT: TOKEN WORKFLOW FOR TEACHERS
+### ============================================================
+### 1. First, run the LOGIN request below with a teacher account
+### 2. Copy the token value from the response
+### 3. Replace @teacher_token with the copied token
+### 4. All teacher-specific requests will now work
+### ============================================================
+
+### ============================================================
+### AUTHENTICATION (For Teachers)
+### ============================================================
+
+### 1. Login - POST /auth/login/ (TEACHER ACCOUNT)
+POST http://127.0.0.1:8000/api/v1/auth/login/
+Content-Type: application/json
+
+{
+  "email": "teacher@example.com",
+  "password": "password123"
+}
+
+### SAVE THE token FROM RESPONSE AND USE BELOW:
+@teacher_token = your_token_here
+
+### ============================================================
+### TEACHER-SPECIFIC ENDPOINTS
+### ============================================================
+
+### 1. Get All Teachers - GET /teachers/
+GET http://127.0.0.1:8000/api/v1/teachers/
+Authorization: Token @teacher_token
+
+### 2. Get Teacher's Assigned Subjects - GET /teachers/{id}/subjects/
+GET http://127.0.0.1:8000/api/v1/teachers/1/subjects/
+Authorization: Token @teacher_token
+
+### ============================================================
+### ATTENDANCE MANAGEMENT (Teacher Can Mark)
+### ============================================================
+
+### 1. Mark Attendance for Student - POST /attendance/
+POST http://127.0.0.1:8000/api/v1/attendance/
+Authorization: Token @teacher_token
+Content-Type: application/json
+
+{
+  "student": 1,
+  "subject": 1,
+  "date": "2026-01-04",
+  "status": true,
+  "classes_held": 10,
+  "classes_attended": 8,
+  "marked_by": 1
+}
+
+### 2. View Attendance Records - GET /attendance/
+GET http://127.0.0.1:8000/api/v1/attendance/
+Authorization: Token @teacher_token
+
+### 3. View Student's Attendance - GET /attendance/?student_id=1
+GET http://127.0.0.1:8000/api/v1/attendance/?student_id=1
+Authorization: Token @teacher_token
+
+### ============================================================
+### MARKS & GRADES MANAGEMENT
+### ============================================================
+
+### 1. Add Marks for Student - POST /marks/
+POST http://127.0.0.1:8000/api/v1/marks/
+Authorization: Token @teacher_token
+Content-Type: application/json
+
+{
+  "student": 1,
+  "subject": 1,
+  "internal_marks": 35,
+  "semester_marks": 65
+}
+
+### 2. View All Marks - GET /marks/
+GET http://127.0.0.1:8000/api/v1/marks/
+Authorization: Token @teacher_token
+
+### 3. Get Specific Mark Entry - GET /marks/{id}/
+GET http://127.0.0.1:8000/api/v1/marks/1/
+Authorization: Token @teacher_token
+
+### 4. Update Marks - PUT /marks/{id}/
+PUT http://127.0.0.1:8000/api/v1/marks/1/
+Authorization: Token @teacher_token
+Content-Type: application/json
+
+{
+  "internal_marks": 40,
+  "semester_marks": 70
+}
+
+### 5. Delete Marks - DELETE /marks/{id}/
+DELETE http://127.0.0.1:8000/api/v1/marks/1/
+Authorization: Token @teacher_token
+
+### 6. View Student Marks - GET /marks/by_student/?student_id=1
+GET http://127.0.0.1:8000/api/v1/marks/by_student/?student_id=1
+Authorization: Token @teacher_token
+
+### 7. View Subject Marks - GET /marks/by_subject/?subject_id=1
+GET http://127.0.0.1:8000/api/v1/marks/by_subject/?subject_id=1
+Authorization: Token @teacher_token
+
+### ============================================================
+### NOTIFICATION/ANNOUNCEMENT (TEACHER SPECIFIC)
+### ============================================================
+
+### 1. Send Announcement to Specific Student - POST /notifications/send-announcement/
+POST http://127.0.0.1:8000/api/v1/notifications/send-announcement/
+Authorization: Token @teacher_token
+Content-Type: application/json
+
+{
+  "target_type": "student",
+  "target_id": 1,
+  "title": "Assignment Due",
+  "message": "Your Data Structures assignment is due by January 10, 2026."
+}
+
+### 2. Send Announcement to Entire Class - POST /notifications/send-announcement/
+POST http://127.0.0.1:8000/api/v1/notifications/send-announcement/
+Authorization: Token @teacher_token
+Content-Type: application/json
+
+{
+  "target_type": "class",
+  "target_id": 1,
+  "title": "Class Notice",
+  "message": "Tomorrow's lecture is rescheduled to 3 PM."
+}
+
+### 3. View Sent Notifications - GET /notifications/
+GET http://127.0.0.1:8000/api/v1/notifications/
+Authorization: Token @teacher_token
+
+### 4. Get Notification Details - GET /notifications/{id}/
+GET http://127.0.0.1:8000/api/v1/notifications/1/
+Authorization: Token @teacher_token
+
+### 5. Mark Notification as Read - PUT /notifications/{id}/mark_read/
+PUT http://127.0.0.1:8000/api/v1/notifications/1/mark_read/
+Authorization: Token @teacher_token
+
+### ============================================================
+### FACULTY & ACADEMIC STRUCTURE (READ-ONLY)
+### ============================================================
+
+### 1. View All Departments - GET /departments/
+GET http://127.0.0.1:8000/api/v1/departments/
+Authorization: Token @teacher_token
+
+### 2. View All Courses - GET /courses/
+GET http://127.0.0.1:8000/api/v1/courses/
+Authorization: Token @teacher_token
+
+### 3. View All Subjects - GET /subjects/
+GET http://127.0.0.1:8000/api/v1/subjects/
+Authorization: Token @teacher_token
+
+### 4. View All Classes - GET /classes/
+GET http://127.0.0.1:8000/api/v1/classes/
+Authorization: Token @teacher_token
+
+### ============================================================
+### STUDENT INFORMATION (READ-ONLY)
+### ============================================================
+
+### 1. View All Students - GET /students/
+GET http://127.0.0.1:8000/api/v1/students/
+Authorization: Token @teacher_token
+
+### 2. Get Student Details - GET /students/{id}/
+GET http://127.0.0.1:8000/api/v1/students/1/
+Authorization: Token @teacher_token
+
+### 3. Get Student Attendance - GET /students/{id}/attendance/
+GET http://127.0.0.1:8000/api/v1/students/1/attendance/
+Authorization: Token @teacher_token
+
+### 4. Get Student Marks - GET /students/{id}/marks/
+GET http://127.0.0.1:8000/api/v1/students/1/marks/
+Authorization: Token @teacher_token
+
+### ============================================================
+### PROFILE MANAGEMENT (COMMON ENDPOINTS)
+### ============================================================
+
+### 1. Get Your Profile - GET /auth/profile/
+GET http://127.0.0.1:8000/api/v1/auth/profile/
+Authorization: Token @teacher_token
+
+### 2. Update Your Profile - PUT /auth/profile/
+PUT http://127.0.0.1:8000/api/v1/auth/profile/
+Authorization: Token @teacher_token
+Content-Type: application/json
+
+{
+  "first_name": "John",
+  "last_name": "Doe",
+  "phone": "9876543210",
+  "address": "123 Main St"
+}
+
+### 3. Change Password - POST /auth/change-password/
+POST http://127.0.0.1:8000/api/v1/auth/change-password/
+Authorization: Token @teacher_token
+Content-Type: application/json
+
+{
+  "old_password": "oldpassword123",
+  "new_password": "newpassword456",
+  "confirm_password": "newpassword456"
+}
+
+### 4. Logout - POST /auth/logout/
+POST http://127.0.0.1:8000/api/v1/auth/logout/
+Authorization: Token @teacher_token
+
+### ============================================================
+### QUICK REFERENCE - TEACHER API SUMMARY
+### ============================================================
+
+### TEACHER ACTIONS
+### POST   /notifications/send-announcement/    - Send announcement to student/class
+### POST   /attendance/                         - Mark student attendance
+### POST   /marks/                              - Add student marks
+### PUT    /marks/{id}/                         - Update student marks
+### DELETE /marks/{id}/                         - Delete mark entry
+
+### TEACHER VIEW ACCESS
+### GET    /teachers/                           - View all teachers
+### GET    /teachers/{id}/subjects/             - View assigned subjects
+### GET    /attendance/                         - View attendance records
+### GET    /marks/                              - View all marks
+### GET    /students/                           - View all students
+### GET    /students/{id}/                      - View student details
+### GET    /students/{id}/attendance/           - View student attendance
+### GET    /students/{id}/marks/                - View student marks
+### GET    /notifications/                      - View sent notifications
+### GET    /departments/                        - View all departments
+### GET    /courses/                            - View all courses
+### GET    /subjects/                           - View all subjects
+### GET    /classes/                            - View all classes
+
+### COMMON AUTHENTICATION
+### GET    /auth/profile/                       - Get your profile
+### PUT    /auth/profile/                       - Update your profile
+### POST   /auth/change-password/               - Change password
+### POST   /auth/logout/                        - Logout
+
+### ============================================================
+### NOTES:
+### - Replace @teacher_token with actual authentication token
+### - Replace {id} with actual resource ID
+### - Teachers can only modify marks/attendance for their subjects
+### - Announcements sent to classes reach all enrolled students
+### - All times are in UTC/ISO 8601 format
+### ============================================================

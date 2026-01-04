@@ -53,12 +53,14 @@ INSTALLED_APPS = [
     'fees',
     'rest_framework',
     'rest_framework.authtoken',
+    'corsheaders',
     'api',
     
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -152,6 +154,20 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# CORS Configuration for React Native Development
+CORS_ALLOWED_ORIGINS = [
+    "http://127.0.0.1:3000",
+    "http://127.0.0.1:8081",  # React Native default port
+    "http://localhost:3000",
+    "http://localhost:8081",
+]
+
+# For development only - allow all origins
+if DEBUG:
+    CORS_ALLOW_ALL_ORIGINS = False  # Set to True if development needs all origins
+
+CORS_ALLOW_CREDENTIALS = True
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
