@@ -20,21 +20,17 @@ POST http://127.0.0.1:8000/api/v1/auth/login/
 Content-Type: application/json
 
 {
+{
   "email": "teacher@example.com",
   "password": "password123"
-}
 ```
 
 **Response:**
 ```json
 {
-  "auth_token": "7c3f4b9d8e2a1c6f5h4j2k1l9m8n7o6p",
-  "user_id": 5,
-  "email": "teacher@example.com",
-  "first_name": "Dr.",
-  "last_name": "Smith",
-  "role": "faculty",
-  "message": "Login successful"
+{
+  "token": "7c3f4b9d8e2a1c6f5h4j2k1l9m8n7o6p",
+  "role": "faculty"
 }
 ```
 
@@ -69,6 +65,56 @@ Content-Type: application/json
   {
     "id": 3,
     "name": "Mechanical Engineering"
+
+  ---
+
+  ### 5. SEND ANNOUNCEMENT (TEACHER / ADMIN)
+  **Request Type:** POST
+  **Endpoint:** `/notifications/send-announcement/`
+  **Authentication:** Required ✅
+  **Purpose:** Send a notification to a single student or an entire class
+
+  **Notes:** Teachers can send announcements if either:
+  - their `CustomUser.role` is `faculty`, or
+  - they have an associated `Teacher` profile in the database. Admins and superusers are also allowed.
+
+  **Request (student):**
+  ```http
+  POST http://127.0.0.1:8000/api/v1/notifications/send-announcement/
+  Authorization: Token <token>
+  Content-Type: application/json
+
+  {
+    "target_type": "student",
+    "target_id": 1,
+    "title": "Individual Alert",
+    "message": "Please complete your assignment."
+  }
+  ```
+
+  **Request (class):**
+  ```http
+  POST http://127.0.0.1:8000/api/v1/notifications/send-announcement/
+  Authorization: Token <token>
+  Content-Type: application/json
+
+  {
+    "target_type": "class",
+    "target_id": 1,
+    "title": "Class Notice",
+    "message": "Lecture moved to 4 PM."
+  }
+  ```
+
+  **Response (success):**
+  ```json
+  {
+    "status": "sent",
+    "count": 25
+  }
+  ```
+
+  **Validation:** `target_type` must be `class` or `student`. The API will return 400 if the provided `target_id` does not exist.
   },
   {
     "id": 4,
